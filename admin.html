@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In — Trade Desk — Triple 7 Holdings</title>
-<meta name="description" content="Sign in or create an account for the Triple 7 Holdings Trade Desk.">
+<title>Dashboard — Trade Desk — Triple 7 Holdings</title>
+<meta name="description" content="Trade Desk dashboard.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="images/logo-icon.png?v=2">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
 <link rel="stylesheet" href="css/portal.css">
+<script>try{if(!JSON.parse(localStorage.getItem('t7.session')||'null')){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}}catch(e){}</script>
 </head>
-<body class="page-signin">
+<body class="page-admin">
 
 <nav class="nav">
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;width:100%">
@@ -35,28 +36,25 @@
   <div class="desk-inner">
     <div class="desk-strip">
       <span class="desk-id">Trade Desk <b>·&nbsp; Kimberley</b></span>
-      <div class="desk-actions"><a class="desk-btn" href="contact.html">Contact Desk</a></div>
+      <div class="desk-actions"><span class="desk-count" id="desk-count"></span><button type="button" class="desk-btn" id="refresh">Refresh</button><a class="desk-btn" href="signin.html?signout=1">Sign Out</a></div>
     </div>
     <div class="desk-title-wrap">
-      <p class="desk-crumb"><a href="trade.html">T7 / Desk</a> / Sign in</p>
-      <h1 class="desk-title" id="desk-title">Sign In</h1>
-      <p class="desk-sub" id="desk-sub">Sign in to browse lots, send enquiries and manage your listings.</p>
+      <p class="desk-crumb"><a href="trade.html">T7 / Desk</a> / Dashboard</p>
+      <h1 class="desk-title" id="desk-title">Dashboard</h1>
+      <p class="desk-sub" id="desk-sub">Everything on the Trade Desk: accounts, lots, enquiries and documents.</p>
     </div>
   </div>
 </header>
 
+<nav class="market-strip admin-tabs" aria-label="Dashboard sections"><div class="market-strip-inner"><div class="market-primary" id="admin-tabs" role="tablist"></div></div></nav>
+
 <section class="desk-body">
   <div class="wrap">
-    <div class="auth-wrap">
-      <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Sign in or create an account" hidden>
-        <button type="button" id="tab-signin" role="tab" aria-selected="true">Sign In</button>
-        <button type="button" id="tab-signup" role="tab" aria-selected="false">Create Account</button>
-      </div>
-      <div id="signin-root" aria-live="polite"><p class="auth-wait">One moment…</p></div>
-      <noscript><p class="notice">Signing in needs JavaScript. Enable it, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
-    </div>
+    <div id="admin-root" aria-live="polite"><p class="auth-wait">Loading the dashboard…</p></div>
   </div>
 </section>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-title"><div id="sheet-body"></div></dialog>
 
 <footer class="footer">
   <div class="wrap">
@@ -126,7 +124,7 @@
 <script src="js/trade.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
-<script src="js/signin.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/account-menu.js"></script>
 </body>
 </html>

@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Desk — Triple 7 Holdings</title>
-<meta name="description" content="Diamond and gold lots listed on the Triple 7 Holdings Kimberley Trade Desk.">
+<meta name="description" content="Diamonds, gold, precious metals and gemstones listed on the Triple 7 Holdings Kimberley Trade Desk.">
 <link rel="icon" type="image/png" href="images/logo-icon.png?v=2">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
+<link rel="stylesheet" href="css/portal.css">
+<script>try{var s=JSON.parse(localStorage.getItem('t7.session')||'null');if(!s){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}else if(s.role==='admin'){location.replace('admin.html');}}catch(e){}</script>
 </head>
 <body class="page-trade">
 
@@ -29,19 +31,20 @@
   </div>
 </nav>
 
-<header class="catalogue-head"><div class="wrap"><p class="eyebrow">Kimberley, South Africa</p><h1>Trade Desk</h1><p>Browse diamond and gold lots. Select a lot to view its details and request a quote.</p></div></header>
+<header class="catalogue-head"><div class="wrap catalogue-head-row"><div><p class="eyebrow">Kimberley, South Africa</p><h1>Trade Desk</h1><p id="trade-intro">Pick a category, open a lot, and send the seller an enquiry.</p></div><div class="trade-welcome" id="trade-welcome"></div></div></header>
 <main class="catalogue-main"><div class="wrap">
-<div class="catalogue-top"><div class="commodity-tabs" aria-label="Filter by commodity"><button type="button" data-commodity="" aria-pressed="true">All Lots</button><button type="button" data-commodity="diamond" aria-pressed="false">Diamonds</button><button type="button" data-commodity="gold" aria-pressed="false">Gold</button></div><div class="stat-row" id="stat-row" role="status"></div></div>
+<div class="catalogue-top"><div class="commodity-tabs" id="commodity-tabs" aria-label="Filter by category"><button type="button" data-commodity="" aria-pressed="true">All Lots</button></div></div>
 <div class="catalogue-layout">
-<aside class="catalogue-sidebar" aria-label="Refine the catalogue"><button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="controls">Filters</button><form class="board-controls is-collapsed" id="controls" aria-label="Filter lots"><h2>Refine your search</h2><div class="filter-row" id="filter-row"></div><p class="filter-help">Filters reflect the details available for the listed lots.</p></form></aside>
+<aside class="catalogue-sidebar" aria-label="Refine the catalogue"><button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="controls">Filters</button><form class="board-controls is-collapsed" id="controls" aria-label="Filter lots"><h2>Refine your search</h2><div class="filter-row" id="filter-row"></div><p class="filter-help">Filters show only what is on the board right now.</p></form></aside>
 <div class="catalogue-results">
-<div class="catalogue-toolbar"><div class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.8"/></svg><input type="search" id="q" placeholder="Search by name, lot ID or keyword" aria-label="Search lots"></div><label class="board-sort">Sort by<select id="sort"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="commodity">Commodity</option><option value="lot">Lot ID</option></select></label></div>
+<div class="catalogue-toolbar"><div class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.8"/></svg><input type="search" id="q" placeholder="Search by name, lot ID or keyword" aria-label="Search lots"></div><label class="board-sort">Sort by<select id="sort"><option value="newest">Newest</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="weight-desc">Weight: largest first</option><option value="lot">Lot ID</option></select></label></div>
 <div class="catalogue-resultbar"><p class="board-count" id="board-count" role="status">Loading lots…</p><button type="button" class="reset-link" id="reset" hidden>Clear filters</button></div>
 <div id="board" aria-live="polite"></div>
-<p class="catalogue-note">Prices and commercial terms are confirmed per quote. Listed lots are not live market prices.</p>
+<p class="catalogue-note">Prices are the seller’s asking price in South African rand. Every lot is checked by the desk before it appears here.</p>
 <noscript><p>Enable JavaScript to browse the catalogue, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
 </div></div>
-<section class="buying-summary" aria-labelledby="buying-title"><div class="buying-intro"><p class="eyebrow">A guided purchase</p><h2 id="buying-title">How buying works</h2><a href="how-to-buy.html" class="btn btn-outline">Read the Full Guide</a></div><ol class="buying-steps"><li><span>01</span><h3>Explore a lot</h3><p>Review the details and find a lot that suits your requirements.</p></li><li><span>02</span><h3>Request a quote</h3><p>Sign in and share your interest. The desk confirms availability and terms.</p></li><li><span>03</span><h3>Agree with the desk</h3><p>Review the written quote and arrange settlement directly with our team.</p></li></ol></section>
+<section class="dash-section" id="my-enquiries" hidden></section>
+<section class="buying-summary" aria-labelledby="buying-title"><div class="buying-intro"><p class="eyebrow">Three steps</p><h2 id="buying-title">How buying works</h2><a href="how-to-buy.html" class="btn btn-outline">Read the Full Guide</a></div><ol class="buying-steps"><li><span>01</span><h3>Find a lot</h3><p>Pick a category, then narrow it down by price, weight or grade.</p></li><li><span>02</span><h3>Send an enquiry</h3><p>One message from the lot page. The seller gets your name and contact details.</p></li><li><span>03</span><h3>Agree with the seller</h3><p>The seller replies to you directly to confirm availability, viewing and payment.</p></li></ol></section>
 <div class="catalogue-support"><a class="btn btn-outline" href="provenance.html">Origin &amp; Documentation</a><a class="btn btn-outline" href="contact.html">Contact the Desk</a></div>
 <div id="alerts"></div>
 </div></main>
@@ -109,10 +112,11 @@
 
 <script src="js/script.js"></script>
 <script src="js/config.js"></script>
-<script src="js/t7-lots.js"></script>
-<script src="js/api.js"></script>
+<script src="js/vendor/supabase.js"></script>
+<script src="js/catalog.js"></script>
 <script src="js/trade.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/api.js"></script>
 <script src="js/board.js"></script>
 <script src="js/alerts.js"></script>
 <script src="js/account-menu.js"></script>

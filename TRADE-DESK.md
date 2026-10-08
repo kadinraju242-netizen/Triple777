@@ -1,5 +1,10 @@
 # Trade Desk — Person 3
 
+> **Superseded in part (October 2026).** The sandbox sign-in, the no-price model and the
+> quote-request flow described below have been replaced by real accounts, rand prices and
+> enquiries backed by Supabase. See `BACKEND.md` for what changed and `SETUP.md` to run it.
+> The design notes below are kept for history.
+
 Public marketplace for the Triple 7 Kimberley desk: Live Board, lot pages,
 Trade Basket, quote requests. Built into the existing static site.
 

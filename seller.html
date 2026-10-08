@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
+<link rel="stylesheet" href="css/portal.css">
+<script>try{if(!JSON.parse(localStorage.getItem('t7.session')||'null')){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}}catch(e){}</script>
 </head>
 <body class="page-seller">
 
@@ -34,31 +36,21 @@
   <div class="desk-inner">
     <div class="desk-strip">
       <span class="desk-id">Trade Desk <b>·&nbsp; Kimberley</b></span>
-      <div class="desk-actions">
-        <span class="desk-count" id="desk-count"></span>
-        
-        <a class="desk-btn" href="contact.html">Contact Desk</a>
-      </div>
+      <div class="desk-actions"><a class="desk-btn" href="contact.html">Contact Desk</a></div>
     </div>
     <div class="desk-title-wrap">
       <p class="desk-crumb"><a href="trade.html">T7 / Desk</a> / Seller</p>
-      <h1 class="desk-title" id="desk-title">Seller Desk</h1>
-      <p class="desk-sub" id="desk-sub"></p>
+      <h1 class="desk-title" id="desk-title">Seller Dashboard</h1>
+      <p class="desk-sub" id="desk-sub">List a lot, track approvals and answer enquiries.</p>
     </div>
   </div>
 </header>
 
-<nav class="market-strip" aria-label="Trade Desk sections"><div class="market-strip-inner"><div class="market-primary"><a href="trade.html">Browse Lots</a><a href="how-to-buy.html">How to Buy</a><a href="provenance.html">Origin &amp; Documentation</a></div></div></nav>
-<div class="sandbox-bar">
-  <div class="wrap">
-    <b>Sandbox</b>
-    <span>Demonstration only — no password is checked, nothing is verified, and nothing you enter leaves this browser.</span>
-  </div>
-</div>
+<nav class="market-strip" aria-label="Trade Desk sections"><div class="market-strip-inner"><div class="market-primary"><a href="trade.html">Browse Lots</a><a href="how-to-buy.html">How to Buy</a><a href="provenance.html">Origin &amp; Documentation</a></div><div class="market-accounts" id="strip-account"></div></div></nav>
 
 <section class="desk-body">
   <div class="wrap">
-    <div id="seller-root" aria-live="polite"></div>
+    <div id="seller-root" aria-live="polite"><p class="auth-wait">Loading your dashboard…</p></div>
   </div>
 </section>
 
@@ -125,10 +117,11 @@
 
 <script src="js/script.js"></script>
 <script src="js/config.js"></script>
-<script src="js/t7-lots.js"></script>
-<script src="js/api.js"></script>
+<script src="js/vendor/supabase.js"></script>
+<script src="js/catalog.js"></script>
 <script src="js/trade.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/api.js"></script>
 <script src="js/seller.js"></script>
 <script src="js/account-menu.js"></script>
 </body>

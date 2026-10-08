@@ -1,0 +1,12 @@
+{
+  "name": "triple7-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Triple 7 Holdings website and Trade Desk",
+  "scripts": {
+    "start": "node serve.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}
