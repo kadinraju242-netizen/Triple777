@@ -198,7 +198,7 @@
              '<div class="field"><label for="' + id('country') + '">Country</label><select id="' + id('country') + '" name="country" autocomplete="country-name">' + countries + '</select></div>' +
            '</div>' +
            '<div class="field">' +
-             '<label for="' + id('company') + '">Company or trading name <span class="opt">(optional, mainly for sellers)</span></label>' +
+             '<label for="' + id('company') + '">Company or trading name <span class="opt">(optional)</span></label>' +
              '<input id="' + id('company') + '" name="company" type="text" autocomplete="organization" value="' + esc(p.company || '') + '">' +
            '</div>';
   }
@@ -254,13 +254,17 @@
         '</section>' +
 
         '<section id="signup-card" role="tabpanel" aria-labelledby="tab-signup">' +
-          '<p class="auth-card-sub">It takes about a minute. One account can buy and sell: pick either button now and add the other side later with the same email.</p>' +
+          '<div class="auth-kind" role="group" aria-label="Create an account to buy or to sell">' +
+            '<button type="button" data-kind="buyer" aria-pressed="false">Sign Up As Buyer</button>' +
+            '<button type="button" data-kind="seller" aria-pressed="false">Sign Up As Seller</button>' +
+          '</div>' +
+          '<p class="auth-card-sub" id="kind-sub"></p>' +
           '<form class="form" id="signup-form" novalidate>' +
-            profileFields({}, 'su-') +
+            '<div id="seller-fields">' + profileFields({}, 'su-') + '</div>' +
             '<div class="field"><label for="su-email">Email</label><input id="su-email" name="email" type="email" autocomplete="email" required><p class="field-error"></p></div>' +
             passwordField('su-password', 'Password', 'new-password', 'At least 8 characters.') +
             '<p class="form-error" role="alert" hidden></p>' +
-            sideButtons('Sign Up') +
+            '<button type="submit" class="btn-desk auth-submit" id="signup-submit"></button>' +
             '<p class="field-hint auth-center">We will email you a link to confirm your address.</p>' +
           '</form>' +
           '<p class="auth-foot"><span>Already have an account? <button type="button" class="linklike" data-tab="signin">Sign in</button></span></p>' +
@@ -286,7 +290,7 @@
         if (up) u.searchParams.set('mode', 'signup'); else u.searchParams.delete('mode');
         history.replaceState(null, '', u.pathname + u.search + u.hash);
       } catch (e) {}
-      if (focus) document.getElementById(up ? 'su-first' : 'si-email').focus();
+      if (focus) document.getElementById(up ? (document.getElementById('signup-form').dataset.kind === 'seller' ? 'su-first' : 'su-email') : 'si-email').focus();
     }
 
     document.getElementById('tab-signin').addEventListener('click', () => show('signin', true));
@@ -309,6 +313,35 @@
     });
     document.getElementById('forgot').addEventListener('click', () =>
       forgotForm(document.getElementById('si-email').value.trim()));
+
+    /* Buyer or seller inside the Create Account tab. A buyer needs only
+       an email and a password; a seller also gives a name and phone
+       number so buyers and the desk know who they are dealing with. */
+    const form = document.getElementById('signup-form');
+    function kind(which, focus) {
+      form.dataset.kind = which;
+      const selling = which === 'seller';
+      root.querySelectorAll('[data-kind]').forEach(b => {
+        const on = b.dataset.kind === which;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      const extra = document.getElementById('seller-fields');
+      extra.hidden = !selling;
+      extra.querySelectorAll('input, select').forEach(el => { el.disabled = !selling; });
+      document.getElementById('kind-sub').textContent = selling
+        ? 'Sellers list lots for the desk to approve. Buyers see your name and number on enquiries, so we need them.'
+        : 'All a buyer needs is an email and a password. You can add selling to the same account later.';
+      const btn = document.getElementById('signup-submit');
+      btn.textContent = selling ? 'Create Seller Account' : 'Create Buyer Account';
+      btn.dataset.label = btn.textContent;
+      btn.classList.toggle('is-seller', selling);
+      formError(form, '');
+      form.querySelectorAll('.is-invalid').forEach(f => { f.classList.remove('is-invalid'); const er = f.querySelector('.field-error'); if (er) er.textContent = ''; });
+      if (focus) document.getElementById(selling ? 'su-first' : 'su-email').focus();
+    }
+    root.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => kind(b.dataset.kind, true)));
+    kind(leaning, false);
 
     show(current, false);
   }
@@ -343,8 +376,8 @@
     clearOnInput(form);
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      const side = pressed(e);
-      if (!validateProfile(form)) return;
+      const side = form.dataset.kind === 'seller' ? 'seller' : 'buyer';
+      if (side === 'seller' && !validateProfile(form)) return;
       const email = form.elements.email.value.trim();
       const password = form.elements.password.value;
       if (!EMAIL.test(email)) { setError(form, 'email', 'That email address does not look right.'); form.elements.email.focus(); return; }
@@ -354,7 +387,8 @@
       lock(form, true);
       busy(btn, 'Creating your account…');
       try {
-        const result = await T7.auth.signUp(Object.assign(profileValues(form, side), { email: email, password: password }), next);
+        const fields = side === 'seller' ? profileValues(form, side) : { role: 'buyer' };
+        const result = await T7.auth.signUp(Object.assign(fields, { email: email, password: password }), next);
         if (result.needsVerification) verifySent(email, false, result.devLink);
         else route(result.profile, side);
       } catch (err) {
@@ -366,34 +400,50 @@
   }
 
   /* ---------- Signed in, but this account does not have that side yet ---------- */
+  /* A seller needs a name and phone number. An account that signed up
+     as a buyer with just an email gives them here, once. */
+  function needsSellerDetails(profile) {
+    return !(profile.first_name && profile.last_name && profile.phone);
+  }
+
   function addSide(profile, side) {
     const other = side === 'seller' ? 'buyer' : 'seller';
+    const askDetails = side === 'seller' && needsSellerDetails(profile);
     head(side === 'seller' ? 'Start Selling' : 'Start Buying', 'Use the same account for both.');
     single(
       '<h2 class="auth-card-title">' + (side === 'seller' ? 'Sell with this account?' : 'Buy with this account?') + '</h2>' +
       '<p class="auth-card-sub"><strong>' + esc(profile.email) + '</strong> is set up for ' + DOING[other] + '. ' +
         'Add ' + DOING[side] + ' to the same account: same email, same password, nothing new to remember. ' +
-        (side === 'seller' ? 'Lots you list are checked by the desk before buyers see them.' : 'You can then send enquiries to sellers.') + '</p>' +
-      '<p class="form-error" role="alert" hidden></p>' +
-      '<div class="auth-sides">' +
-        '<button type="button" class="btn-desk' + (side === 'seller' ? ' is-seller' : '') + '" id="add-side">Yes, Add ' + (side === 'seller' ? 'Selling' : 'Buying') + '</button>' +
-        '<button type="button" class="btn-line" id="keep-side">Continue As ' + SIDE[other] + '</button>' +
-      '</div>' +
+        (side === 'seller' ? 'Lots you list are checked by the desk before buyers see them.' : 'You can then send enquiries to sellers.') +
+        (askDetails ? ' Sellers also give a name and phone number, so buyers and the desk know who they are dealing with.' : '') + '</p>' +
+      '<form class="form" id="add-side-form" novalidate>' +
+        (askDetails ? profileFields(profile, 'as-') : '') +
+        '<p class="form-error" role="alert" hidden></p>' +
+        '<div class="auth-sides">' +
+          '<button type="submit" class="btn-desk' + (side === 'seller' ? ' is-seller' : '') + '" id="add-side">Yes, Add ' + (side === 'seller' ? 'Selling' : 'Buying') + '</button>' +
+          '<button type="button" class="btn-line" id="keep-side">Continue As ' + SIDE[other] + '</button>' +
+        '</div>' +
+      '</form>' +
       '<p class="auth-foot"><button type="button" class="linklike" id="signout">Sign out</button></p>');
 
-    const card = root.querySelector('.auth-card');
+    const form = document.getElementById('add-side-form');
+    clearOnInput(form);
     document.getElementById('keep-side').addEventListener('click', () => go(T7.auth.setMode(other)));
     document.getElementById('signout').addEventListener('click', async () => { await T7.auth.signOut(); authPanels(); });
     const btn = document.getElementById('add-side');
-    btn.addEventListener('click', async () => {
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (askDetails && !validateProfile(form)) return;
       busy(btn, 'Adding…');
       try {
-        const updated = await T7.auth.enableRole(side);
+        const updated = askDetails
+          ? await T7.auth.completeProfile(profileValues(form, side))
+          : await T7.auth.enableRole(side);
         T7.toast(side === 'seller' ? 'Selling added to your account' : 'Buying added to your account');
         go(updated);
       } catch (err) {
         busy(btn, '');
-        formError(card, err.message);
+        formError(form, err.message);
       }
     });
   }
