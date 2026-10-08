@@ -25,6 +25,8 @@ if (navToggle && navLinks) {
     // locks the page behind the panel
     root.classList.toggle('menu-open', open);
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navLinks.inert = !open && window.matchMedia('(max-width: 1100px)').matches;
+    if (open) navLinks.querySelector('a')?.focus();
   };
 
   navToggle.addEventListener('click', (e) => {
@@ -50,13 +52,22 @@ if (navToggle && navLinks) {
       setMenu(false);
       navToggle.focus();
     }
+    if (e.key === 'Tab' && isOpen()) {
+      const controls = [navToggle, ...navLinks.querySelectorAll('a, summary, button')].filter(el => el.getClientRects().length);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
 
   // rotating to landscape / resizing past the breakpoint closes it,
   // so the desktop nav never inherits the open state
   window.addEventListener('resize', () => {
     if (isOpen() && window.innerWidth > 1100) setMenu(false);
+    navLinks.inert = !isOpen() && window.matchMedia('(max-width: 1100px)').matches;
   });
+  navLinks.inert = window.matchMedia('(max-width: 1100px)').matches;
 
   // belt and braces: if a scroll gets through the lock anyway (iOS momentum
   // scrolling can), close rather than let the page slide behind the panel
