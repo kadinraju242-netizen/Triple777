@@ -33,6 +33,37 @@ window.T7 = window.T7 || {};
   const TOKEN_KEY = 't7.local-token';
   const CACHE_KEY = 't7.session';
   const PENDING_KEY = 't7.pending-signup';
+  const MODE_KEY = 't7.mode';
+
+  /* ---------- Buying or selling ----------
+     One account can be a buyer, a seller, or both. Which side someone
+     is using right now ("mode") is chosen by the button they signed in
+     with, and can be switched from the Account menu. It only decides
+     which screens they see; what they may do is checked by the database
+     against the account itself. */
+  function can(profile, mode) {
+    if (!profile) return false;
+    /* Older databases (before 9 Oct 2026) kept one role per account. */
+    if (mode === 'buyer') return Boolean(profile.is_buyer) || profile.role === 'buyer';
+    if (mode === 'seller') return Boolean(profile.is_seller) || profile.role === 'seller';
+    return false;
+  }
+
+  function storedMode() { try { return localStorage.getItem(MODE_KEY); } catch (e) { return null; } }
+  function storeMode(mode) { try { if (mode) localStorage.setItem(MODE_KEY, mode); else localStorage.removeItem(MODE_KEY); } catch (e) {} }
+
+  /* The side this account is acting as: 'admin', 'buyer', 'seller', or
+     null when it has neither yet. */
+  function activeRole(profile) {
+    if (profile.role === 'admin') return 'admin';
+    const wanted = storedMode();
+    if (wanted && can(profile, wanted)) return wanted;
+    if (can(profile, 'buyer')) return 'buyer';
+    if (can(profile, 'seller')) return 'seller';
+    return null;
+  }
+
+  let lastProfile = null;
 
   /* ---------- Cached session (for menus only) ---------- */
   function readCache() {
@@ -43,8 +74,10 @@ window.T7 = window.T7 || {};
   }
 
   function writeCache(profile) {
+    lastProfile = profile || null;
     const next = profile ? {
-      id: profile.id, email: profile.email, role: profile.role || null, status: profile.status || 'active',
+      id: profile.id, email: profile.email, role: activeRole(profile), status: profile.status || 'active',
+      is_buyer: can(profile, 'buyer'), is_seller: can(profile, 'seller'), is_admin: profile.role === 'admin',
       first_name: profile.first_name || '', last_name: profile.last_name || '',
       company: profile.company || '', phone: profile.phone || '', country: profile.country || ''
     } : null;
@@ -119,7 +152,7 @@ window.T7 = window.T7 || {};
     if (error) throw error;
     /* The profile row is created by a database trigger. If it is
        somehow missing, behave as "signed in, nothing chosen yet". */
-    return data || { id: user.id, email: user.email, role: null, status: 'active' };
+    return data || { id: user.id, email: user.email, role: 'member', is_buyer: false, is_seller: false, status: 'active' };
   }
 
   async function resolveSession() {
@@ -191,11 +224,36 @@ window.T7 = window.T7 || {};
       return readyPromise;
     },
 
+    /* Can this account buy / sell? */
+    can(mode) { return can(lastProfile || readCache(), mode); },
+
+    /* Switch between buying and selling (both must already be allowed). */
+    setMode(mode) {
+      storeMode(mode);
+      return lastProfile ? writeCache(lastProfile) : readCache();
+    },
+
+    /* Give this account the other side as well, then switch to it. */
+    async enableRole(mode) {
+      if (LOCAL) await T7.local('enableRole', { role: mode });
+      else {
+        const client = await T7.client();
+        const { error } = await client.rpc('enable_role', { p_role: mode });
+        if (error) throw new Error(friendly(error));
+      }
+      storeMode(mode);
+      return T7.auth.refresh();
+    },
+
     homeFor(role) {
       if (role === 'admin') return 'admin.html';
       if (role === 'seller') return 'seller.html';
       return 'trade.html';
     },
+
+    /* The address that switches to buying or selling (and, if this account
+       does not have that side yet, offers to add it). */
+    switchUrl(mode) { return 'signin.html?as=' + mode; },
 
     displayName(profile) {
       const p = profile || readCache();
@@ -219,6 +277,7 @@ window.T7 = window.T7 || {};
     /* Returns { profile } when the account is usable straight away, or
        { needsVerification: true } when a confirmation email was sent. */
     async signUp(fields, next) {
+      storeMode(fields.role === 'seller' ? 'seller' : 'buyer');
       if (LOCAL) return T7.local('signUp', Object.assign({}, fields, { next: next || '' }));
       const client = await T7.client();
       if (!client) throw new Error('The database is not connected yet.');
@@ -238,7 +297,8 @@ window.T7 = window.T7 || {};
       /* Supabase answers a repeat sign-up with a blank user so nobody can
          use the form to test which emails have accounts. */
       if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-        throw new Error('An account with that email already exists. Sign in instead.');
+        throw new Error('An account with that email already exists. Sign in with it as a ' +
+          (fields.role === 'seller' ? 'seller' : 'buyer') + ' instead; the same account can buy and sell.');
       }
       if (!data.session) return { needsVerification: true };
       return { profile: await T7.auth.refresh() };
@@ -268,7 +328,7 @@ window.T7 = window.T7 || {};
     },
 
     async completeProfile(fields) {
-      if (LOCAL) { await T7.local('completeProfile', fields); return T7.auth.refresh(); }
+      if (LOCAL) { await T7.local('completeProfile', fields); if (fields.role) storeMode(fields.role); return T7.auth.refresh(); }
       const client = await T7.client();
       const { error } = await client.rpc('complete_profile', {
         p_role: fields.role || null,
@@ -277,6 +337,7 @@ window.T7 = window.T7 || {};
       });
       if (error) throw new Error(friendly(error));
       try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+      if (fields.role) storeMode(fields.role);
       return T7.auth.refresh();
     },
 
@@ -298,6 +359,7 @@ window.T7 = window.T7 || {};
       if (LOCAL) {
         try { if (localToken()) await T7.local('signOut'); } catch (e) { console.error(e); }
         setLocalToken(null);
+        storeMode(null);
         writeCache(null);
         readyPromise = Promise.resolve(null);
         return;
@@ -306,6 +368,7 @@ window.T7 = window.T7 || {};
         const client = await T7.client();
         if (client) await client.auth.signOut();
       } catch (e) { console.error(e); }
+      storeMode(null);
       writeCache(null);
       readyPromise = Promise.resolve(null);
     },
@@ -328,6 +391,10 @@ window.T7 = window.T7 || {};
         return null;
       }
       if (roles && roles.length && roles.indexOf(profile.role) === -1) {
+        /* A page for the other side of the same account (the seller
+           dashboard while buying, say): just switch sides. */
+        const other = roles.find(r => r !== 'admin' && T7.auth.can(r));
+        if (other && profile.role !== 'admin') return T7.auth.setMode(other);
         location.replace(T7.auth.homeFor(profile.role));
         return null;
       }
@@ -338,14 +405,26 @@ window.T7 = window.T7 || {};
   /* The slim account area on the right of the Trade Desk strip
      (lot, seller pages). Same rule as the menus: display only. */
   function paintStrip() {
-    const el = document.getElementById('strip-account');
-    if (!el) return;
+    let el = document.getElementById('strip-account');
+    if (!el) {
+      /* Guide pages (How to Buy, Origin & Documentation) carry the same
+         strip without an account area written in; add it so the strip is
+         the same everywhere. */
+      const strip = document.querySelector('.market-strip:not(.admin-tabs) .market-strip-inner');
+      if (!strip) return;
+      el = document.createElement('div');
+      el.className = 'market-accounts';
+      el.id = 'strip-account';
+      strip.appendChild(el);
+    }
     const s = readCache();
     if (!s || !s.role) { el.innerHTML = '<a href="signin.html">Sign in</a>'; return; }
     const home = s.role === 'admin' ? '<a href="admin.html">Dashboard</a>'
                : s.role === 'seller' ? '<a href="seller.html">My dashboard</a>' : '';
-    el.innerHTML = '<span>' + T7.auth.displayName(s).replace(/[&<>"]/g, '') + '</span>' + home +
-                   '<a href="signin.html?signout=1">Sign out</a>';
+    const other = s.role === 'buyer' ? 'seller' : s.role === 'seller' ? 'buyer' : null;
+    const swap = other ? '<a href="' + T7.auth.switchUrl(other) + '">' + (other === 'seller' ? 'Sell' : 'Buy') + '</a>' : '';
+    el.innerHTML = '<span>' + T7.auth.displayName(s).replace(/[&<>"]/g, '') + ' · ' + (s.role === 'admin' ? 'Admin' : s.role === 'seller' ? 'Selling' : 'Buying') + '</span>' +
+                   home + swap + '<a href="signin.html?signout=1">Sign out</a>';
   }
   document.addEventListener('t7:session', paintStrip);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paintStrip);

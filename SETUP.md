@@ -33,7 +33,13 @@ All use the password **`Triple7-Test!`**
 | Seller | `seller1@triple7.test` … `seller8@triple7.test` | Seller dashboard |
 | Buyer | `buyer1@triple7.test` … `buyer12@triple7.test` | Trade board |
 
-`buyer9` is suspended, to show what that looks like.
+`buyer9` is suspended, to show what that looks like. `seller1` can also buy, to show one account doing both.
+
+### One account, buying and selling
+
+The sign-in page has two tabs. **Sign In** has **Sign In As Buyer** and **Sign In As Seller** buttons. **Create Account** has a **Sign Up As Buyer / Sign Up As Seller** switch: a buyer gives only an email and a password; a seller also gives name, surname, phone, country and (optionally) a company name.
+
+One account can do both. A buyer who presses Sign In As Seller is asked once "Sell with this account?" and, if the account has no name or phone yet, fills those in there. After that they switch between buying and selling from the Account menu or the dashboard. Admins sign in with either button and land on the dashboard.
 
 ### Adding and removing users
 
@@ -137,13 +143,16 @@ The button is built but hidden for now. To switch it on:
 
 3. Add `googleSignIn: true` to `js/config.js`. The button stays hidden until you do.
 
-A first-time Google user is asked once whether they are buying or selling.
 
 ### Putting it on Vercel
 
 1. Deploy the folder as it is (no build step). `supabase/`, `local-db/` and the `.md` files are not uploaded.
 2. In Supabase **Authentication → URL Configuration**, change **Site URL** to `https://your-site.vercel.app/signin.html` and add `https://your-site.vercel.app/**` to **Redirect URLs** (keep the localhost one for testing).
 3. **Before sharing the link**, run `supabase/99_remove_test_data.sql`. It removes every `@triple7.test` account, including the test admin whose password is written in this file.
+
+### Already set up before buyers could also sell?
+
+If your Supabase project was set up before October 2026, open **SQL Editor → New query**, paste in `supabase/04_buyers_can_sell.sql` and **Run** once. It keeps every account, lot and enquiry and lets accounts hold both sides. (A fresh project that runs the current `01_schema.sql` does not need it.)
 
 ### Starting over (Supabase)
 

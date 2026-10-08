@@ -58,6 +58,10 @@
   const USER_STATUS = { active: ['Active', 'is-good'], suspended: ['Suspended', 'is-bad'] };
 
   /* ---------- Small helpers ---------- */
+  /* Older databases (before 9 Oct 2026) kept one role per account. */
+  const isBuyerFn = p => p.role !== 'admin' && (Boolean(p.is_buyer) || p.role === 'buyer');
+  const isSellerFn = p => p.role !== 'admin' && (Boolean(p.is_seller) || p.role === 'seller');
+  const sides = p => p.role === 'admin' ? 'Admin' : isBuyerFn(p) && isSellerFn(p) ? 'Buyer & seller' : isSellerFn(p) ? 'Seller' : isBuyerFn(p) ? 'Buyer' : 'Not chosen yet';
   const fullName = p => (p ? [p.first_name, p.last_name].filter(Boolean).join(' ') || p.email : '—');
   const dateShort = iso => (iso ? new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '');
   const dateTime = iso => (iso ? new Date(iso).toLocaleString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '');
@@ -99,8 +103,9 @@
       p.last_sent = p.sent.length ? p.sent.map(e => e.created_at).sort().pop() : null;
     });
     idx = {
-      sellers: db.profiles.filter(p => p.role === 'seller'),
-      buyers: db.profiles.filter(p => p.role === 'buyer'),
+      /* One account can be both, so it can appear in both lists. */
+      sellers: db.profiles.filter(isSellerFn),
+      buyers: db.profiles.filter(isBuyerFn),
       pendingLots: db.lots.filter(l => l.status === 'pending'),
       pendingDocs: db.documents.filter(d => d.status === 'pending')
     };
@@ -302,7 +307,7 @@
         return true;
       },
       cols: [
-        { key: 'name', label: 'Seller', get: p => p.company || fullName(p), html: p => '<span class="cell-main">' + esc(p.company || fullName(p)) + '</span><span class="muted">' + esc(fullName(p)) + '</span>' },
+        { key: 'name', label: 'Seller', get: p => p.company || fullName(p), html: p => '<span class="cell-main">' + esc(p.company || fullName(p)) + '</span><span class="muted">' + esc(fullName(p)) + (isBuyerFn(p) ? ' · also buys' : '') + '</span>' },
         { key: 'email', label: 'Contact', get: p => p.email, html: contact },
         { key: 'country', label: 'Country', get: p => p.country || '' },
         { key: 'live', label: 'Live', num: true, get: p => p.lots.filter(l => l.status === 'live').length },
@@ -329,7 +334,7 @@
         return true;
       },
       cols: [
-        { key: 'name', label: 'Buyer', get: p => fullName(p), html: p => '<span class="cell-main">' + esc(fullName(p)) + '</span>' + (p.company ? '<span class="muted">' + esc(p.company) + '</span>' : '') },
+        { key: 'name', label: 'Buyer', get: p => fullName(p), html: p => '<span class="cell-main">' + esc(fullName(p)) + '</span>' + (p.company || isSellerFn(p) ? '<span class="muted">' + esc([p.company, isSellerFn(p) ? 'also sells' : ''].filter(Boolean).join(' · ')) + '</span>' : '') },
         { key: 'email', label: 'Contact', get: p => p.email, html: contact },
         { key: 'country', label: 'Country', get: p => p.country || '' },
         { key: 'sent', label: 'Enquiries sent', num: true, get: p => p.sent.length },
@@ -560,16 +565,19 @@
     if (intent === 'reject') { const n = document.getElementById('review-note'); if (n) n.focus(); }
   }
 
-  function userSheet(p) {
-    const isSeller = p.role === 'seller';
+  /* `as` is the list it was opened from: an account that buys and
+     sells shows its lots from Sellers and its enquiries from Buyers. */
+  function userSheet(p, as) {
+    const isSeller = as ? as === 'seller' : (isSellerFn(p) && !isBuyerFn(p));
     const list = isSeller
       ? p.lots.slice(0, 8).map(l => '<div><dt>' + esc(l.lot_id) + ' · ' + esc(l.name) + '</dt><dd>' + esc(cat.money(l.price_zar)) + ' ' + lotPill(l) + '</dd></div>').join('')
       : p.sent.slice(0, 8).map(e => '<div><dt>' + esc(e.ref) + ' · ' + esc(e.lot ? e.lot.name : 'Lot removed') + '</dt><dd>' + pill(ENQ_STATUS[e.status]) + '</dd></div>').join('');
     openSheet(
       '<h2 id="sheet-title">' + esc(isSeller ? (p.company || fullName(p)) : fullName(p)) + '</h2>' +
-      '<p class="muted">' + (isSeller ? 'Seller' : 'Buyer') + ' account</p>' +
+      '<p class="muted">' + esc(sides(p)) + ' account</p>' +
       dl([
         ['Account', pill(USER_STATUS[p.status]), true],
+        ['Can', sides(p)],
         ['Name', fullName(p)], ['Company', p.company], ['Email', p.email], ['Phone', p.phone], ['Country', p.country],
         ['Joined', dateTime(p.created_at)]
       ].concat(isSeller
@@ -632,7 +640,7 @@
 
   function openDetail(kind, id, intent) {
     if (kind === 'lot') { const l = find(db.lots, id); if (l) lotSheet(l, intent); }
-    if (kind === 'user') { const p = find(db.profiles, id); if (p) userSheet(p); }
+    if (kind === 'user') { const p = find(db.profiles, id); if (p) userSheet(p, tab === 'sellers' ? 'seller' : tab === 'buyers' ? 'buyer' : null); }
     if (kind === 'enquiry') { const e = find(db.enquiries, id); if (e) enquirySheet(e); }
     if (kind === 'document') { const d = find(db.documents, id); if (d) documentSheet(d); }
   }

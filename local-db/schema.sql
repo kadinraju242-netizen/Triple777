@@ -8,7 +8,7 @@
 -- It is kept as a normal .sql file so you can read it, or import
 -- it yourself in phpMyAdmin / MySQL Workbench if you prefer.
 --
---   profiles          one row per account (buyer, seller or admin)
+--   profiles          one row per account; it can buy, sell, or both
 --   sessions          who is signed in right now
 --   lots              everything a seller lists (pending -> live)
 --   seller_documents  the supporting document filed with each lot
@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS profiles (
   id             CHAR(36)     NOT NULL PRIMARY KEY,
   email          VARCHAR(190) NOT NULL UNIQUE,
   password_hash  VARCHAR(255) NOT NULL,           -- scrypt, never the password itself
-  role           ENUM('buyer','seller','admin') NULL,
+  role           ENUM('member','admin') NOT NULL DEFAULT 'member',
+  is_buyer       TINYINT(1)   NOT NULL DEFAULT 0, -- one account can buy,
+  is_seller      TINYINT(1)   NOT NULL DEFAULT 0, -- sell, or both
   first_name     VARCHAR(100) NULL,
   last_name      VARCHAR(100) NULL,
   phone          VARCHAR(40)  NULL,
