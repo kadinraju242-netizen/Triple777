@@ -4,3 +4,10 @@ serve.js
 tools
 node_modules
 *.zip
+
+# Database scripts and notes are for the team, not for visitors
+supabase
+*.md
+local-db
+deploy
+make-deploy.js

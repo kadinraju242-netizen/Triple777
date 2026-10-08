@@ -24,12 +24,16 @@ window.T7 = window.T7 || {};
   };
 
   /* ---------- Lot imagery ---------- */
+  const GEM  = '<path d="M30 22h40l18 20-38 40L12 42z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>' +
+               '<path d="M12 42h76M30 22l8 20 12 40 12-40 8-20M38 42l12-20 12 20" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55" stroke-linejoin="round"/>';
+  const BARS = '<rect x="16" y="38" width="68" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/>' +
+               '<rect x="24" y="58" width="52" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>' +
+               '<rect x="30" y="22" width="40" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>';
   const MARKS = {
     diamond: '<path d="M32 8h36l12 12v60L68 92H32L20 80V20z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>' +
              '<path d="M28 18h44l6 6v52l-6 6H28l-6-6V24z" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55"/>',
-    gold:    '<rect x="16" y="38" width="68" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/>' +
-             '<rect x="24" y="58" width="52" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>' +
-             '<rect x="30" y="22" width="40" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>'
+    gold: BARS, platinum: BARS, silver: BARS,
+    ruby: GEM, sapphire: GEM, emerald: GEM, tanzanite: GEM
   };
 
   T7.lotMark = function (commodity) {
@@ -41,7 +45,7 @@ window.T7 = window.T7 || {};
     const o = opts || {};
     const src = o.card ? (lot.image_card || lot.image) : lot.image;
     const alt = lot.image_alt || lot.name || '';
-    return '<div class="lot-media' + (o.wide ? ' is-wide' : '') + (o.thumb ? ' is-thumb' : '') + '">' +
+    return '<div class="lot-media c-' + T7.esc(lot.commodity || 'diamond') + (o.wide ? ' is-wide' : '') + (o.thumb ? ' is-thumb' : '') + '">' +
              T7.lotMark(lot.commodity) +
              (src ? '<img class="lot-photo" src="' + T7.esc(src) + '" alt="' + T7.esc(alt) + '" loading="lazy" decoding="async">' : '') +
            '</div>';
@@ -116,7 +120,10 @@ window.T7 = window.T7 || {};
     toastTimer = setTimeout(() => toastEl.classList.remove('is-up'), 4600);
   };
 
-  T7.COMMODITY_LABEL = { diamond: 'Diamond', gold: 'Gold' };
+  T7.COMMODITY_LABEL = {
+    diamond: 'Diamond', gold: 'Gold', platinum: 'Platinum', silver: 'Silver',
+    ruby: 'Ruby', sapphire: 'Sapphire', emerald: 'Emerald', tanzanite: 'Tanzanite'
+  };
 
   /* Relative time for dashboards. Nothing here claims to be live. */
   T7.ago = function (iso) {
@@ -125,6 +132,7 @@ window.T7 = window.T7 || {};
     if (secs < 60) return 'just now';
     if (secs < 3600) return Math.floor(secs / 60) + ' min ago';
     if (secs < 86400) return Math.floor(secs / 3600) + ' hr ago';
-    return Math.floor(secs / 86400) + ' d ago';
+    if (secs < 86400 * 60) return Math.floor(secs / 86400) + ' d ago';
+    return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 })();

@@ -23,3 +23,6 @@ Desktop.ini
 
 # Build and deploy artefacts
 .vercel
+
+# Clean copy for Netlify, rebuilt by make-deploy.js
+deploy/

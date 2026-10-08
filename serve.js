@@ -1,9 +1,16 @@
-/* Local static server for development. Not deployed — see .vercelignore.
-   Vercel serves these files itself in production, and the functions in
-   /api only run under `vercel dev` or on Vercel. Demo mode needs neither. */
+/* Local server for development. Not deployed — see .vercelignore.
+
+   It does two things:
+     1. serves the site's files, as Vercel does online
+     2. runs the Trade Desk API behind /api, backed by MySQL (see
+        local-db/server.js). Needs MySQL running and `npm install` once.
+
+   Online, the site talks to Supabase instead (js/config.js). */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+
+const localDb = require('./local-db/server.js');
 
 const ROOT = __dirname;
 const PORT = process.env.PORT || 4180;
@@ -23,7 +30,12 @@ const TYPES = {
 };
 
 http.createServer((req, res) => {
+  if (localDb.handle(req, res)) return;
+
   const url = new URL(req.url, 'http://localhost');
+  /* Database scripts and settings are never served. */
+  if (/^\/(local-db|supabase|node_modules)\//i.test(url.pathname)) { res.writeHead(404).end('Not found'); return; }
+
   let rel = decodeURIComponent(url.pathname);
   if (rel === '/') rel = '/index.html';
 
@@ -48,4 +60,5 @@ http.createServer((req, res) => {
   });
 }).listen(PORT, () => {
   console.log('Triple 7 Holdings — http://localhost:' + PORT);
+  localDb.start();
 });
