@@ -308,7 +308,8 @@
           '<p class="dash-name">' + esc(profile.company || T7.auth.displayName(profile)) + '</p>' +
           '<p class="muted">' + esc(T7.auth.displayName(profile)) + ' · ' + esc(profile.email) + '</p></div>' +
         '<div class="action-row"><a class="btn-desk" href="#new">List A Lot</a>' +
-          '<a class="btn-line" href="trade.html">View The Board</a>' +
+          '<a class="btn-line" href="trade.html">Browse Lots</a>' +
+          '<a class="btn-line" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>' +
           '<a class="btn-line" href="signin.html?signout=1">Sign Out</a></div>' +
       '</div>' +
       numbers() +

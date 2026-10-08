@@ -222,10 +222,14 @@
   /* ---------- Who is here ---------- */
   function paintWelcome(profile) {
     const name = T7.auth.displayName(profile);
-    const who = '<p><b>' + esc(name) + '</b>' + esc({ buyer: 'Buyer account', seller: 'Seller account' }[profile.role]) + '</p>';
+    const who = '<p><b>' + esc(name) + '</b>' + esc({ buyer: 'Buying', seller: 'Selling', admin: 'Admin, viewing the board' }[profile.role]) + '</p>';
     let action = '';
     if (profile.role === 'seller') action = '<a class="btn-desk" href="seller.html#new">List A Lot</a><a class="btn-line" href="seller.html">My Dashboard</a>';
     if (profile.role === 'buyer')  action = '<a class="btn-line" href="#my-enquiries" id="jump-enquiries" hidden>My Enquiries</a>';
+    if (profile.role === 'admin')  action = '<a class="btn-desk" href="admin.html">Back To Dashboard</a>';
+    /* The same account can switch sides, or add the side it lacks. */
+    if (profile.role === 'buyer')  action += '<a class="btn-line" href="signin.html?as=seller">' + (profile.is_seller ? 'Switch To Selling' : 'Start Selling') + '</a>';
+    if (profile.role === 'seller') action += '<a class="btn-line" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>';
     action += '<a class="btn-line" href="signin.html?signout=1">Sign Out</a>';
     welcomeEl.innerHTML = who + action;
   }
@@ -312,10 +316,18 @@
     '<div class="sk-card"><div class="skeleton sk-media"></div><div class="skeleton sk-line" style="width:40%"></div><div class="skeleton sk-line" style="width:75%"></div></div>'.repeat(3) +
   '</div>';
 
-  /* Buyers and sellers only. An admin works from the dashboard and is
-     sent there instead. */
-  T7.auth.require(['buyer', 'seller']).then(profile => {
+  /* Buyers and sellers. An admin gets in only with the pass that the
+     dashboard's "View Trade Board" button sets (see js/admin.js), and
+     then sees the lots without the buyer guidance around them. */
+  function adminPass() { try { return sessionStorage.getItem('t7.admin-trade') === '1'; } catch (e) { return false; } }
+
+  T7.auth.require().then(profile => {
     if (!profile) return;
+    if (profile.role === 'admin') {
+      if (!adminPass()) { location.replace('admin.html'); return; }
+      document.querySelectorAll('.buying-summary, .catalogue-support, #alerts').forEach(el => { el.hidden = true; });
+      document.getElementById('trade-intro').textContent = 'The board as buyers and sellers see it. Manage lots from the dashboard.';
+    }
     paintWelcome(profile);
     if (profile.role === 'buyer') paintMyEnquiries();
 

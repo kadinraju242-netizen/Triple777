@@ -16,6 +16,7 @@ supabase/
   01_schema.sql            tables, triggers, row-level security, admin functions
   02_test_data.sql         21 test accounts, 49 lots, 38 enquiries
   03_make_admin.sql        the one line that makes an account an admin
+  04_buyers_can_sell.sql   upgrade for projects set up earlier: one account can buy and sell
   99_remove_test_data.sql  run before going live
 js/
   config.js                project URL + anon key (public by design)
@@ -45,7 +46,7 @@ js/
 
 | Table | Holds |
 |---|---|
-| `profiles` | one row per account: role (`buyer` / `seller` / `admin`), name, phone, country, company, status |
+| `profiles` | one row per account: role (`member` / `admin`), `is_buyer`, `is_seller` (both can be on), name, phone, country, company, status |
 | `lots` | every listing: commodity, price, weight, per-commodity details in `specs` (jsonb), status |
 | `seller_documents` | one supporting document per listing. Empty for now; created automatically; reviewed by an admin |
 | `enquiries` | buyer → seller messages about a lot, with the buyer's contact details copied in |
@@ -55,6 +56,8 @@ Lot status: `pending` → `live` (admin approves) or `rejected`; then `sold` or 
 
 ## Who can do what
 
+Buyer and Seller are capabilities, not separate accounts: an account with both gets both columns. Which side the pages show (buying or selling) is only a choice in the browser; the database checks `is_buyer` / `is_seller`.
+
 | | Not signed in | Buyer | Seller | Admin |
 |---|---|---|---|---|
 | See live lots | no | yes | yes | yes |
@@ -62,7 +65,7 @@ Lot status: `pending` → `live` (admin approves) or `rejected`; then `sold` or 
 | List a lot | no | no | yes, always starts `pending` | — |
 | Approve / reject / delete a lot | no | no | no | yes |
 | Withdraw or mark sold | no | no | own only | yes |
-| Send an enquiry | no | on live lots | no | no |
+| Send an enquiry | no | on live lots, not their own | no | no |
 | Read enquiries | no | own | on own lots | all |
 | Read other people's profiles | no | no | no | yes |
 | Review documents | no | no | no | yes |
@@ -76,7 +79,7 @@ Enforced by row-level security plus `before` triggers (`lots_guard`, `enquiries_
 
 Run against a local Postgres 16 + Supabase Auth (GoTrue 2.170) + PostgREST 12 stack, using supabase-js:
 
-- 52 database checks: every row of the table above from each role, sign-up with email confirmation, forged fields, suspended accounts.
+- 59 database checks: every row of the table above from each role, sign-up with email confirmation, forged fields, suspended accounts, one account buying and selling.
 - 29 browser checks: sign-up → email link → list a lot → admin approves → buyer enquires → seller answers; redirects; wrong password; tampering with the cached session.
 
 The browser checks were also run against the MySQL backend, on both MySQL 8.0 and MariaDB 10.11 (the one XAMPP ships).

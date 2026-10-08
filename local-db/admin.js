@@ -13,7 +13,8 @@
 
    For make-admin the account must already exist: create it on the
    site first. You can do all of this in phpMyAdmin too — an admin is
-   simply a row in `profiles` whose `role` is 'admin'.
+   simply a row in `profiles` whose `role` is 'admin'. Buying and selling
+   are the `is_buyer` / `is_seller` columns (an account can have both).
    ============================================================ */
 const store = require('./server.js');
 
@@ -30,15 +31,16 @@ async function main() {
   await store.init();
 
   if (cmd === 'list') {
-    const rows = await store.q('SELECT role, status, email FROM profiles ORDER BY role, email');
-    rows.forEach(p => console.log(String(p.role || '(none)').padEnd(7), p.status.padEnd(10), p.email));
+    const rows = await store.q('SELECT role, is_buyer, is_seller, status, email FROM profiles ORDER BY role, email');
+    const kind = p => p.role === 'admin' ? 'admin' : [p.is_buyer ? 'buyer' : '', p.is_seller ? 'seller' : ''].filter(Boolean).join('+') || '(none)';
+    rows.forEach(p => console.log(kind(p).padEnd(13), p.status.padEnd(10), p.email));
   } else if (cmd === 'make-admin') {
     const p = await account();
     await store.q("UPDATE profiles SET role = 'admin', status = 'active', verified = 1 WHERE id = ?", [p.id]);
     console.log(p.email + ' is now an admin. Sign out and in again on the site.');
   } else if (cmd === 'remove-admin') {
     const p = await account();
-    await store.q("UPDATE profiles SET role = 'buyer' WHERE id = ?", [p.id]);
+    await store.q("UPDATE profiles SET role = 'member', is_buyer = 1 WHERE id = ?", [p.id]);
     console.log(p.email + ' is no longer an admin (now a buyer).');
   } else if (cmd === 'password') {
     if (!extra || extra.length < 8) throw new Error('Give a new password of at least 8 characters.');

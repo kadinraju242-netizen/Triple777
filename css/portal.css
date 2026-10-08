@@ -45,7 +45,22 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;background:rgba
 /* ---------- Sign in / create account ---------- */
 .page-signin .desk-title-wrap{padding:24px 0 30px}
 .page-signin .desk-body{padding:40px 0 80px}
-.page-signin .auth-wrap{max-width:520px;background:var(--card);border:1px solid var(--card-line);border-radius:14px;padding:32px;box-shadow:0 10px 30px rgba(16,29,50,.05)}
+.page-signin .auth-wrap{max-width:520px;margin:0 auto}
+.page-signin .auth-wrap.is-split{max-width:1060px}
+.auth-card{background:var(--card);border:1px solid var(--card-line);border-radius:14px;padding:32px;box-shadow:0 10px 30px rgba(16,29,50,.05)}
+.auth-panels{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:24px;align-items:start}
+.auth-card-title{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.25;margin-bottom:6px}
+.auth-card-sub{font-size:14px;color:var(--text-dark-2);line-height:1.65;margin-bottom:22px}
+.auth-card-sub strong{color:var(--text-dark)}
+.auth-message{margin-bottom:22px}
+.auth-center{text-align:center}
+/* The pair of buttons: buyer in brand blue, seller in ink, so the two
+   sides read as different doors without a radio button. */
+.auth-sides{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.auth-sides .btn-desk,.auth-sides .btn-line{width:100%;padding-left:12px;padding-right:12px}
+.btn-desk.is-seller{background:var(--ink);border-color:var(--ink)}
+.btn-desk.is-seller:hover{background:#1b2c49;border-color:#1b2c49;box-shadow:0 10px 26px rgba(10,20,37,.24)}
+.auth-sides .is-leaning{box-shadow:0 0 0 3px rgba(36,89,189,.28)}
 .auth-tabs{border-radius:9px;padding:4px;margin-bottom:26px;background:var(--soft);border-color:transparent}
 .auth-tabs button{font-family:var(--f-body);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none;border-radius:6px;padding:11px;min-height:44px}
 .auth-tabs button.is-on{background:#fff;color:var(--text-dark);box-shadow:0 1px 4px rgba(16,29,50,.14)}
@@ -257,8 +272,12 @@ button.bar-row:hover .bar-label{color:var(--brand);text-decoration:underline}
   .pick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .form-3{grid-template-columns:1fr 1fr}
 }
+@media(max-width:860px){
+  .auth-panels{grid-template-columns:1fr}
+}
 @media(max-width:760px){
-  .page-signin .auth-wrap{padding:22px 18px;border-radius:12px}
+  .auth-card{padding:22px 18px;border-radius:12px}
+  .auth-sides{grid-template-columns:1fr}
   .page-signin .desk-body{padding-top:24px}
   .catalogue-head-row{align-items:flex-start;flex-direction:column;gap:16px}
   .trade-welcome p{text-align:left}
@@ -283,3 +302,17 @@ button.bar-row:hover .bar-label{color:var(--brand);text-decoration:underline}
   .cols-axis span:nth-child(even){visibility:hidden}
 }
 @media print{.filters,.admin-tabs,.sheet{display:none!important}}
+/* Sign In / Create Account tabs inside the one card */
+.page-signin .auth-card .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;border:0}
+.page-signin .auth-card .auth-tabs button{color:var(--text-dark-2);background:transparent;cursor:pointer}
+.page-signin .auth-card .auth-tabs button.is-on{background:#fff;color:var(--text-dark)}
+.page-signin .auth-card [role=tabpanel] > .auth-card-sub{margin-top:0}
+/* Buyer / Seller switch inside Create Account */
+.auth-kind{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}
+.auth-kind button{min-height:46px;padding:10px 12px;border:1px solid #cdd7e5;border-radius:8px;background:#fff;font-family:var(--f-body);font-size:14px;font-weight:700;color:var(--text-dark-2);cursor:pointer;transition:background-color .18s,border-color .18s,color .18s}
+.auth-kind button:hover{border-color:#9fb0c8;color:var(--text-dark)}
+.auth-kind button.is-on{background:var(--brand);border-color:var(--brand);color:#fff}
+.auth-kind button[data-kind=seller].is-on{background:var(--ink);border-color:var(--ink)}
+.auth-kind button:focus-visible{outline:3px solid rgba(5,15,94,.3);outline-offset:2px}
+#signup-form .auth-submit{margin-top:4px;justify-content:center}
+@media (max-width:420px){.auth-kind{grid-template-columns:1fr}}
