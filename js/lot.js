@@ -80,7 +80,7 @@
   /* ---------- The action box: depends on who is looking ---------- */
   function actionBox(l) {
     const box = document.getElementById('enquire');
-    const mine = profile.role === 'seller' && l.seller_id === profile.id;
+    const mine = l.seller_id === profile.id;   /* buying or selling, it is still theirs */
     const status = cat.status[l.status] || { label: l.status, tone: 'done' };
 
     if (mine) {
@@ -91,6 +91,13 @@
         '<div class="action-row"><a class="btn-desk" href="seller.html">Open My Dashboard</a></div>';
       return;
     }
+    if (profile.role === 'admin') {
+      box.innerHTML =
+        '<h2>Admin view</h2>' +
+        '<p><span class="pill is-' + status.tone + '">' + esc(status.label) + '</span> This is how buyers see the lot. Approve, reject or remove it from the dashboard.</p>' +
+        '<div class="action-row"><a class="btn-desk" href="admin.html#listings">Back To Dashboard</a><a class="btn-line" href="trade.html">Back To The Board</a></div>';
+      return;
+    }
     if (l.status !== 'live') {
       box.innerHTML =
         '<h2>No longer available</h2>' +
@@ -99,10 +106,15 @@
       return;
     }
     if (profile.role === 'seller') {
+      const back = encodeURIComponent('lot.html?id=' + l.lot_id + '#enquire');
       box.innerHTML =
-        '<h2>Enquiries come from buyers</h2>' +
-        '<p>You are signed in with a seller account, which lists lots rather than enquiring on them.</p>' +
-        '<div class="action-row"><a class="btn-line" href="seller.html">Go To My Dashboard</a></div>';
+        '<h2>Interested in buying this?</h2>' +
+        '<p>You are signed in as a seller. Enquiries are sent while buying' +
+          (profile.is_buyer ? '.' : '; you can add buying to this same account.') + '</p>' +
+        '<div class="action-row">' +
+          '<a class="btn-desk" href="signin.html?as=buyer&next=' + back + '">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>' +
+          '<a class="btn-line" href="seller.html">My Dashboard</a>' +
+        '</div>';
       return;
     }
     enquiryForm(l, box);
@@ -112,7 +124,7 @@
     const suggestion = 'Hi, I am interested in ' + l.name + ' (' + l.lot_id + '). Is it still available?';
     box.innerHTML =
       '<h2>Ask the seller about this lot</h2>' +
-      '<p>Your name, email and phone number are sent with your message so the seller can reply to you directly.</p>' +
+      '<p>Your contact details (email, and name and phone if you have added them) are sent with your message so the seller can reply to you directly.</p>' +
       '<form id="enquiry-form" novalidate>' +
         '<label class="sr-only" for="message">Your message</label>' +
         '<textarea id="message" name="message" maxlength="1500" required>' + esc(suggestion) + '</textarea>' +
@@ -216,8 +228,14 @@
     return;
   }
 
-  T7.auth.require(['buyer', 'seller']).then(p => {
+  T7.auth.require().then(p => {
     if (!p) return;
+    /* Admins reach lot pages only from the board, with the dashboard's pass. */
+    if (p.role === 'admin') {
+      let pass = false;
+      try { pass = sessionStorage.getItem('t7.admin-trade') === '1'; } catch (e) {}
+      if (!pass) { location.replace('admin.html'); return; }
+    }
     profile = p;
     return Promise.all([T7.api.getLot(lotId), T7.api.listLots()]).then(([lot, all]) => {
       if (!lot) {

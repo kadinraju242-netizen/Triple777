@@ -12,7 +12,7 @@
 --        Triple7-Test!
 --
 --   Admin    desk+admin@triple7.test
---   Sellers  seller1@triple7.test … seller8@triple7.test
+--   Sellers  seller1@triple7.test … seller8@triple7.test   (seller1 also buys)
 --   Buyers   buyer1@triple7.test  … buyer12@triple7.test   (buyer9 is suspended)
 --
 -- These are fake people. BEFORE THE SITE GOES LIVE run
@@ -78,6 +78,9 @@ from auth.users u where u.id = p.id and u.email like '%@triple7.test';
 select public.make_admin('desk+admin@triple7.test');
 
 update public.profiles set status = 'suspended' where email = 'buyer9@triple7.test';
+
+-- One account that both buys and sells, to show that it works.
+update public.profiles set is_buyer = true where email = 'seller1@triple7.test';
 
 -- ---------- Lots ----------
 -- lot_id (D-3001 …) is filled in by the database.

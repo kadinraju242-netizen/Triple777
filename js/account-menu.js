@@ -23,8 +23,6 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  const ROLE_LABEL = { buyer: 'Buyer', seller: 'Seller', admin: 'Admin' };
-
   /* For an admin, the Trade link in the top navigation opens the
      dashboard; the board itself is reached from a button there. */
   function repointTrade() {
@@ -33,7 +31,7 @@
        on the dashboard, which sets a pass for this browser tab. Any page
        other than the board or a lot takes the pass away again. */
     try {
-      if (!/(^|\/)(trade|lot)\.html$/i.test(location.pathname)) sessionStorage.removeItem('t7.admin-trade');
+      if (!/(^|\/)(trade|lot)(\.html)?\/?$/i.test(location.pathname)) sessionStorage.removeItem('t7.admin-trade');
     } catch (e) {}
     document.querySelectorAll('.nav-links a[href="trade.html"], .nav-links a[href="admin.html"]').forEach(a => {
       a.setAttribute('href', s && s.role === 'admin' ? 'admin.html' : 'trade.html');
@@ -80,12 +78,16 @@
     if (s.role === 'admin')  links.push('<a href="admin.html">Dashboard</a>');
     if (s.role === 'seller') links.push('<a href="seller.html">Seller dashboard</a>');
     if (s.role !== 'admin') links.push('<a href="trade.html">Browse lots</a>');
+    /* One account can buy and sell: offer the other side. If this
+       account does not have it yet, signin.html offers to add it. */
+    if (s.role === 'buyer')  links.push('<a href="signin.html?as=seller">' + (s.is_seller ? 'Switch to selling' : 'Start selling') + '</a>');
+    if (s.role === 'seller') links.push('<a href="signin.html?as=buyer">' + (s.is_buyer ? 'Switch to buying' : 'Start buying') + '</a>');
     links.push('<a href="signin.html?signout=1">Sign out</a>');
 
     box.innerHTML =
       '<div style="padding:10px 12px 12px;border-bottom:1px solid #e3e8f0;margin-bottom:6px;line-height:1.45">' +
         '<div style="font-size:14px;font-weight:700;overflow-wrap:anywhere">' + esc(name) + '</div>' +
-        '<div style="font-size:12px;font-weight:600;opacity:.7">' + esc(ROLE_LABEL[s.role] || '') + ' account</div>' +
+        '<div style="font-size:12px;font-weight:600;opacity:.7">' + esc(s.role === 'admin' ? 'Admin account' : s.role === 'seller' ? 'Selling' + (s.is_buyer ? ' · also buys' : '') : 'Buying' + (s.is_seller ? ' · also sells' : '')) + '</div>' +
       '</div>' + links.join('');
   }
 

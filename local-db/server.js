@@ -18,7 +18,8 @@
 
      - passwords are stored hashed (scrypt), never as text
      - a new lot always starts "pending"; only an admin approves it
-     - buyers enquire, sellers list, neither can do the other
+     - an account can buy, sell, or both; buying and selling each
+       need that side switched on, and nobody enquires on their own lot
      - nobody becomes an admin through the website. Use:
            node local-db/admin.js make-admin someone@example.com
 
@@ -86,10 +87,26 @@ async function init() {
     if (statement.trim()) await p.query(statement);
   }
 
+  await upgrade(p);
   pool = p;
   const [[{ n }]] = await p.query('SELECT COUNT(*) AS n FROM profiles');
   if (n === 0) await seed();
   return pool;
+}
+
+/* Databases created before 9 October 2026 stored one role per account
+   (buyer OR seller). Now an account can be both. This converts an older
+   database in place the first time the new server starts; it does
+   nothing on a database that is already up to date. */
+async function upgrade(p) {
+  const [cols] = await p.query("SHOW COLUMNS FROM profiles LIKE 'is_buyer'");
+  if (cols.length) return;
+  await p.query('ALTER TABLE profiles ADD COLUMN is_buyer TINYINT(1) NOT NULL DEFAULT 0 AFTER role, ADD COLUMN is_seller TINYINT(1) NOT NULL DEFAULT 0 AFTER is_buyer');
+  await p.query("ALTER TABLE profiles MODIFY role ENUM('buyer','seller','admin','member') NULL");
+  await p.query("UPDATE profiles SET is_buyer = (role = 'buyer'), is_seller = (role = 'seller')");
+  await p.query("UPDATE profiles SET role = 'member' WHERE role IS NULL OR role IN ('buyer','seller')");
+  await p.query("ALTER TABLE profiles MODIFY role ENUM('member','admin') NOT NULL DEFAULT 'member'");
+  console.log('Database upgraded: accounts can now both buy and sell.');
 }
 
 async function q(sql, params) {
@@ -123,8 +140,8 @@ async function seed() {
   const admin = data.users.find(u => u.role === 'admin');
 
   for (const u of data.users) {
-    await q('INSERT INTO profiles (id, email, password_hash, role, first_name, last_name, phone, country, company, status, verified, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?)',
-      [u.id, u.email, pw, u.role, u.first_name, u.last_name, u.phone, u.country, u.company || null, u.status, ago(u.days), ago(u.days)]);
+    await q('INSERT INTO profiles (id, email, password_hash, role, is_buyer, is_seller, first_name, last_name, phone, country, company, status, verified, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1,?,?)',
+      [u.id, u.email, pw, u.role, u.is_buyer ? 1 : 0, u.is_seller ? 1 : 0, u.first_name, u.last_name, u.phone, u.country, u.company || null, u.status, ago(u.days), ago(u.days)]);
   }
 
   for (const l of data.lots) {
@@ -163,7 +180,7 @@ const clean = v => (v == null ? '' : String(v).trim());
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 /* Never the password hash or the confirmation token. */
-const PROFILE_COLS = 'id, email, role, first_name, last_name, phone, country, company, status, created_at, updated_at';
+const PROFILE_COLS = 'id, email, role, is_buyer, is_seller, first_name, last_name, phone, country, company, status, created_at, updated_at';
 
 function lotRow(l) {
   if (!l) return null;
@@ -187,10 +204,33 @@ function withLot(r) {
   return enquiryRow(r);
 }
 
+/* Can this account act as one of `roles`? An account may be a buyer,
+   a seller, or both; "admin" is separate. */
+function may(me, role) {
+  if (role === 'admin') return me.role === 'admin';
+  if (role === 'buyer') return Boolean(me.is_buyer);
+  if (role === 'seller') return Boolean(me.is_seller);
+  return false;
+}
+
+/* Sellers are known by name and phone number. */
+function sellerDetails(p) {
+  if (clean(p.first_name).length < 2 || clean(p.last_name).length < 2) refuse('Please enter your first name and surname.');
+  if (clean(p.phone).replace(/\D/g, '').length < 9) refuse('Please enter a phone number we can reach you on.');
+}
+
 function need(me, roles) {
   if (!me) refuse('Please sign in first.');
   if (me.status !== 'active') refuse('This account is on hold.');
-  if (roles && roles.indexOf(me.role) === -1) refuse('Your account is not allowed to do that.');
+  if (roles && !roles.some(r => may(me, r))) refuse('Your account is not allowed to do that.');
+}
+
+/* MySQL gives 0/1 for TINYINT; the pages expect true/false. */
+function profileRow(p) {
+  if (!p) return p;
+  p.is_buyer = Boolean(p.is_buyer);
+  p.is_seller = Boolean(p.is_seller);
+  return p;
 }
 
 async function startSession(userId) {
@@ -201,8 +241,8 @@ async function startSession(userId) {
 
 async function whoIs(token) {
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
-  return one('SELECT p.id, p.email, p.role, p.first_name, p.last_name, p.phone, p.country, p.company, p.status, p.created_at, p.updated_at ' +
-             'FROM sessions s JOIN profiles p ON p.id = s.user_id WHERE s.token = ? AND s.created_at > (UTC_TIMESTAMP(3) - INTERVAL 30 DAY)', [token]);
+  return profileRow(await one('SELECT p.id, p.email, p.role, p.is_buyer, p.is_seller, p.first_name, p.last_name, p.phone, p.country, p.company, p.status, p.created_at, p.updated_at ' +
+             'FROM sessions s JOIN profiles p ON p.id = s.user_id WHERE s.token = ? AND s.created_at > (UTC_TIMESTAMP(3) - INTERVAL 30 DAY)', [token]));
 }
 
 function verifyLink(ctx, token, next) {
@@ -218,13 +258,17 @@ const FN = {
     const email = clean(a.email).toLowerCase();
     if (!EMAIL.test(email)) refuse('That email address does not look right.');
     if (clean(a.password).length < 8) refuse('Choose a longer password (at least 8 characters).');
-    if (clean(a.first_name).length < 2 || clean(a.last_name).length < 2) refuse('Please enter your first name and surname.');
-    if (await one('SELECT id FROM profiles WHERE email = ?', [email])) refuse('An account with that email already exists. Sign in instead.');
+    /* A buyer needs only an email and a password; a seller also gives a
+       name and phone number. */
+    if (a.role === 'seller') sellerDetails(a);
+    if (await one('SELECT id FROM profiles WHERE email = ?', [email])) {
+      refuse('An account with that email already exists. Sign in with it as a ' + (a.role === 'seller' ? 'seller' : 'buyer') + ' instead; the same account can buy and sell.');
+    }
     const token = crypto.randomBytes(24).toString('hex');
-    await q('INSERT INTO profiles (id, email, password_hash, role, first_name, last_name, phone, country, company, verified, verify_token) VALUES (?,?,?,?,?,?,?,?,?,0,?)',
+    await q('INSERT INTO profiles (id, email, password_hash, is_buyer, is_seller, first_name, last_name, phone, country, company, verified, verify_token) VALUES (?,?,?,?,?,?,?,?,?,?,0,?)',
       [crypto.randomUUID(), email, hashPassword(a.password),
-       a.role === 'seller' ? 'seller' : 'buyer',                 // never admin from the website
-       clean(a.first_name), clean(a.last_name), clean(a.phone) || null, clean(a.country) || null, clean(a.company) || null, token]);
+       a.role === 'seller' ? 0 : 1, a.role === 'seller' ? 1 : 0,  // never admin from the website
+       clean(a.first_name) || null, clean(a.last_name) || null, clean(a.phone) || null, clean(a.country) || null, clean(a.company) || null, token]);
     const link = verifyLink(ctx, token, a.next);
     console.log('\n  Confirmation link for ' + email + ':\n  ' + link + '\n');
     /* No real email is sent from your own computer, so the link is handed
@@ -256,12 +300,23 @@ const FN = {
 
   async completeProfile(a, me) {
     if (!me) refuse('Sign in first.');
-    /* The role can be chosen once (buyer or seller) and never changed here. */
-    const role = !me.role && (a.role === 'buyer' || a.role === 'seller') ? a.role : me.role;
-    await q('UPDATE profiles SET role = ?, first_name = ?, last_name = ?, phone = ?, country = ?, company = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?',
-      [role, clean(a.first_name) || me.first_name, clean(a.last_name) || me.last_name, clean(a.phone) || me.phone,
+    if (a.role === 'seller') sellerDetails({
+      first_name: clean(a.first_name) || me.first_name, last_name: clean(a.last_name) || me.last_name, phone: clean(a.phone) || me.phone });
+    /* a.role switches on buying or selling; it never switches anything off. */
+    await q('UPDATE profiles SET is_buyer = (is_buyer OR ?), is_seller = (is_seller OR ?), first_name = ?, last_name = ?, phone = ?, country = ?, company = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?',
+      [a.role === 'buyer' ? 1 : 0, a.role === 'seller' ? 1 : 0, clean(a.first_name) || me.first_name, clean(a.last_name) || me.last_name, clean(a.phone) || me.phone,
        clean(a.country) || me.country, clean(a.company) || me.company, me.id]);
-    return one('SELECT ' + PROFILE_COLS + ' FROM profiles WHERE id = ?', [me.id]);
+    return profileRow(await one('SELECT ' + PROFILE_COLS + ' FROM profiles WHERE id = ?', [me.id]));
+  },
+
+  /* "Sign in as seller" on an account that so far only buys (or the
+     other way round): the same account gains the other side. */
+  async enableRole(a, me) {
+    need(me);
+    if (a.role !== 'buyer' && a.role !== 'seller') refuse('Choose buyer or seller.');
+    if (a.role === 'seller') sellerDetails(me);
+    await q('UPDATE profiles SET ' + (a.role === 'seller' ? 'is_seller' : 'is_buyer') + ' = 1, updated_at = UTC_TIMESTAMP(3) WHERE id = ?', [me.id]);
+    return profileRow(await one('SELECT ' + PROFILE_COLS + ' FROM profiles WHERE id = ?', [me.id]));
   },
 
   /* ----- the board ----- */
@@ -283,6 +338,7 @@ const FN = {
     const lot = await one('SELECT id, seller_id, status FROM lots WHERE id = ?', [clean(a.lot_id)]);
     if (!lot) refuse('That lot does not exist.');
     if (lot.status !== 'live') refuse('This lot is no longer open for enquiries.');
+    if (lot.seller_id === me.id) refuse('This is your own lot.');
     if (clean(a.message).length < 2) refuse('Write a short message for the seller first.');
     const id = crypto.randomUUID();
     /* Name, email and phone come from the buyer's own profile, not from
@@ -362,7 +418,7 @@ const FN = {
     need(me, ['seller', 'admin']);
     if (['new', 'answered', 'closed'].indexOf(a.status) === -1) refuse('Unknown status.');
     const e = await one('SELECT id, seller_id FROM enquiries WHERE id = ?', [clean(a.id)]);
-    if (!e || (me.role === 'seller' && e.seller_id !== me.id)) refuse('This is not your enquiry.');
+    if (!e || (me.role !== 'admin' && e.seller_id !== me.id)) refuse('This is not your enquiry.');
     await q('UPDATE enquiries SET status = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?', [a.status, e.id]);
     return enquiryRow(await one('SELECT * FROM enquiries WHERE id = ?', [e.id]));
   },
@@ -377,7 +433,7 @@ const FN = {
       q('SELECT * FROM seller_documents ORDER BY created_at DESC'),
       q('SELECT * FROM lot_alerts ORDER BY created_at DESC')
     ]);
-    return { profiles: profiles, lots: lots.map(lotRow), enquiries: enquiries.map(enquiryRow), documents: documents, alerts: alerts.map(alertRow) };
+    return { profiles: profiles.map(profileRow), lots: lots.map(lotRow), enquiries: enquiries.map(enquiryRow), documents: documents, alerts: alerts.map(alertRow) };
   },
 
   async reviewLot(a, me) {
@@ -408,10 +464,10 @@ const FN = {
     need(me, ['admin']);
     if (a.id === me.id) refuse('You cannot suspend your own account.');
     if (a.status !== 'active' && a.status !== 'suspended') refuse('Status must be active or suspended.');
-    const res = await q("UPDATE profiles SET status = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ? AND (role IS NULL OR role <> 'admin')", [a.status, clean(a.id)]);
+    const res = await q("UPDATE profiles SET status = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ? AND role <> 'admin'", [a.status, clean(a.id)]);
     if (!res.affectedRows) refuse('Account not found, or it is an admin account.');
     if (a.status === 'suspended') await q('DELETE FROM sessions WHERE user_id = ?', [clean(a.id)]);
-    return one('SELECT ' + PROFILE_COLS + ' FROM profiles WHERE id = ?', [clean(a.id)]);
+    return profileRow(await one('SELECT ' + PROFILE_COLS + ' FROM profiles WHERE id = ?', [clean(a.id)]));
   },
 
   /* Removes an account for good, with its lots, documents, enquiries
@@ -419,7 +475,7 @@ const FN = {
   async deleteUser(a, me) {
     need(me, ['admin']);
     if (a.id === me.id) refuse('You cannot delete your own account.');
-    const res = await q("DELETE FROM profiles WHERE id = ? AND (role IS NULL OR role <> 'admin')", [clean(a.id)]);
+    const res = await q("DELETE FROM profiles WHERE id = ? AND role <> 'admin'", [clean(a.id)]);
     if (!res.affectedRows) refuse('Account not found, or it is an admin account.');
     return true;
   },

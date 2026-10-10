@@ -6,7 +6,7 @@
 -- own tables, so only re-run it while you are still on test data.
 --
 -- What it creates
---   profiles          one row per account: buyer, seller or admin
+--   profiles          one row per account; an account can buy, sell or both
 --   lots              everything a seller lists (pending -> live)
 --   seller_documents  the supporting document for each listing,
 --                     reviewed by an admin
@@ -34,8 +34,12 @@ drop sequence if exists public.enquiry_number_seq;
 create table public.profiles (
   id          uuid primary key references auth.users(id) on delete cascade,
   email       text not null,
-  -- null means "signed up (e.g. with Google) but has not picked buyer/seller yet"
-  role        text check (role in ('buyer', 'seller', 'admin')),
+  -- 'admin' for the people who run the desk, 'member' for everyone else.
+  role        text not null default 'member' check (role in ('member', 'admin')),
+  -- One account can buy, sell, or both. Both false means "signed up
+  -- (e.g. with Google) but has not said which yet".
+  is_buyer    boolean not null default false,
+  is_seller   boolean not null default false,
   first_name  text,
   last_name   text,
   phone       text,
@@ -99,19 +103,20 @@ create trigger profiles_touch before update on public.profiles
 -- 3. A profile is created automatically for every new account
 -- ------------------------------------------------------------
 -- The sign-up form sends name, phone, etc. as "user metadata".
--- That metadata is typed by the visitor, so the role is only
--- accepted if it is buyer or seller. Nobody can sign up as admin.
+-- That metadata is typed by the visitor, so it can only switch on
+-- buying or selling. Nobody can sign up as admin.
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
   meta  jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
   full_name text := nullif(trim(coalesce(meta->>'full_name', meta->>'name', '')), '');
 begin
-  insert into public.profiles (id, email, role, first_name, last_name, phone, country, company)
+  insert into public.profiles (id, email, is_buyer, is_seller, first_name, last_name, phone, country, company)
   values (
     new.id,
     coalesce(new.email, ''),
-    case when meta->>'role' in ('buyer', 'seller') then meta->>'role' end,
+    coalesce(meta->>'role', '') = 'buyer',
+    coalesce(meta->>'role', '') = 'seller',
     coalesce(nullif(trim(meta->>'first_name'), ''), nullif(trim(meta->>'given_name'), ''), split_part(full_name, ' ', 1)),
     coalesce(nullif(trim(meta->>'last_name'), ''),  nullif(trim(meta->>'family_name'), ''),
              nullif(trim(substr(full_name, length(split_part(full_name, ' ', 1)) + 1)), '')),
@@ -135,8 +140,8 @@ select id, coalesce(email, '') from auth.users
 on conflict (id) do nothing;
 
 
--- Finishing or editing your own profile. The role can be chosen
--- once (buyer or seller) and never changed from the website.
+-- Finishing or editing your own profile. p_role switches on buying
+-- or selling for this account (it never switches anything off).
 create or replace function public.complete_profile(
   p_role text, p_first_name text, p_last_name text,
   p_phone text default null, p_country text default null, p_company text default null
@@ -150,7 +155,8 @@ begin
   end if;
 
   update public.profiles set
-    role       = case when role is null and p_role in ('buyer', 'seller') then p_role else role end,
+    is_buyer   = is_buyer  or p_role = 'buyer',
+    is_seller  = is_seller or p_role = 'seller',
     first_name = coalesce(nullif(trim(p_first_name), ''), first_name),
     last_name  = coalesce(nullif(trim(p_last_name), ''),  last_name),
     phone      = coalesce(nullif(trim(p_phone), ''),      phone),
@@ -159,6 +165,44 @@ begin
   where id = auth.uid()
   returning * into result;
 
+  -- Sellers are known by name and phone number (buyers need only an email).
+  if p_role = 'seller' and (coalesce(trim(result.first_name), '') = '' or coalesce(trim(result.last_name), '') = ''
+                            or coalesce(trim(result.phone), '') = '') then
+    raise exception 'Please add your name and phone number to sell.';
+  end if;
+
+  return result;
+end;
+$$;
+
+-- "Sign in as seller" with an account that so far only buys (or the
+-- other way round): the same account simply gains the other side.
+create or replace function public.enable_role(p_role text)
+returns public.profiles
+language plpgsql security definer set search_path = public as $$
+declare
+  result public.profiles;
+begin
+  if auth.uid() is null then
+    raise exception 'Sign in first.';
+  end if;
+  if p_role not in ('buyer', 'seller') then
+    raise exception 'Choose buyer or seller.';
+  end if;
+  update public.profiles set
+    is_buyer  = is_buyer  or p_role = 'buyer',
+    is_seller = is_seller or p_role = 'seller'
+  where id = auth.uid() and status = 'active'
+  returning * into result;
+  if result.id is null then
+    raise exception 'This account is on hold.';
+  end if;
+
+  -- Sellers are known by name and phone number (buyers need only an email).
+  if p_role = 'seller' and (coalesce(trim(result.first_name), '') = '' or coalesce(trim(result.last_name), '') = ''
+                            or coalesce(trim(result.phone), '') = '') then
+    raise exception 'Please add your name and phone number to sell.';
+  end if;
   return result;
 end;
 $$;
@@ -216,8 +260,11 @@ begin
     select * into me from public.profiles where id = auth.uid();
 
     if tg_op = 'INSERT' then
-      if me.role is distinct from 'seller' or me.status <> 'active' then
+      if not coalesce(me.is_seller, false) or me.status <> 'active' then
         raise exception 'Only an active seller account can list a lot.';
+      end if;
+      if coalesce(trim(me.first_name), '') = '' or coalesce(trim(me.phone), '') = '' then
+        raise exception 'Please add your name and phone number before listing.';
       end if;
       -- A seller cannot choose these. Every new listing waits for an admin.
       new.seller_id   := auth.uid();
@@ -379,8 +426,11 @@ begin
 
     if kind = 'user' then
       select * into me from public.profiles where id = auth.uid();
-      if me.role is distinct from 'buyer' or me.status <> 'active' then
+      if not coalesce(me.is_buyer, false) or me.status <> 'active' then
         raise exception 'Only an active buyer account can send an enquiry.';
+      end if;
+      if lot.seller_id = auth.uid() then
+        raise exception 'This is your own lot.';
       end if;
       if lot.status <> 'live' then
         raise exception 'This lot is no longer open for enquiries.';
@@ -522,7 +572,10 @@ begin
   if p_new_role not in ('buyer', 'seller') then
     raise exception 'New role must be buyer or seller.';
   end if;
-  update public.profiles set role = p_new_role
+  update public.profiles set
+    role = 'member',
+    is_buyer  = is_buyer  or p_new_role = 'buyer',
+    is_seller = is_seller or p_new_role = 'seller'
   where lower(email) = lower(trim(p_email)) and role = 'admin';
   get diagnostics n = row_count;
   if n = 0 then
@@ -547,6 +600,7 @@ revoke all on function public.is_admin()                          from public, a
 revoke all on function public.my_role()                           from public, anon, authenticated;
 revoke all on function public.caller_kind()                       from public, anon, authenticated;
 revoke all on function public.complete_profile(text, text, text, text, text, text) from public, anon, authenticated;
+revoke all on function public.enable_role(text)                   from public, anon, authenticated;
 revoke all on function public.subscribe_lot_alerts(text, text[])  from public, anon, authenticated;
 revoke all on function public.admin_set_user_status(uuid, text)   from public, anon, authenticated;
 revoke all on function public.admin_delete_user(uuid)             from public, anon, authenticated;
@@ -571,6 +625,7 @@ grant execute on function public.my_role()     to anon, authenticated;
 grant execute on function public.caller_kind() to anon, authenticated;
 grant execute on function public.subscribe_lot_alerts(text, text[]) to anon, authenticated;
 grant execute on function public.complete_profile(text, text, text, text, text, text) to authenticated;
+grant execute on function public.enable_role(text) to authenticated;
 grant execute on function public.admin_set_user_status(uuid, text) to authenticated;
 grant execute on function public.admin_delete_user(uuid) to authenticated;
 -- make_admin / remove_admin are deliberately granted to nobody.

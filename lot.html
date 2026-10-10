@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="css/portal.css">
 <script>try{var s=JSON.parse(localStorage.getItem('t7.session')||'null');if(!s){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}else if(s.role==='admin'){location.replace('admin.html');}}catch(e){}</script>
 <link rel="stylesheet" href="css/content-update.css?v=20261010">
+<script>try{var s=JSON.parse(localStorage.getItem('t7.session')||'null');if(!s){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}else if(s.role==='admin'&&sessionStorage.getItem('t7.admin-trade')!=='1'){location.replace('admin.html');}}catch(e){}</script>
 </head>
 <body class="page-lot">
 
