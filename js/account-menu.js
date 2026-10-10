@@ -35,12 +35,27 @@
     try {
       if (!/(^|\/)(trade|lot)\.html$/i.test(location.pathname)) sessionStorage.removeItem('t7.admin-trade');
     } catch (e) {}
-    document.querySelectorAll('.nav-links > a[href="trade.html"], .nav-links > a[href="admin.html"]').forEach(a => {
+    document.querySelectorAll('.nav-links a[href="trade.html"], .nav-links a[href="admin.html"]').forEach(a => {
       a.setAttribute('href', s && s.role === 'admin' ? 'admin.html' : 'trade.html');
     });
   }
 
   function paint() {
+    if (document.body.classList.contains("investor-portal")) return;
+    const utility = document.querySelector('.nav-utility');
+    if (utility) {
+      repointTrade();
+      const s = session();
+      const signin = utility.querySelector('[data-nav-signin]');
+      const register = utility.querySelector('[data-nav-register]');
+      if (signin && register) {
+        signin.textContent = s ? 'Dashboard' : 'Sign In';
+        signin.href = s ? (s.role === 'admin' ? 'admin.html' : s.role === 'seller' ? 'seller.html' : 'buyer.html') : 'signin.html';
+        register.textContent = s ? 'Sign Out' : 'Register';
+        register.href = s ? 'signin.html?signout=1' : 'signin.html?mode=signup';
+      }
+      return;
+    }
     const menu = document.querySelector('.account-menu');
     if (!menu) { repointTrade(); return; }
     const box = menu.querySelector('.account-dropdown');
@@ -52,7 +67,8 @@
     if (!s || !s.role) {
       summary.textContent = 'Account';
       box.innerHTML =
-        '<a href="signin.html">Sign in</a>' +
+        '<a href="investor-login.html">Investor login</a>' +
+        '<a href="signin.html">Trade sign in</a>' +
         '<a href="signin.html?mode=signup">Create account</a>';
       return;
     }
@@ -60,7 +76,7 @@
     const name = [s.first_name, s.last_name].filter(Boolean).join(' ') || s.email;
     summary.textContent = s.first_name || 'Account';
 
-    const links = [];
+    const links = ['<a href="investor-login.html">Investor portal</a>'];
     if (s.role === 'admin')  links.push('<a href="admin.html">Dashboard</a>');
     if (s.role === 'seller') links.push('<a href="seller.html">Seller dashboard</a>');
     if (s.role !== 'admin') links.push('<a href="trade.html">Browse lots</a>');

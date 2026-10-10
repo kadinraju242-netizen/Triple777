@@ -9,26 +9,12 @@
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
-<link rel="stylesheet" href="css/site-update.css?v=20261008f">
+<link rel="stylesheet" href="css/site-update.css?v=20261009nav2">
+<link rel="stylesheet" href="css/content-update.css?v=20261010">
 </head>
 <body class="page-contact">
 
-<nav class="nav">
-  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;width:100%">
-    <a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a>
-    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="trade.html">Trade</a>
-      <a href="investors.html">Invest</a>
-      <a href="mines.html">Mines</a>
-      <a href="mine-projects.html">Mine Projects</a>
-      <a href="about.html">About</a>
-      <a href="signin.html" class="nav-account">Account</a>
-      <a href="contact.html" class="nav-cta" aria-current="page">Contact</a>
-    </div>
-  </div>
-</nav>
+<nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html">Mine Projects</a></div><div class="nav-utility" aria-label="Account and contact"><a href="signin.html?mode=signup" data-nav-register>Register</a><a href="signin.html" data-nav-signin>Sign In</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
 
 <header class="pagehead">
   <div class="pagehead-media"><img src="images/hero-banner100.jpg" alt=""></div>
@@ -72,7 +58,7 @@
   </div>
 </section>
 
-<footer class="footer">
+<section class="section enquiry-section" id="inquiry"><div class="wrap enquiry-layout"><div><p class="eyebrow">Let's start a conversation</p><h2 class="section-title">Make an<br><em>Inquiry.</em></h2><p>Tell us what you need. Our Kimberley team can help with minerals, bulk requirements, mining partnerships and investment enquiries.</p><a class="enquiry-email" href="mailto:info@triple7holdings.co.za">info@triple7holdings.co.za</a><p class="enquiry-note">This form opens your email app with your enquiry ready to send.</p></div><form class="enquiry-form" data-enquiry-form><div class="enquiry-fields"><label>Your name<input name="name" autocomplete="name" maxlength="120" required></label><label>Email address<input name="email" type="email" autocomplete="email" maxlength="200" required></label><label>Phone <span>(optional)</span><input name="phone" type="tel" autocomplete="tel" maxlength="60"></label><label>I'm interested in<select name="interest"><option>General enquiry</option><option>Diamonds</option><option>Gold</option><option>Bulk commodities</option><option>Mining partnerships</option><option>Investment</option></select></label></div><label>Your enquiry<textarea name="message" rows="5" maxlength="4000" required placeholder="Product, quantity, destination or project details…"></textarea></label><button class="btn btn-solid" type="submit">Make an Inquiry</button><p class="enquiry-status" role="status"></p></form></div></section><footer class="footer">
   <div class="wrap">
     <div class="footer-top">
       <div>
@@ -83,9 +69,9 @@
         <h4>Navigate</h4>
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
+          <li><a href="about.html">About</a></li><li><a href="minerals.html">Minerals</a></li>
           <li><a href="trade.html">Trade</a></li>
-          <li><a href="mines.html">Mines</a></li>
+          
           <li><a href="investors.html">Invest</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -95,7 +81,7 @@
         <ul>
           <li><a href="mine-bucklands.html">Bucklands Project</a></li>
           <li><a href="mine-longlands.html">Longlands Project</a></li>
-          <li><a href="mines.html">All Mines</a></li>
+          <li><a href="mine-projects.html">Mine Projects</a></li>
           <li><a href="mine-projects.html">Start a Project</a></li>
         </ul>
       </div>
@@ -117,6 +103,7 @@
 </footer>
 <script src="js/script.js?v=20261008"></script>
 <script src="js/trade.js"></script>
-<script src="js/account-menu.js"></script>
+<script src="js/account-menu.js?v=20261009nav"></script>
+<script src="js/enquiry.js"></script>
 </body>
 </html>
