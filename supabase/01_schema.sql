@@ -10,7 +10,9 @@
 --   lots              everything a seller lists (pending -> live)
 --   seller_documents  the supporting document for each listing,
 --                     reviewed by an admin
---   enquiries         messages buyers send about a lot
+--   enquiries         questions buyers send about a lot (to the desk)
+--   enquiry_messages  the conversations: buyer <-> desk, desk <-> seller
+--   buy_requests      "I can't find it": what a buyer wants sourced
 --   lot_alerts        "tell me when new lots list" sign-ups
 --
 -- Who can do what is enforced HERE, by row-level security and
@@ -20,12 +22,15 @@
 -- ============================================================
 
 drop table if exists public.lot_alerts        cascade;
+drop table if exists public.buy_requests      cascade;
+drop table if exists public.enquiry_messages  cascade;
 drop table if exists public.enquiries         cascade;
 drop table if exists public.seller_documents  cascade;
 drop table if exists public.lots              cascade;
 drop table if exists public.profiles          cascade;
 drop sequence if exists public.lot_number_seq;
 drop sequence if exists public.enquiry_number_seq;
+drop sequence if exists public.request_number_seq;
 
 
 -- ------------------------------------------------------------
@@ -211,20 +216,41 @@ $$;
 -- ------------------------------------------------------------
 -- 4. Lots (seller listings)
 -- ------------------------------------------------------------
+-- The lot number prefix for each commodity (D-3001, FE-3002 …). It
+-- is also the list of commodities the desk accepts: anything this
+-- returns null for is refused by the check constraints below. Keep
+-- it in step with js/catalog.js.
+create or replace function public.lot_prefix(p_commodity text)
+returns text language sql immutable as $$
+  select case p_commodity
+    when 'diamond'     then 'D'   when 'ruby'        then 'R'   when 'sapphire'  then 'SA'
+    when 'emerald'     then 'E'   when 'tanzanite'   then 'T'
+    when 'gold'        then 'G'   when 'silver'      then 'S'
+    when 'platinum'    then 'P'   when 'palladium'   then 'PD'  when 'rhodium'   then 'RH'
+    when 'iridium'     then 'IR'  when 'ruthenium'   then 'RU'
+    when 'iron_ore'    then 'FE'  when 'manganese'   then 'MN'  when 'chrome'    then 'CR'
+    when 'ferrochrome' then 'FC'  when 'vanadium'    then 'V'
+    when 'copper'      then 'CU'  when 'nickel'      then 'NI'  when 'cobalt'    then 'CO'
+    when 'zinc'        then 'ZN'  when 'lead'        then 'PB'  when 'aluminium' then 'AL'
+    when 'coal'        then 'C'
+    when 'titanium'    then 'TI'  when 'zircon'      then 'ZR'  when 'fluorspar' then 'FL'
+    when 'phosphate'   then 'PH'  when 'andalusite'  then 'AN'  when 'vermiculite' then 'VM'
+  end;
+$$;
+
 create sequence public.lot_number_seq start 3001;
 
 create table public.lots (
   id           uuid primary key default gen_random_uuid(),
   lot_id       text not null unique,          -- D-3001, G-3002 … made automatically
   seller_id    uuid references public.profiles(id) on delete cascade,
-  commodity    text not null check (commodity in
-                 ('diamond', 'gold', 'platinum', 'silver', 'ruby', 'sapphire', 'emerald', 'tanzanite')),
+  commodity    text not null check (public.lot_prefix(commodity) is not null),
   name         text not null check (length(trim(name)) >= 3),
   type         text,                          -- polished, rough, bar, coin …
   description  text,
   price_zar    numeric(14, 2) not null check (price_zar > 0),
   weight       numeric(12, 3) check (weight is null or weight > 0),
-  weight_unit  text check (weight_unit in ('ct', 'g')),
+  weight_unit  text check (weight_unit in ('ct', 'g', 't')),   -- carats, grams, tonnes
   quantity     integer not null default 1 check (quantity > 0),
   origin       text,
   -- The details that differ per commodity (cut, colour, clarity, karat …).
@@ -300,16 +326,7 @@ begin
   end if;
 
   if tg_op = 'INSERT' and (new.lot_id is null or new.lot_id = '') then
-    new.lot_id := case new.commodity
-        when 'diamond'   then 'D'
-        when 'gold'      then 'G'
-        when 'platinum'  then 'P'
-        when 'silver'    then 'S'
-        when 'ruby'      then 'R'
-        when 'sapphire'  then 'SA'
-        when 'emerald'   then 'E'
-        when 'tanzanite' then 'T'
-      end || '-' || nextval('public.lot_number_seq');
+    new.lot_id := public.lot_prefix(new.commodity) || '-' || nextval('public.lot_number_seq');
   end if;
 
   new.updated_at := now();
@@ -392,13 +409,21 @@ create table public.enquiries (
   lot_id       uuid not null references public.lots(id) on delete cascade,
   buyer_id     uuid references public.profiles(id) on delete cascade,
   seller_id    uuid references public.profiles(id) on delete cascade,
-  -- Copied from the buyer's profile when the enquiry is sent, so the
-  -- seller can reply without being able to read the profiles table.
+  -- Copied from the buyer's profile when the enquiry is sent, for the
+  -- desk. Sellers never see these: they cannot read this table.
   buyer_name   text,
   buyer_email  text,
   buyer_phone  text,
   message      text not null check (length(trim(message)) >= 2),
-  status       text not null default 'new' check (status in ('new', 'answered', 'closed')),
+  -- new             waiting for the desk
+  -- with_seller     the desk asked the seller
+  -- seller_replied  the seller answered the desk
+  -- answered        the desk answered the buyer
+  -- closed
+  status       text not null default 'new'
+                 check (status in ('new', 'with_seller', 'seller_replied', 'answered', 'closed')),
+  forwarded_at    timestamptz,                -- when the desk first brought the seller in
+  last_message_at timestamptz,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -449,14 +474,11 @@ begin
       new.ref := 'ENQ-' || nextval('public.enquiry_number_seq');
     end if;
 
-  elsif kind = 'user' and not public.is_admin() then
-    -- The seller who received it may only move its status along.
-    if old.seller_id is distinct from auth.uid() then
-      raise exception 'This is not your enquiry.';
-    end if;
-    if (to_jsonb(new) - 'status' - 'updated_at') is distinct from (to_jsonb(old) - 'status' - 'updated_at') then
-      raise exception 'Only the status of an enquiry can be changed.';
-    end if;
+  elsif kind = 'user' and not public.is_admin()
+        and coalesce(current_setting('t7.internal', true), '') <> '1' then
+    -- Only the desk moves an enquiry along (messages do it for
+    -- everyone else, through enquiry_messages_after).
+    raise exception 'Only the desk can change an enquiry.';
   end if;
 
   new.updated_at := now();
@@ -466,6 +488,201 @@ $$;
 
 create trigger enquiries_guard before insert or update on public.enquiries
   for each row execute function public.enquiries_guard();
+
+
+-- ------------------------------------------------------------
+-- 6b. Enquiry messages: every conversation goes through the desk
+-- ------------------------------------------------------------
+-- A buyer's enquiry goes to the desk, never straight to the
+-- seller. The desk answers it, or asks the seller (without the
+-- buyer's name or contact details); the seller answers the desk;
+-- the desk answers the buyer. Two separate conversations per
+-- enquiry, so neither side ever sees the other:
+--   channel 'buyer'   buyer  <-> desk
+--   channel 'seller'  seller <-> desk
+create table public.enquiry_messages (
+  id          uuid primary key default gen_random_uuid(),
+  enquiry_id  uuid not null references public.enquiries(id) on delete cascade,
+  channel     text not null check (channel in ('buyer', 'seller')),
+  sender      text not null check (sender in ('buyer', 'seller', 'desk')),
+  author_id   uuid references public.profiles(id) on delete set null,
+  body        text not null check (length(trim(body)) >= 1 and length(body) <= 3000),
+  created_at  timestamptz not null default now()
+);
+
+create index enquiry_messages_enquiry_idx on public.enquiry_messages (enquiry_id, created_at);
+
+-- Which side of an enquiry the signed-in person is on: 'buyer',
+-- 'seller' (only once the desk has brought them in), or null.
+create or replace function public.enquiry_party(p_enquiry uuid)
+returns text language sql stable security definer set search_path = public as $$
+  select case
+    when e.buyer_id = auth.uid() then 'buyer'
+    when e.seller_id = auth.uid() and e.forwarded_at is not null then 'seller'
+  end
+  from public.enquiries e where e.id = p_enquiry;
+$$;
+
+create or replace function public.enquiry_messages_guard()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  kind  text := public.caller_kind();
+  e     public.enquiries;
+  me    public.profiles;
+begin
+  if kind = 'anon' then
+    raise exception 'Sign in first.';
+  end if;
+  select * into e from public.enquiries where id = new.enquiry_id;
+  if e.id is null then
+    raise exception 'That enquiry does not exist.';
+  end if;
+
+  if kind = 'user' then
+    select * into me from public.profiles where id = auth.uid();
+    if me.status <> 'active' then
+      raise exception 'This account is on hold.';
+    end if;
+    new.author_id  := auth.uid();
+    new.created_at := now();
+    if public.is_admin() then
+      new.sender := 'desk';            -- the desk writes to either side
+    elsif e.buyer_id = auth.uid() then
+      new.sender  := 'buyer';
+      new.channel := 'buyer';
+    elsif e.seller_id = auth.uid() and e.forwarded_at is not null then
+      new.sender  := 'seller';
+      new.channel := 'seller';
+    else
+      raise exception 'This is not your enquiry.';
+    end if;
+    if e.status = 'closed' and new.sender <> 'desk' then
+      raise exception 'This enquiry is closed. Send a new one from the lot page.';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger enquiry_messages_guard before insert on public.enquiry_messages
+  for each row execute function public.enquiry_messages_guard();
+
+-- Moves the enquiry along after each message, so everyone can see
+-- whose turn it is.
+create or replace function public.enquiry_messages_after()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  perform set_config('t7.internal', '1', true);
+  update public.enquiries set
+    status = case
+      when new.sender = 'buyer'                          then 'new'
+      when new.sender = 'seller'                         then 'seller_replied'
+      when new.sender = 'desk' and new.channel = 'seller' then 'with_seller'
+      else 'answered'
+    end,
+    forwarded_at    = case when new.channel = 'seller' then coalesce(forwarded_at, now()) else forwarded_at end,
+    last_message_at = now()
+  where id = new.enquiry_id;
+  perform set_config('t7.internal', '', true);
+  return new;
+end;
+$$;
+
+create trigger enquiry_messages_after after insert on public.enquiry_messages
+  for each row execute function public.enquiry_messages_after();
+
+-- What a seller sees of the enquiries the desk has brought them
+-- into: the lot and where it stands. Never the buyer.
+create or replace function public.seller_enquiries()
+returns table (
+  id uuid, ref text, lot_id uuid, lot_code text, lot_name text, commodity text,
+  price_zar numeric, status text, forwarded_at timestamptz, last_message_at timestamptz, created_at timestamptz
+) language sql stable security definer set search_path = public as $$
+  select e.id, e.ref, l.id, l.lot_id, l.name, l.commodity, l.price_zar,
+         e.status, e.forwarded_at, e.last_message_at, e.created_at
+  from public.enquiries e join public.lots l on l.id = e.lot_id
+  where e.seller_id = auth.uid() and e.forwarded_at is not null
+  order by coalesce(e.last_message_at, e.created_at) desc;
+$$;
+
+
+-- ------------------------------------------------------------
+-- 6c. Buyer requests ("I can't find what I need")
+-- ------------------------------------------------------------
+-- A buyer describes what they want; the desk sources it. Only the
+-- buyer and the desk ever see a request.
+create sequence public.request_number_seq start 7001;
+
+create table public.buy_requests (
+  id               uuid primary key default gen_random_uuid(),
+  ref              text not null unique,               -- REQ-7001
+  buyer_id         uuid references public.profiles(id) on delete cascade,
+  commodity        text not null check (public.lot_prefix(commodity) is not null),
+  product_type     text,                               -- cut, bar, lump, cathode …
+  specs            jsonb not null default '{}'::jsonb, -- the same detail keys as a lot
+  quantity         numeric(14, 3) check (quantity is null or quantity > 0),
+  quantity_unit    text check (quantity_unit in ('ct', 'g', 't')),
+  budget_min       numeric(14, 2) check (budget_min is null or budget_min >= 0),
+  budget_max       numeric(14, 2) check (budget_max is null or budget_max >= 0),
+  delivery_country text,
+  timeframe        text,
+  notes            text check (notes is null or length(notes) <= 2000),
+  status           text not null default 'new' check (status in ('new', 'sourcing', 'matched', 'closed')),
+  desk_reply       text,                               -- what the desk tells the buyer
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+create index buy_requests_buyer_idx  on public.buy_requests (buyer_id);
+create index buy_requests_status_idx on public.buy_requests (status);
+
+create or replace function public.buy_requests_guard()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  kind text := public.caller_kind();
+  me   public.profiles;
+begin
+  if kind = 'anon' then
+    raise exception 'Sign in first.';
+  end if;
+
+  if tg_op = 'INSERT' then
+    if kind = 'user' then
+      select * into me from public.profiles where id = auth.uid();
+      if not coalesce(me.is_buyer, false) or me.status <> 'active' then
+        raise exception 'Only an active buyer account can send a request.';
+      end if;
+      new.buyer_id   := auth.uid();
+      new.status     := 'new';
+      new.desk_reply := null;
+      new.ref        := null;
+      new.created_at := now();
+    end if;
+    if new.budget_min is not null and new.budget_max is not null and new.budget_max < new.budget_min then
+      raise exception 'The highest budget is lower than the lowest.';
+    end if;
+    if new.ref is null or new.ref = '' then
+      new.ref := 'REQ-' || nextval('public.request_number_seq');
+    end if;
+
+  elsif kind = 'user' and not public.is_admin() then
+    -- A buyer may only withdraw their own request.
+    if old.buyer_id is distinct from auth.uid() then
+      raise exception 'This is not your request.';
+    end if;
+    if (to_jsonb(new) - 'status' - 'updated_at') is distinct from (to_jsonb(old) - 'status' - 'updated_at')
+       or new.status <> 'closed' then
+      raise exception 'You can only withdraw a request. Send a new one to change it.';
+    end if;
+  end if;
+
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+create trigger buy_requests_guard before insert or update on public.buy_requests
+  for each row execute function public.buy_requests_guard();
 
 
 -- ------------------------------------------------------------
@@ -593,8 +810,9 @@ $$;
 -- visitor needs. Row-level security then narrows it to the rows
 -- they are allowed to touch.
 revoke all on public.profiles, public.lots, public.seller_documents,
-              public.enquiries, public.lot_alerts from anon, authenticated;
-revoke all on sequence public.lot_number_seq, public.enquiry_number_seq from anon, authenticated;
+              public.enquiries, public.enquiry_messages, public.buy_requests,
+              public.lot_alerts from anon, authenticated;
+revoke all on sequence public.lot_number_seq, public.enquiry_number_seq, public.request_number_seq from anon, authenticated;
 
 revoke all on function public.is_admin()                          from public, anon, authenticated;
 revoke all on function public.my_role()                           from public, anon, authenticated;
@@ -611,6 +829,11 @@ revoke all on function public.lots_guard()                        from public, a
 revoke all on function public.lots_create_document()              from public, anon, authenticated;
 revoke all on function public.documents_guard()                   from public, anon, authenticated;
 revoke all on function public.enquiries_guard()                   from public, anon, authenticated;
+revoke all on function public.enquiry_party(uuid)                 from public, anon, authenticated;
+revoke all on function public.enquiry_messages_guard()            from public, anon, authenticated;
+revoke all on function public.enquiry_messages_after()            from public, anon, authenticated;
+revoke all on function public.seller_enquiries()                  from public, anon, authenticated;
+revoke all on function public.buy_requests_guard()                from public, anon, authenticated;
 
 grant usage on schema public to anon, authenticated;
 
@@ -618,6 +841,8 @@ grant select                 on public.profiles         to authenticated;
 grant select, insert, update, delete on public.lots     to authenticated;
 grant select, update         on public.seller_documents to authenticated;
 grant select, insert, update on public.enquiries        to authenticated;
+grant select, insert         on public.enquiry_messages to authenticated;
+grant select, insert, update on public.buy_requests     to authenticated;
 grant select, delete         on public.lot_alerts       to authenticated;
 
 grant execute on function public.is_admin()    to anon, authenticated;
@@ -628,12 +853,17 @@ grant execute on function public.complete_profile(text, text, text, text, text, 
 grant execute on function public.enable_role(text) to authenticated;
 grant execute on function public.admin_set_user_status(uuid, text) to authenticated;
 grant execute on function public.admin_delete_user(uuid) to authenticated;
+grant execute on function public.enquiry_party(uuid) to authenticated;
+grant execute on function public.seller_enquiries() to authenticated;
+grant execute on function public.lot_prefix(text) to anon, authenticated;
 -- make_admin / remove_admin are deliberately granted to nobody.
 
 alter table public.profiles         enable row level security;
 alter table public.lots             enable row level security;
 alter table public.seller_documents enable row level security;
 alter table public.enquiries        enable row level security;
+alter table public.enquiry_messages enable row level security;
+alter table public.buy_requests     enable row level security;
 alter table public.lot_alerts       enable row level security;
 
 -- profiles: you see your own row. Admins see everyone.
@@ -671,20 +901,46 @@ create policy "admins review documents" on public.seller_documents
   using (public.is_admin())
   with check (public.is_admin());
 
--- enquiries: visible to the buyer who sent it, the seller who
--- received it, and admins.
-create policy "buyer, seller or admin read enquiries" on public.enquiries
+-- enquiries: the buyer who sent it and the desk. NOT the seller:
+-- sellers see only what public.seller_enquiries() gives them, which
+-- leaves out who the buyer is.
+create policy "buyer or admin read enquiries" on public.enquiries
   for select to authenticated
-  using (buyer_id = auth.uid() or seller_id = auth.uid() or public.is_admin());
+  using (buyer_id = auth.uid() or public.is_admin());
 
 create policy "buyers send enquiries" on public.enquiries
   for insert to authenticated
   with check (buyer_id = auth.uid() or public.is_admin());
 
-create policy "seller or admin update enquiries" on public.enquiries
+create policy "admins update enquiries" on public.enquiries
   for update to authenticated
-  using (seller_id = auth.uid() or public.is_admin())
-  with check (seller_id = auth.uid() or public.is_admin());
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- enquiry_messages: the desk reads both conversations; the buyer
+-- reads only theirs with the desk; the seller only theirs with the
+-- desk, and only once the desk has brought them in.
+create policy "own side of the conversation" on public.enquiry_messages
+  for select to authenticated
+  using (public.is_admin() or public.enquiry_party(enquiry_id) = channel);
+
+create policy "write to your side" on public.enquiry_messages
+  for insert to authenticated
+  with check (author_id = auth.uid() and (public.is_admin() or public.enquiry_party(enquiry_id) = channel));
+
+-- buy_requests: the buyer who sent it and the desk.
+create policy "own requests or admin" on public.buy_requests
+  for select to authenticated
+  using (buyer_id = auth.uid() or public.is_admin());
+
+create policy "buyers send requests" on public.buy_requests
+  for insert to authenticated
+  with check (buyer_id = auth.uid() or public.is_admin());
+
+create policy "buyer withdraws, admin manages" on public.buy_requests
+  for update to authenticated
+  using (buyer_id = auth.uid() or public.is_admin())
+  with check (buyer_id = auth.uid() or public.is_admin());
 
 -- lot_alerts: admins only.
 create policy "admins read alerts" on public.lot_alerts

@@ -5,41 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign In — Trade Desk — Triple 7 Holdings</title>
 <meta name="description" content="Sign in or create an account for the Triple 7 Holdings Trade Desk.">
-<meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="images/logo-icon.png?v=2">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
 <link rel="stylesheet" href="css/site-update.css?v=20261009nav2">
-<link rel="stylesheet" href="css/portal.css">
 <link rel="stylesheet" href="css/content-update.css?v=20261010">
+<link rel="stylesheet" href="css/portal.css?v=20261011">
+<link rel="stylesheet" href="css/trade-desk.css?v=20261011">
+
 </head>
-<body class="page-signin">
+<body class="page-signin td-page">
 
 <nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html">Mine Projects</a></div><div class="nav-utility" aria-label="Account and contact"><a href="signin.html?mode=signup" data-nav-register>Register</a><a href="signin.html" data-nav-signin>Sign In</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
 
-<header class="desk-head">
-  <div class="desk-inner">
-    <div class="desk-strip">
-      <span class="desk-id">Trade Desk <b>·&nbsp; Kimberley</b></span>
-      <div class="desk-actions"><a class="desk-btn" href="contact.html">Contact Desk</a></div>
-    </div>
-    <div class="desk-title-wrap">
-      
-      <h1 class="desk-title" id="desk-title">Sign In</h1>
-      <p class="desk-sub" id="desk-sub">Sign in to browse lots, send enquiries and manage your listings.</p>
-    </div>
+<main id="main-content">
+<header class="pagehead td-head td-head-short"><div class="pagehead-media"><img src="images/live-sa-hero.jpg" alt="A diamond set in a gold ring"></div><div class="wrap"><p class="eyebrow">The Triple 7 Trade Desk</p><h1 class="pagehead-title" id="desk-title">Sign In</h1><p class="pagehead-sub" id="desk-sub">Buy and sell with one account.</p></div></header>
+<section class="section td-auth"><div class="wrap td-auth-layout">
+  <div class="td-auth-copy">
+    <p class="eyebrow">Why trade through the desk</p>
+    <h2 class="section-title">Every deal.<br><em>Handled with care.</em></h2>
+    <p>One account lets you buy and sell. Our Kimberley team checks every lot before it is listed and handles every conversation between buyer and seller.</p>
+    <dl class="bulk-details td-points">
+      <div><dt>Buy</dt><dd>Browse lots from diamonds to coal, ask questions, or tell us what you need.</dd></div>
+      <div><dt>Sell</dt><dd>List a lot in five steps. The desk approves it before buyers see it.</dd></div>
+      <div><dt>Desk</dt><dd>Questions and answers go through Triple 7, so every deal stays with the desk.</dd></div>
+    </dl>
   </div>
-</header>
-
-<section class="desk-body">
-  <div class="wrap">
-    <div class="auth-wrap">
-      <div id="signin-root" aria-live="polite"><p class="auth-wait">One moment…</p></div>
-      <noscript><p class="notice">Signing in needs JavaScript. Enable it, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
-    </div>
+  <div class="auth-wrap">
+    <div id="signin-root" aria-live="polite"><p class="auth-wait">One moment…</p></div>
+    <noscript><p class="notice">Signing in needs JavaScript. Enable it, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
   </div>
-</section>
+</div></section>
+</main>
 
 <footer class="footer">
   <div class="wrap">
@@ -52,10 +50,10 @@
         <h4>Navigate</h4>
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li><li><a href="minerals.html">Minerals</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="minerals.html">Minerals</a></li>
           <li><a href="trade.html">Trade</a></li>
-          <li>
-      <a href="mine-projects.html">Mine Projects</a></li>
+          <li><a href="mine-projects.html">Mine Projects</a></li>
           <li><a href="investors.html">Invest</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -63,11 +61,11 @@
       <div>
         <h4>Trade Desk</h4>
         <ul>
-          <li><a href="trade.html">Live Board</a></li>
-          <li><a href="how-to-buy.html">How To Buy</a></li>
-          <li><a href="provenance.html">Provenance</a></li>
-          <li><a href="signin.html?role=buyer">Buyer Sign In</a></li>
-          <li><a href="signin.html?role=seller">Seller Sign In</a></li>
+          <li><a href="trade.html">Browse lots</a></li>
+          <li><a href="buyer.html#request">Request a commodity</a></li>
+          <li><a href="how-to-buy.html">How to buy</a></li>
+          <li><a href="provenance.html">Origin &amp; documentation</a></li>
+          <li><a href="signin.html">Sign in</a></li>
         </ul>
       </div>
       <div>
@@ -90,11 +88,11 @@
 <script src="js/script.js?v=20261008"></script>
 <script src="js/config.js"></script>
 <script src="js/vendor/supabase.js"></script>
-<script src="js/catalog.js"></script>
-<script src="js/trade.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/signin.js"></script>
-<script src="js/account-menu.js?v=20261009nav"></script>
+<script src="js/catalog.js?v=20261011"></script>
+<script src="js/trade.js?v=20261011"></script>
+<script src="js/auth.js?v=20261011"></script>
+<script src="js/api.js?v=20261011"></script>
+<script src="js/signin.js?v=20261011"></script>
+<script src="js/account-menu.js?v=20261011"></script>
 </body>
 </html>

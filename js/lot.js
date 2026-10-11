@@ -2,10 +2,10 @@
    Triple 7 Holdings — lot page
    ------------------------------------------------------------
    One lot: photo, price, every detail the seller gave, and — for
-   a buyer — the enquiry box right on the page. Sending an enquiry
-   is one click: the message is pre-written and the buyer's name
-   and contact details are attached by the database from their
-   profile.
+   a buyer — the enquiry box right on the page. An enquiry goes to
+   the Triple 7 desk, never straight to the seller: the desk answers
+   it, asking the seller where needed, and the reply appears in the
+   buyer's account (buyer.html).
 
    A field is printed only if it has a value; absent fields are
    dropped rather than shown as a dash, because a dash reads as
@@ -42,10 +42,10 @@
       ['Lot ID', l.lot_id],
       ['Category', cat.label(l.commodity)],
       [c ? c.typeLabel : 'Type', l.type],
-      [c ? c.unitLabel.replace(' in grams', '') : 'Weight', cat.weight(l)]
+      [c ? c.unitLabel.replace(' in grams', '').replace(' in tonnes', '') : 'Weight', cat.weight(l)]
     ];
     if (c) c.fields.forEach(f => rows.push([f.label, specs[f.key]]));
-    rows.push(['Pieces in this lot', l.quantity > 1 ? l.quantity : null]);
+    rows.push([c && c.unit === 't' ? 'Lots or loads' : 'Pieces in this lot', l.quantity > 1 ? l.quantity : null]);
     rows.push(['Origin', l.origin]);
     rows.push(['Listed', new Date(l.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' })]);
     return rows
@@ -55,25 +55,14 @@
   }
 
   function related(all, current) {
+    const c = cat.get(current.commodity);
     const rest = all.filter(l => l.commodity === current.commodity && l.lot_id !== current.lot_id).slice(0, 3);
-    if (!rest.length) return '';
-    return '<section class="dash-section" style="margin-top:56px;margin-bottom:0">' +
-             '<h2>More ' + esc(cat.get(current.commodity).plural.toLowerCase()) +
-               ' <a class="reset-link" href="trade.html?commodity=' + esc(current.commodity) + '">See all</a></h2>' +
-             '<div class="board-grid">' +
-               rest.map(l => {
-                 const href = 'lot.html?id=' + encodeURIComponent(l.lot_id);
-                 return '<article class="lot-card">' +
-                   '<a href="' + href + '" aria-hidden="true" tabindex="-1">' + T7.lotMedia(l, { card: true }) + '</a>' +
-                   '<div class="lot-card-body">' +
-                     '<div class="lot-meta"><span class="lot-id">' + esc(l.lot_id) + '</span></div>' +
-                     '<a class="lot-name textlink" href="' + href + '">' + esc(l.name) + '</a>' +
-                     '<p class="lot-desc">' + esc(cat.summary(l).join(' · ')) + '</p>' +
-                     '<div class="lot-foot"><span class="lot-price">' + esc(cat.money(l.price_zar)) + '</span>' +
-                     '<a class="lot-open" href="' + href + '">View lot</a></div>' +
-                   '</div></article>';
-               }).join('') +
-             '</div>' +
+    if (!rest.length || !c) return '';
+    return '<section class="td-related">' +
+             '<div class="td-section-head"><div><p class="eyebrow">' + esc(cat.groupOf(current.commodity).label) + '</p>' +
+               '<h2 class="section-title td-small-title">More ' + esc(c.plural.toLowerCase()) + '</h2></div>' +
+               '<a class="text-link" href="trade.html?commodity=' + esc(current.commodity) + '">See all ' + esc(c.plural.toLowerCase()) + '</a></div>' +
+             '<div class="board-grid">' + rest.map(T7.lotCard).join('') + '</div>' +
            '</section>';
   }
 
@@ -88,7 +77,8 @@
         '<h2>This is your listing</h2>' +
         '<p><span class="pill is-' + status.tone + '">' + esc(status.label) + '</span></p>' +
         (l.review_note ? '<p class="review-note">Note from the desk: ' + esc(l.review_note) + '</p>' : '') +
-        '<div class="action-row"><a class="btn-desk" href="seller.html">Open My Dashboard</a></div>';
+        '<p>Buyers’ questions about it come to you from the Triple 7 desk, in your dashboard.</p>' +
+        '<div class="action-row"><a class="btn-desk" href="seller.html#questions">Open My Dashboard</a></div>';
       return;
     }
     if (profile.role === 'admin') {
@@ -109,7 +99,7 @@
       const back = encodeURIComponent('lot.html?id=' + l.lot_id + '#enquire');
       box.innerHTML =
         '<h2>Interested in buying this?</h2>' +
-        '<p>You are signed in as a seller. Enquiries are sent while buying' +
+        '<p>You are signed in as a seller. Questions about lots are sent while buying' +
           (profile.is_buyer ? '.' : '; you can add buying to this same account.') + '</p>' +
         '<div class="action-row">' +
           '<a class="btn-desk" href="signin.html?as=buyer&next=' + back + '">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>' +
@@ -123,14 +113,14 @@
   function enquiryForm(l, box, error) {
     const suggestion = 'Hi, I am interested in ' + l.name + ' (' + l.lot_id + '). Is it still available?';
     box.innerHTML =
-      '<h2>Ask the seller about this lot</h2>' +
-      '<p>Your contact details (email, and name and phone if you have added them) are sent with your message so the seller can reply to you directly.</p>' +
+      '<h2>Ask the desk about this lot</h2>' +
+      '<p>Your question goes to the Triple 7 desk. We answer it, checking with the seller where needed, and the reply appears under <a class="textlink" href="buyer.html">My enquiries</a>. Your details are never passed to the seller.</p>' +
       '<form id="enquiry-form" novalidate>' +
         '<label class="sr-only" for="message">Your message</label>' +
-        '<textarea id="message" name="message" maxlength="1500" required>' + esc(suggestion) + '</textarea>' +
+        '<textarea id="message" name="message" maxlength="1500" rows="4" required>' + esc(suggestion) + '</textarea>' +
         '<p class="form-error" id="enquiry-error" role="alert"' + (error ? '' : ' hidden') + '>' + esc(error || '') + '</p>' +
         '<div class="action-row">' +
-          '<button type="submit" class="btn-desk" id="enquiry-send">Send Enquiry</button>' +
+          '<button type="submit" class="btn-desk" id="enquiry-send">Send to the desk</button>' +
           '<span class="field-hint">No payment is taken on this site.</span>' +
         '</div>' +
       '</form>' +
@@ -142,7 +132,7 @@
       const message = form.elements.message.value.trim();
       const err = document.getElementById('enquiry-error');
       if (message.length < 2) {
-        err.textContent = 'Write a short message for the seller first.';
+        err.textContent = 'Write a short question first.';
         err.hidden = false;
         form.elements.message.focus();
         return;
@@ -154,16 +144,16 @@
         const sent = await T7.api.sendEnquiry(l.id, message);
         box.innerHTML =
           '<div class="enquire-sent">' +
-            '<span class="pill is-good">Enquiry sent</span>' +
-            '<h2>The seller has your message</h2>' +
-            '<p style="margin:0">Your reference is <strong>' + esc(sent.ref) + '</strong>. The seller will reply to ' +
-              esc(profile.email) + (profile.phone ? ' or ' + esc(profile.phone) : '') + '.</p>' +
+            '<span class="pill is-good">Sent to the desk</span>' +
+            '<h2>The desk has your question</h2>' +
+            '<p style="margin:0">Your reference is <strong>' + esc(sent.ref) + '</strong>. We will reply under My enquiries, ' +
+              'and you can add to the conversation there.</p>' +
             '<div class="action-row" style="margin-top:8px">' +
-              '<a class="btn-desk" href="trade.html">Back To The Board</a>' +
-              '<a class="btn-line" href="trade.html#my-enquiries">My Enquiries</a>' +
+              '<a class="btn-desk" href="buyer.html#e-' + esc(sent.id) + '">Open My Enquiries</a>' +
+              '<a class="btn-line" href="trade.html">Back To The Board</a>' +
             '</div>' +
           '</div>';
-        T7.toast('Enquiry ' + sent.ref + ' sent');
+        T7.toast('Enquiry ' + sent.ref + ' sent to the desk');
       } catch (e2) {
         console.error(e2);
         enquiryForm(l, box, e2.message || 'We could not send that. Please try again.');
@@ -178,8 +168,8 @@
       if (!here.length || !past) return;
       past.hidden = false;
       past.innerHTML = here.map(r =>
-        '<span>You enquired ' + esc(T7.ago(r.created_at)) + ' (' + esc(r.ref) + ') — ' +
-        esc({ new: 'waiting for the seller', answered: 'the seller has replied', closed: 'closed' }[r.status] || r.status) + '.</span>').join('');
+        '<span>You asked ' + esc(T7.ago(r.created_at)) + ' (' + esc(r.ref) + '): ' +
+        esc(((cat.enquiryStatus[r.status] || {}).buyer || r.status).toLowerCase()) + '. <a class="textlink" href="buyer.html#e-' + esc(r.id) + '">Open</a></span>').join('');
     }).catch(() => {});
   }
 

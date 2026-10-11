@@ -14,9 +14,10 @@ local-db/
   seed.json                the test data it starts from
 supabase/
   01_schema.sql            tables, triggers, row-level security, admin functions
-  02_test_data.sql         21 test accounts, 49 lots, 38 enquiries
+  02_test_data.sql         24 test accounts, 77 lots, 52 enquiries, 8 buyer requests
   03_make_admin.sql        the one line that makes an account an admin
   04_buyers_can_sell.sql   upgrade for projects set up earlier: one account can buy and sell
+  05_trade_desk_update.sql upgrade (Oct 2026): 30 commodities, buyer requests, enquiries through the desk
   99_remove_test_data.sql  run before going live
 js/
   config.js                project URL + anon key (public by design)
@@ -49,7 +50,9 @@ js/
 | `profiles` | one row per account: role (`member` / `admin`), `is_buyer`, `is_seller` (both can be on), name, phone, country, company, status |
 | `lots` | every listing: commodity, price, weight, per-commodity details in `specs` (jsonb), status |
 | `seller_documents` | one supporting document per listing. Empty for now; created automatically; reviewed by an admin |
-| `enquiries` | buyer → seller messages about a lot, with the buyer's contact details copied in |
+| `enquiries` | a buyer's question about a lot, with the buyer's contact details copied in. Read by the buyer and the desk only |
+| `enquiry_messages` | the conversations: buyer <-> desk (channel `buyer`) and desk <-> seller (channel `seller`). Sellers read only theirs, through `seller_enquiries()`, which never includes the buyer |
+| `buy_requests` | what a buyer asked the desk to source; the desk sets a status and a reply |
 | `lot_alerts` | "tell me when new lots list" emails |
 
 Lot status: `pending` → `live` (admin approves) or `rejected`; then `sold` or `withdrawn`.
@@ -65,8 +68,10 @@ Buyer and Seller are capabilities, not separate accounts: an account with both g
 | List a lot | no | no | yes, always starts `pending` | — |
 | Approve / reject / delete a lot | no | no | no | yes |
 | Withdraw or mark sold | no | no | own only | yes |
-| Send an enquiry | no | on live lots, not their own | no | no |
-| Read enquiries | no | own | on own lots | all |
+| Send an enquiry (to the desk) | no | on live lots, not their own | no | no |
+| Reply in an enquiry | no | to the desk | to the desk, once the desk asks | to either side |
+| Send a buyer request | no | yes | no | no |
+| Read enquiries | no | own | only the desk's questions, never the buyer | all |
 | Read other people's profiles | no | no | no | yes |
 | Review documents | no | no | no | yes |
 | Suspend an account | no | no | no | yes |
@@ -79,7 +84,7 @@ Enforced by row-level security plus `before` triggers (`lots_guard`, `enquiries_
 
 Run against a local Postgres 16 + Supabase Auth (GoTrue 2.170) + PostgREST 12 stack, using supabase-js:
 
-- 59 database checks: every row of the table above from each role, sign-up with email confirmation, forged fields, suspended accounts, one account buying and selling.
+- 102 database checks: every row of the table above from each role, sign-up with email confirmation, forged fields, suspended accounts, one account buying and selling, enquiries through the desk, buyer requests.
 - 29 browser checks: sign-up → email link → list a lot → admin approves → buyer enquires → seller answers; redirects; wrong password; tampering with the cached session.
 
 The browser checks were also run against the MySQL backend, on both MySQL 8.0 and MariaDB 10.11 (the one XAMPP ships).

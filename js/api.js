@@ -95,6 +95,11 @@ window.T7 = window.T7 || {};
   }
 
   const WITH_LOT = '*, lot:lots(id, lot_id, name, commodity, price_zar, status)';
+  const MSG_COLS = 'id, enquiry_id, channel, sender, body, created_at';
+  const byTime = (a, b) => new Date(a.created_at) - new Date(b.created_at);
+  const lastActive = e => new Date(e.last_message_at || e.created_at).getTime();
+
+  function requestRow(r) { if (r && !r.specs) r.specs = {}; return r; }
 
   /* ---------- Public API ---------- */
   T7.api = {
@@ -130,13 +135,60 @@ window.T7 = window.T7 || {};
       return unwrap(await client.from('enquiries').insert({ lot_id: lotUuid, message: message }).select().single());
     },
 
-    /* Enquiries this buyer has sent. `lot` is null if the lot has since
+    /* Enquiries this buyer has sent, each with the buyer's side of the
+       conversation (buyer <-> desk). `lot` is null if the lot has since
        been taken off the board. */
     async myEnquiries() {
       if (LOCAL) return local('myEnquiries');
       const client = await db();
       const id = await userId();
-      return unwrap(await client.from('enquiries').select(WITH_LOT).eq('buyer_id', id).order('created_at', { ascending: false }));
+      const rows = unwrap(await client.from('enquiries')
+        .select(WITH_LOT + ', messages:enquiry_messages(' + MSG_COLS + ')')
+        .eq('buyer_id', id).order('created_at', { ascending: false }));
+      rows.forEach(r => { r.messages = (r.messages || []).sort(byTime); });
+      return rows.sort((a, b) => lastActive(b) - lastActive(a));
+    },
+
+    /* One message into an enquiry's conversation. The database decides
+       the side for buyers and sellers (always to the desk); only the
+       desk picks `channel` ('buyer' or 'seller'). */
+    async sendMessage(enquiryId, body, channel) {
+      if (LOCAL) return local('sendMessage', { enquiry_id: enquiryId, body: body, channel: channel });
+      const client = await db();
+      return unwrap(await client.from('enquiry_messages').insert({
+        enquiry_id: enquiryId, channel: channel || 'buyer', sender: 'buyer', body: body
+      }).select(MSG_COLS).single());
+    },
+
+    /* ----- Buyer requests ("I can't find what I need") ----- */
+    async createRequest(req) {
+      if (LOCAL) return requestRow(await local('createRequest', req));
+      const client = await db();
+      return requestRow(unwrap(await client.from('buy_requests').insert({
+        commodity: req.commodity,
+        product_type: req.product_type || null,
+        specs: req.specs || {},
+        quantity: req.quantity || null,
+        quantity_unit: req.quantity_unit || null,
+        budget_min: req.budget_min || null,
+        budget_max: req.budget_max || null,
+        delivery_country: req.delivery_country || null,
+        timeframe: req.timeframe || null,
+        notes: req.notes || null
+      }).select().single()));
+    },
+
+    async myRequests() {
+      if (LOCAL) return (await local('myRequests')).map(requestRow);
+      const client = await db();
+      const id = await userId();
+      return unwrap(await client.from('buy_requests').select('*').eq('buyer_id', id).order('created_at', { ascending: false })).map(requestRow);
+    },
+
+    async withdrawRequest(requestId) {
+      if (LOCAL) return requestRow(await local('withdrawRequest', { id: requestId }));
+      const client = await db();
+      return requestRow(unwrap(await client.from('buy_requests').update({ status: 'closed' }).eq('id', requestId).select().single()));
     },
 
     /* ----- Sellers ----- */
@@ -182,17 +234,21 @@ window.T7 = window.T7 || {};
       return unwrap(await client.from('seller_documents').select('*').eq('seller_id', id));
     },
 
+    /* The enquiries the desk has asked this seller about, with the
+       seller's side of the conversation (desk <-> seller). Never who
+       the buyer is. */
     async sellerEnquiries() {
       if (LOCAL) return local('sellerEnquiries');
       const client = await db();
-      const id = await userId();
-      return unwrap(await client.from('enquiries').select(WITH_LOT).eq('seller_id', id).order('created_at', { ascending: false }));
-    },
-
-    async setEnquiryStatus(enquiryId, status) {
-      if (LOCAL) return local('setEnquiryStatus', { id: enquiryId, status: status });
-      const client = await db();
-      return unwrap(await client.from('enquiries').update({ status: status }).eq('id', enquiryId).select().single());
+      const rows = unwrap(await client.rpc('seller_enquiries')) || [];
+      const ids = rows.map(r => r.id);
+      const msgs = ids.length ? unwrap(await client.from('enquiry_messages').select(MSG_COLS).in('enquiry_id', ids).order('created_at')) : [];
+      return rows.map(r => ({
+        id: r.id, ref: r.ref, lot_id: r.lot_id, status: r.status,
+        forwarded_at: r.forwarded_at, last_message_at: r.last_message_at, created_at: r.created_at,
+        lot: { id: r.lot_id, lot_id: r.lot_code, name: r.lot_name, commodity: r.commodity, price_zar: r.price_zar },
+        messages: msgs.filter(m => m.enquiry_id === r.id)
+      }));
     },
 
     /* ----- Admin -----
@@ -202,19 +258,23 @@ window.T7 = window.T7 || {};
       async load() {
         if (LOCAL) { const all = await local('adminLoad'); all.lots = all.lots.map(decorate); return all; }
         const client = await db();
-        const [profiles, lots, enquiries, documents, alerts] = await Promise.all([
+        const [profiles, lots, enquiries, documents, alerts, messages, requests] = await Promise.all([
           client.from('profiles').select('*').order('created_at', { ascending: false }),
           client.from('lots').select('*').order('created_at', { ascending: false }),
           client.from('enquiries').select('*').order('created_at', { ascending: false }),
           client.from('seller_documents').select('*').order('created_at', { ascending: false }),
-          client.from('lot_alerts').select('*').order('created_at', { ascending: false })
+          client.from('lot_alerts').select('*').order('created_at', { ascending: false }),
+          client.from('enquiry_messages').select(MSG_COLS).order('created_at'),
+          client.from('buy_requests').select('*').order('created_at', { ascending: false })
         ]);
         return {
           profiles: unwrap(profiles),
           lots: unwrap(lots).map(decorate),
           enquiries: unwrap(enquiries),
           documents: unwrap(documents),
-          alerts: unwrap(alerts)
+          alerts: unwrap(alerts),
+          messages: unwrap(messages),
+          requests: unwrap(requests).map(requestRow)
         };
       },
 
@@ -251,8 +311,23 @@ window.T7 = window.T7 || {};
         return unwrap(await client.rpc('admin_delete_user', { p_user: userUuid }));
       },
 
+      /* Close or reopen an enquiry. Messages move it along otherwise. */
       async setEnquiryStatus(enquiryId, status) {
-        return T7.api.setEnquiryStatus(enquiryId, status);
+        if (LOCAL) return local('setEnquiryStatus', { id: enquiryId, status: status });
+        const client = await db();
+        return unwrap(await client.from('enquiries').update({ status: status }).eq('id', enquiryId).select().single());
+      },
+
+      /* The desk writes to the buyer ('buyer') or to the seller ('seller'). */
+      async sendMessage(enquiryId, body, channel) {
+        return T7.api.sendMessage(enquiryId, body, channel);
+      },
+
+      async updateRequest(requestId, status, reply) {
+        if (LOCAL) return requestRow(await local('updateRequest', { id: requestId, status: status, desk_reply: reply }));
+        const client = await db();
+        return requestRow(unwrap(await client.from('buy_requests')
+          .update({ status: status, desk_reply: reply || null }).eq('id', requestId).select().single()));
       }
     },
 

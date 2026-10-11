@@ -67,8 +67,21 @@
      js/config.js. */
   const GOOGLE = T7.backend === 'supabase' && (window.T7_CONFIG || {}).googleSignIn === true;
 
+  /* The page heading, in the site's two-line style: a plain line and
+     an italic one. */
+  const HEADINGS = {
+    'Sign In':           ['Welcome back.', 'Sign in to the desk.'],
+    'Sign In As Buyer':  ['Welcome back.', 'Sign in to buy.'],
+    'Sign In As Seller': ['Welcome back.', 'Sign in to sell.'],
+    'Create Account':    ['One account.', 'Buy and sell.'],
+    'Start Selling':     ['Start selling.', 'With the same account.'],
+    'Start Buying':      ['Start buying.', 'With the same account.'],
+    'Check Your Inbox':  ['Check your inbox.', 'One click to confirm.'],
+    'Almost There':      ['Almost there.', 'A few details first.']
+  };
   function head(title, sub) {
-    titleEl.textContent = title;
+    const two = HEADINGS[title];
+    titleEl.innerHTML = two ? esc(two[0]) + '<br><em>' + esc(two[1]) + '</em>' : esc(title);
     subEl.textContent = sub;
     document.title = title + ' — Trade Desk — Triple 7 Holdings';
   }
