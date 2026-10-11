@@ -4,51 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Desk — Triple 7 Holdings</title>
-<meta name="description" content="Diamonds, gold, precious metals and gemstones listed on the Triple 7 Holdings Kimberley Trade Desk.">
+<meta name="description" content="Diamonds, precious metals, PGMs, ores, coal and industrial minerals on the Triple 7 Holdings Trade Desk.">
+<meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="images/logo-icon.png?v=2">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/trade.css">
 <link rel="stylesheet" href="css/refresh.css">
-<link rel="stylesheet" href="css/site-update.css?v=20261008f">
-<link rel="stylesheet" href="css/portal.css">
+<link rel="stylesheet" href="css/site-update.css?v=20261009nav2">
+<link rel="stylesheet" href="css/content-update.css?v=20261010">
+<link rel="stylesheet" href="css/portal.css?v=20261011">
+<link rel="stylesheet" href="css/trade-desk.css?v=20261011">
 <script>try{var s=JSON.parse(localStorage.getItem('t7.session')||'null');if(!s){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}else if(s.role==='admin'&&sessionStorage.getItem('t7.admin-trade')!=='1'){location.replace('admin.html');}}catch(e){}</script>
-</head>
-<body class="page-trade">
 
-<nav class="nav">
-  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;width:100%">
-    <a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a>
-    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="trade.html" class="is-active" aria-current="page">Trade</a>
-      <a href="investors.html">Invest</a>
-      <a href="mines.html">Mines</a>
-      <a href="mine-projects.html">Mine Projects</a>
-      <a href="about.html">About</a>
-      <details class="account-menu"><summary>Account</summary><div class="account-dropdown"><a href="signin.html" class="account-signin">Sign in</a><a href="buyer.html">Buyer account</a><a href="seller.html">Seller account</a></div></details>
-      <a href="contact.html" class="nav-cta">Contact</a>
+</head>
+<body class="page-trade td-page">
+
+<nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html" class="is-active" aria-current="page">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html">Mine Projects</a></div><div class="nav-utility" aria-label="Account and contact"><a href="signin.html?mode=signup" data-nav-register>Register</a><a href="signin.html" data-nav-signin>Sign In</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
+
+<main id="main-content">
+<header class="pagehead td-head"><div class="pagehead-media"><img src="images/hero-banner2.jpg" alt="Open-pit mine with haul trucks"></div><div class="wrap"><p class="eyebrow">The Triple 7 Trade Desk</p><h1 class="pagehead-title" id="desk-title">Find your next<br><em>exceptional acquisition.</em></h1><p class="pagehead-sub" id="desk-sub"><span id="trade-intro">South Africa’s leading commodities, from diamonds and gold to chrome and coal. Every lot is checked by our desk before it is listed.</span></p><div class="hero-actions td-hero-actions" id="trade-welcome"></div></div></header>
+<section class="section td-board"><div class="wrap">
+  <div class="td-board-head">
+    <div><p class="eyebrow">Browse by commodity</p><h2 class="section-title td-small-title">What are you looking for?</h2></div>
+    <p class="board-count" id="board-count" role="status">Loading lots…</p>
+  </div>
+  <div class="td-groups" id="commodity-groups" role="group" aria-label="Commodity groups"></div>
+  <div class="commodity-tabs td-commodities" id="commodity-tabs" role="group" aria-label="Commodities"></div>
+  <div class="catalogue-layout">
+    <aside class="catalogue-sidebar" aria-label="Refine the list"><button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="controls">Filters</button><form class="board-controls is-collapsed" id="controls" aria-label="Filter lots"><h2>Refine</h2><div class="filter-row" id="filter-row"></div><p class="filter-help">Filters only show what is listed right now.</p></form></aside>
+    <div class="catalogue-results">
+      <div class="catalogue-toolbar"><div class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.8"/></svg><input type="search" id="q" placeholder="Search by name, lot number or grade" aria-label="Search lots"></div><label class="board-sort">Sort by<select id="sort"><option value="newest">Newest</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="weight-desc">Quantity: largest first</option><option value="lot">Lot number</option></select></label></div>
+      <div class="catalogue-resultbar"><span></span><button type="button" class="reset-link" id="reset" hidden>Clear filters</button></div>
+      <div id="board" aria-live="polite"></div>
+      <p class="catalogue-note">Prices are the seller’s asking price in South African rand, for the whole lot.</p>
+      <noscript><p>Enable JavaScript to browse the lots, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
     </div>
   </div>
-</nav>
-
-<header class="catalogue-head"><div class="wrap catalogue-head-row"><div><p class="eyebrow">Kimberley, South Africa</p><h1>Trade Desk</h1><p id="trade-intro">Pick a category, open a lot, and send the seller an enquiry.</p></div><div class="trade-welcome" id="trade-welcome"></div></div></header>
-<main class="catalogue-main"><div class="wrap">
-<div class="catalogue-top"><div class="commodity-tabs" id="commodity-tabs" aria-label="Filter by category"><button type="button" data-commodity="" aria-pressed="true">All Lots</button></div></div>
-<div class="catalogue-layout">
-<aside class="catalogue-sidebar" aria-label="Refine the catalogue"><button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="controls">Filters</button><form class="board-controls is-collapsed" id="controls" aria-label="Filter lots"><h2>Refine your search</h2><div class="filter-row" id="filter-row"></div><p class="filter-help">Filters show only what is on the board right now.</p></form></aside>
-<div class="catalogue-results">
-<div class="catalogue-toolbar"><div class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.8"/></svg><input type="search" id="q" placeholder="Search by name, lot ID or keyword" aria-label="Search lots"></div><label class="board-sort">Sort by<select id="sort"><option value="newest">Newest</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="weight-desc">Weight: largest first</option><option value="lot">Lot ID</option></select></label></div>
-<div class="catalogue-resultbar"><p class="board-count" id="board-count" role="status">Loading lots…</p><button type="button" class="reset-link" id="reset" hidden>Clear filters</button></div>
-<div id="board" aria-live="polite"></div>
-<p class="catalogue-note">Prices are the seller’s asking price in South African rand. Every lot is checked by the desk before it appears here.</p>
-<noscript><p>Enable JavaScript to browse the catalogue, or contact the Kimberley desk on +27 73 569 4045.</p></noscript>
-</div></div>
-<section class="dash-section" id="my-enquiries" hidden></section>
-<section class="buying-summary" aria-labelledby="buying-title"><div class="buying-intro"><p class="eyebrow">Three steps</p><h2 id="buying-title">How buying works</h2><a href="how-to-buy.html" class="btn btn-outline">Read the Full Guide</a></div><ol class="buying-steps"><li><span>01</span><h3>Find a lot</h3><p>Pick a category, then narrow it down by price, weight or grade.</p></li><li><span>02</span><h3>Send an enquiry</h3><p>One message from the lot page. The seller gets your name and contact details.</p></li><li><span>03</span><h3>Agree with the seller</h3><p>The seller replies to you directly to confirm availability, viewing and payment.</p></li></ol></section>
-<div class="catalogue-support"><a class="btn btn-outline" href="provenance.html">Origin &amp; Documentation</a><a class="btn btn-outline" href="contact.html">Contact the Desk</a></div>
-<div id="alerts"></div>
-</div></main>
+</div></section>
+<section class="section bulk-section td-request-cta" id="cant-find"><div class="wrap bulk-layout">
+  <figure><img src="images/mines/bucklands-wide.jpg" alt="Material handling at a mining operation" loading="lazy"></figure>
+  <div>
+    <p class="eyebrow">Can’t find it?</p>
+    <h2 class="section-title">Tell us what you need.<br><em>We will source it.</em></h2>
+    <p>Describe the commodity, the grade and the quantity. Our desk looks for it among our sellers and mines and replies in your account.</p>
+    <dl class="bulk-details"><div><dt>01</dt><dd>Commodity and specification</dd></div><div><dt>02</dt><dd>Quantity, budget and timeframe</dd></div><div><dt>03</dt><dd>Delivery country</dd></div></dl>
+    <a href="buyer.html#request" class="btn btn-solid" id="request-cta">Request a commodity</a>
+  </div>
+</div></section>
+<section class="section td-steps" aria-labelledby="buying-title"><div class="wrap">
+  <div class="offer-heading"><p class="eyebrow">How buying works</p><h2 class="section-title" id="buying-title">Three steps.<br><em>One desk.</em></h2></div>
+  <ol class="td-step-list">
+    <li><span>01</span><h3>Find a lot</h3><p>Choose a commodity, then narrow it down by grade, quantity or price.</p></li>
+    <li><span>02</span><h3>Ask the desk</h3><p>Send your question from the lot page. Our desk answers it, checking with the seller where needed.</p></li>
+    <li><span>03</span><h3>Agree terms</h3><p>The desk confirms availability, viewing, delivery and payment with you. Every deal goes through Triple 7.</p></li>
+  </ol>
+  <div class="catalogue-support"><a class="btn btn-outline" href="how-to-buy.html">Read the full guide</a><a class="btn btn-outline" href="provenance.html">Origin &amp; documentation</a></div>
+  <div id="alerts"></div>
+</div></section>
+</main>
 
 <footer class="footer">
   <div class="wrap">
@@ -62,9 +75,9 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="about.html">About</a></li>
+          <li><a href="minerals.html">Minerals</a></li>
           <li><a href="trade.html">Trade</a></li>
-          <li><a href="mines.html">Mines</a>
-      <a href="mine-projects.html">Mine Projects</a></li>
+          <li><a href="mine-projects.html">Mine Projects</a></li>
           <li><a href="investors.html">Invest</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -72,11 +85,11 @@
       <div>
         <h4>Trade Desk</h4>
         <ul>
-          <li><a href="trade.html">Live Board</a></li>
-          <li><a href="how-to-buy.html">How To Buy</a></li>
-          <li><a href="provenance.html">Provenance</a></li>
-          <li><a href="signin.html?role=buyer">Buyer Sign In</a></li>
-          <li><a href="signin.html?role=seller">Seller Sign In</a></li>
+          <li><a href="trade.html">Browse lots</a></li>
+          <li><a href="buyer.html#request">Request a commodity</a></li>
+          <li><a href="how-to-buy.html">How to buy</a></li>
+          <li><a href="provenance.html">Origin &amp; documentation</a></li>
+          <li><a href="signin.html">Sign in</a></li>
         </ul>
       </div>
       <div>
@@ -99,12 +112,12 @@
 <script src="js/script.js?v=20261008"></script>
 <script src="js/config.js"></script>
 <script src="js/vendor/supabase.js"></script>
-<script src="js/catalog.js"></script>
-<script src="js/trade.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/board.js"></script>
-<script src="js/alerts.js"></script>
-<script src="js/account-menu.js"></script>
+<script src="js/catalog.js?v=20261011"></script>
+<script src="js/trade.js?v=20261011"></script>
+<script src="js/auth.js?v=20261011"></script>
+<script src="js/api.js?v=20261011"></script>
+<script src="js/board.js?v=20261011"></script>
+<script src="js/alerts.js?v=20261011"></script>
+<script src="js/account-menu.js?v=20261011"></script>
 </body>
 </html>

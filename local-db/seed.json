@@ -128,6 +128,48 @@
    "days": 12
   },
   {
+   "id": "11111111-0000-4000-8000-000000000019",
+   "email": "seller9@triple7.test",
+   "role": "member",
+   "is_buyer": false,
+   "is_seller": true,
+   "first_name": "Bongani",
+   "last_name": "Mahlangu",
+   "phone": "+27 82 555 1333",
+   "country": "South Africa",
+   "company": "Witbank Coal & Minerals",
+   "status": "active",
+   "days": 100
+  },
+  {
+   "id": "11111111-0000-4000-8000-000000000020",
+   "email": "seller10@triple7.test",
+   "role": "member",
+   "is_buyer": false,
+   "is_seller": true,
+   "first_name": "Elize",
+   "last_name": "Steyn",
+   "phone": "+27 82 555 1370",
+   "country": "South Africa",
+   "company": "Kalahari Ores",
+   "status": "active",
+   "days": 80
+  },
+  {
+   "id": "11111111-0000-4000-8000-000000000021",
+   "email": "seller11@triple7.test",
+   "role": "member",
+   "is_buyer": false,
+   "is_seller": true,
+   "first_name": "Kabelo",
+   "last_name": "Sekgota",
+   "phone": "+27 82 555 1407",
+   "country": "South Africa",
+   "company": "Bushveld Metals Trading",
+   "status": "active",
+   "days": 58
+  },
+  {
    "id": "11111111-0000-4000-8000-000000000031",
    "email": "buyer1@triple7.test",
    "role": "member",
@@ -299,78 +341,84 @@
  "lots": [
   {
    "id": "22222222-0000-4000-8000-000000000001",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "gold",
-   "name": "1 kg 24K Gold Bar",
-   "type": "Bar",
-   "description": "Gold Bar, 24K (999.9) purity, 1 kg total weight. Assay: Rand Refinery.",
-   "price_zar": 1524250.0,
-   "weight": 1000,
-   "weight_unit": "g",
-   "quantity": 1,
+   "seller_id": "11111111-0000-4000-8000-000000000012",
+   "commodity": "diamond",
+   "name": "12.4 ct Rough Diamond Parcel",
+   "type": "Rough",
+   "description": "Small rough parcel from alluvial diggings. Makeable shapes, some coated stones.",
+   "price_zar": 372000.0,
+   "weight": 12.4,
+   "weight_unit": "ct",
+   "quantity": 9,
    "origin": "South Africa",
    "specs": {
-    "purity": "24K (999.9)",
-    "certificate": "Rand Refinery"
+    "shape": "Rough / uncut",
+    "colour": "Mixed",
+    "clarity": "Mixed",
+    "cut_grade": "Not graded",
+    "certificate": "None"
    },
-   "status": "live",
-   "review_note": null,
-   "image": "images/lots/G-2201.jpg",
-   "image_card": "images/lots/G-2201-card.jpg",
-   "image_alt": "1 kg 24K Gold Bar",
-   "days": 6,
-   "hours": 11
+   "status": "rejected",
+   "review_note": "Duplicate of a lot you already have listed.",
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 71,
+   "hours": 18
   },
   {
    "id": "22222222-0000-4000-8000-000000000002",
-   "seller_id": "11111111-0000-4000-8000-000000000017",
-   "commodity": "emerald",
-   "name": "0.95 ct Pear Emerald",
+   "seller_id": "11111111-0000-4000-8000-000000000016",
+   "commodity": "tanzanite",
+   "name": "1.45 ct Round Tanzanite",
    "type": "Cut",
-   "description": "Vivid green emerald, eye clean, cut pear. Treatment: none.",
-   "price_zar": 104500.0,
-   "weight": 0.95,
+   "description": "Blue-violet (AA) tanzanite, eye clean, cut round. Treatment: heated.",
+   "price_zar": 6700.0,
+   "weight": 1.45,
    "weight_unit": "ct",
    "quantity": 1,
-   "origin": "Zambia",
+   "origin": "Tanzania",
    "specs": {
-    "shape": "Pear",
-    "colour": "Vivid green",
+    "shape": "Round",
+    "colour": "Blue-violet (AA)",
     "clarity": "Eye clean",
-    "treatment": "None",
-    "certificate": "GIA"
+    "treatment": "Heated",
+    "certificate": "None"
    },
    "status": "live",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 32,
-   "hours": 16
+   "days": 21,
+   "hours": 2
   },
   {
    "id": "22222222-0000-4000-8000-000000000003",
-   "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "gold",
-   "name": "250 g 24K Gold Bar",
-   "type": "Bar",
-   "description": "Gold Bar, 24K (999.9) purity, 250 g total weight. Assay: LBMA refiner.",
-   "price_zar": 381060.0,
-   "weight": 250,
-   "weight_unit": "g",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "diamond",
+   "name": "1.01 ct Round Brilliant Diamond",
+   "type": "Polished",
+   "description": "Natural round brilliant diamond, E colour, VS1 clarity. Graded by GIA; the report travels with the stone.",
+   "price_zar": 192200.0,
+   "weight": 1.01,
+   "weight_unit": "ct",
    "quantity": 1,
-   "origin": "Switzerland",
+   "origin": "South Africa",
    "specs": {
-    "purity": "24K (999.9)",
-    "certificate": "LBMA refiner"
+    "shape": "Round Brilliant",
+    "colour": "E",
+    "clarity": "VS1",
+    "cut_grade": "Excellent",
+    "certificate": "GIA"
    },
-   "status": "rejected",
-   "review_note": "We need a grading report or assay before a lot of this value can list.",
+   "status": "pending",
+   "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 55,
-   "hours": 4
+   "days": 2,
+   "hours": 3
   },
   {
    "id": "22222222-0000-4000-8000-000000000004",
@@ -391,55 +439,127 @@
     "treatment": "Heated",
     "certificate": "GIA"
    },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 25,
+   "hours": 19
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000005",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "silver",
+   "name": "2.3 kg Silver Jewellery",
+   "type": "Jewellery",
+   "description": "Silver jewellery at 925 fineness, 2.3 kg total.",
+   "price_zar": 45740.0,
+   "weight": 2300,
+   "weight_unit": "g",
+   "quantity": 64,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "925",
+    "certificate": "None"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 4,
+   "hours": 9
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000006",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "silver",
+   "name": "5 kg Silver Bar",
+   "type": "Bar",
+   "description": "Silver bar at 999 fineness, 5 kg total.",
+   "price_zar": 107390.0,
+   "weight": 5000,
+   "weight_unit": "g",
+   "quantity": 5,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "999",
+    "certificate": "LBMA refiner"
+   },
    "status": "withdrawn",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 60,
-   "hours": 21
+   "days": 72,
+   "hours": 13
   },
   {
-   "id": "22222222-0000-4000-8000-000000000005",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "sapphire",
-   "name": "1.12 ct Round Sapphire",
+   "id": "22222222-0000-4000-8000-000000000007",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "gold",
+   "name": "1 kg 24K Gold Bar",
+   "type": "Bar",
+   "description": "Gold Bar, 24K (999.9) purity, 1 kg total weight. Assay: Rand Refinery.",
+   "price_zar": 1524250.0,
+   "weight": 1000,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "24K (999.9)",
+    "certificate": "Rand Refinery"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": "images/lots/G-2201.jpg",
+   "image_card": "images/lots/G-2201-card.jpg",
+   "image_alt": "1 kg 24K Gold Bar",
+   "days": 48,
+   "hours": 1
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000008",
+   "seller_id": "11111111-0000-4000-8000-000000000017",
+   "commodity": "emerald",
+   "name": "2.75 ct Emerald Emerald",
    "type": "Cut",
-   "description": "Blue sapphire, slightly included, cut round. Treatment: heated.",
-   "price_zar": 19000.0,
-   "weight": 1.12,
+   "description": "Vivid green emerald, slightly included, cut emerald. Treatment: minor oil.",
+   "price_zar": 203500.0,
+   "weight": 2.75,
    "weight_unit": "ct",
    "quantity": 1,
-   "origin": "Madagascar",
+   "origin": "Zambia",
    "specs": {
-    "shape": "Round",
-    "colour": "Blue",
+    "shape": "Emerald",
+    "colour": "Vivid green",
     "clarity": "Slightly included",
-    "treatment": "Heated",
-    "certificate": "GIA"
+    "treatment": "Minor oil",
+    "certificate": "GRS"
    },
-   "status": "rejected",
-   "review_note": "We need a grading report or assay before a lot of this value can list.",
+   "status": "pending",
+   "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 50,
-   "hours": 0
+   "days": 2,
+   "hours": 4
   },
   {
-   "id": "22222222-0000-4000-8000-000000000006",
+   "id": "22222222-0000-4000-8000-000000000009",
    "seller_id": "11111111-0000-4000-8000-000000000014",
    "commodity": "gold",
-   "name": "55.2 g 24K Gold Granules",
-   "type": "Dust / granules",
-   "description": "Gold Granules, 24K (999.9) purity, 55.2 g total weight. Assay: Independent assay.",
-   "price_zar": 82460.0,
-   "weight": 55.2,
+   "name": "86.4 g 22K Gold Nuggets",
+   "type": "Nugget",
+   "description": "Gold Nuggets, 22K (916) purity, 86.4 g total weight. Assay: Independent assay.",
+   "price_zar": 118540.0,
+   "weight": 86.4,
    "weight_unit": "g",
-   "quantity": 1,
-   "origin": "Ghana",
+   "quantity": 3,
+   "origin": "South Africa",
    "specs": {
-    "purity": "24K (999.9)",
+    "purity": "22K (916)",
     "certificate": "Independent assay"
    },
    "status": "live",
@@ -447,38 +567,11 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 45,
-   "hours": 16
+   "days": 21,
+   "hours": 13
   },
   {
-   "id": "22222222-0000-4000-8000-000000000007",
-   "seller_id": "11111111-0000-4000-8000-000000000016",
-   "commodity": "tanzanite",
-   "name": "4.12 ct Cushion Tanzanite",
-   "type": "Cut",
-   "description": "Vivid violet-blue (AAAA) tanzanite, eye clean, cut cushion. Treatment: heated.",
-   "price_zar": 51500.0,
-   "weight": 4.12,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Tanzania",
-   "specs": {
-    "shape": "Cushion",
-    "colour": "Vivid violet-blue (AAAA)",
-    "clarity": "Eye clean",
-    "treatment": "Heated",
-    "certificate": "GIA"
-   },
-   "status": "sold",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 46,
-   "hours": 5
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000008",
+   "id": "22222222-0000-4000-8000-000000000010",
    "seller_id": "11111111-0000-4000-8000-000000000011",
    "commodity": "diamond",
    "name": "2.03 ct Cushion Diamond",
@@ -501,115 +594,61 @@
    "image": "images/lots/D-1055.jpg",
    "image_card": "images/lots/D-1055-card.jpg",
    "image_alt": "2.03 ct Cushion Diamond",
-   "days": 41,
-   "hours": 2
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000009",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "ruby",
-   "name": "0.86 ct Round Ruby",
-   "type": "Cut",
-   "description": "Red ruby, eye clean, cut round. Treatment: none.",
-   "price_zar": 58500.0,
-   "weight": 0.86,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Mozambique",
-   "specs": {
-    "shape": "Round",
-    "colour": "Red",
-    "clarity": "Eye clean",
-    "treatment": "None",
-    "certificate": "GIA"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 34,
-   "hours": 9
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000010",
-   "seller_id": "11111111-0000-4000-8000-000000000017",
-   "commodity": "emerald",
-   "name": "5.10 ct Emerald Emerald",
-   "type": "Cut",
-   "description": "Bluish green emerald, moderately included, cut emerald. Treatment: moderate oil.",
-   "price_zar": 96900.0,
-   "weight": 5.1,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Zambia",
-   "specs": {
-    "shape": "Emerald",
-    "colour": "Bluish green",
-    "clarity": "Moderately included",
-    "treatment": "Moderate oil",
-    "certificate": "None"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 20,
-   "hours": 17
+   "days": 46,
+   "hours": 8
   },
   {
    "id": "22222222-0000-4000-8000-000000000011",
-   "seller_id": "11111111-0000-4000-8000-000000000016",
-   "commodity": "tanzanite",
-   "name": "22.00 ct Rough Tanzanite",
-   "type": "Rough",
-   "description": "Light violet (A) tanzanite, moderately included, rough crystal. Treatment: unheated.",
-   "price_zar": 33000.0,
-   "weight": 22.0,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Tanzania",
-   "specs": {
-    "shape": "Rough / uncut",
-    "colour": "Light violet (A)",
-    "clarity": "Moderately included",
-    "treatment": "Unheated",
-    "certificate": "None"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 46,
-   "hours": 18
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000012",
    "seller_id": "11111111-0000-4000-8000-000000000012",
    "commodity": "diamond",
-   "name": "0.72 ct Pear Diamond",
+   "name": "3.10 ct Oval Diamond",
    "type": "Polished",
-   "description": "Natural pear diamond, G colour, VS1 clarity. Graded by EGL; the report travels with the stone.",
-   "price_zar": 97000.0,
-   "weight": 0.72,
+   "description": "Natural oval diamond, H colour, SI1 clarity. Graded by IGI; the report travels with the stone.",
+   "price_zar": 492300.0,
+   "weight": 3.1,
    "weight_unit": "ct",
    "quantity": 1,
    "origin": "South Africa",
    "specs": {
+    "shape": "Oval",
+    "colour": "H",
+    "clarity": "SI1",
+    "cut_grade": "Very Good",
+    "certificate": "IGI"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 7,
+   "hours": 20
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000012",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "sapphire",
+   "name": "2.20 ct Pear Sapphire",
+   "type": "Cut",
+   "description": "Pink sapphire, slightly included, cut pear. Treatment: heated.",
+   "price_zar": 46200.0,
+   "weight": 2.2,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Madagascar",
+   "specs": {
     "shape": "Pear",
-    "colour": "G",
-    "clarity": "VS1",
-    "cut_grade": "Good",
-    "certificate": "EGL"
+    "colour": "Pink",
+    "clarity": "Slightly included",
+    "treatment": "Heated",
+    "certificate": "IGI"
    },
    "status": "pending",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 3,
+   "days": 2,
    "hours": 2
   },
   {
@@ -631,210 +670,6 @@
     "treatment": "Moderate oil",
     "certificate": "IGI"
    },
-   "status": "withdrawn",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 12,
-   "hours": 12
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000014",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "gold",
-   "name": "100 g 24K Gold Bar",
-   "type": "Bar",
-   "description": "Gold Bar, 24K (999.9) purity, 100 g total weight. Assay: Rand Refinery.",
-   "price_zar": 152420.0,
-   "weight": 100,
-   "weight_unit": "g",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "24K (999.9)",
-    "certificate": "Rand Refinery"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 4,
-   "hours": 4
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000015",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "platinum",
-   "name": "100 g Platinum Grain",
-   "type": "Grain",
-   "description": "Platinum grain at 999.5 fineness, 100 g.",
-   "price_zar": 60970.0,
-   "weight": 100,
-   "weight_unit": "g",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "999.5",
-    "certificate": "Independent assay"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 4,
-   "hours": 9
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000016",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "gold",
-   "name": "311.035 g 22K Gold Coins",
-   "type": "Coin",
-   "description": "Gold Coins, 22K (916) purity, 311.035 g total weight. Assay: Rand Refinery.",
-   "price_zar": 434650.0,
-   "weight": 311.035,
-   "weight_unit": "g",
-   "quantity": 10,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "22K (916)",
-    "certificate": "Rand Refinery"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 72,
-   "hours": 13
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000017",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "sapphire",
-   "name": "3.02 ct Cushion Sapphire",
-   "type": "Cut",
-   "description": "Royal blue sapphire, eye clean, cut cushion. Treatment: heated.",
-   "price_zar": 157000.0,
-   "weight": 3.02,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Madagascar",
-   "specs": {
-    "shape": "Cushion",
-    "colour": "Royal blue",
-    "clarity": "Eye clean",
-    "treatment": "Heated",
-    "certificate": "GRS"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 48,
-   "hours": 1
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000018",
-   "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "gold",
-   "name": "86.4 g 22K Gold Nuggets",
-   "type": "Nugget",
-   "description": "Gold Nuggets, 22K (916) purity, 86.4 g total weight. Assay: Independent assay.",
-   "price_zar": 118540.0,
-   "weight": 86.4,
-   "weight_unit": "g",
-   "quantity": 3,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "22K (916)",
-    "certificate": "Independent assay"
-   },
-   "status": "rejected",
-   "review_note": "Weight and description do not match. Please check and submit again.",
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 25,
-   "hours": 11
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000019",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "ruby",
-   "name": "2.14 ct Oval Ruby",
-   "type": "Cut",
-   "description": "Pigeon blood red ruby, eye clean, cut oval. Treatment: heated.",
-   "price_zar": 203300.0,
-   "weight": 2.14,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Mozambique",
-   "specs": {
-    "shape": "Oval",
-    "colour": "Pigeon blood red",
-    "clarity": "Eye clean",
-    "treatment": "Heated",
-    "certificate": "GRS"
-   },
-   "status": "rejected",
-   "review_note": "Duplicate of a lot you already have listed.",
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 21,
-   "hours": 13
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000020",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "ruby",
-   "name": "3.40 ct Oval Ruby",
-   "type": "Cut",
-   "description": "Pinkish red ruby, moderately included, cut oval. Treatment: none.",
-   "price_zar": 61200.0,
-   "weight": 3.4,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Tanzania",
-   "specs": {
-    "shape": "Oval",
-    "colour": "Pinkish red",
-    "clarity": "Moderately included",
-    "treatment": "None",
-    "certificate": "None"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 6,
-   "hours": 8
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000021",
-   "seller_id": "11111111-0000-4000-8000-000000000012",
-   "commodity": "diamond",
-   "name": "3.10 ct Oval Diamond",
-   "type": "Polished",
-   "description": "Natural oval diamond, H colour, SI1 clarity. Graded by IGI; the report travels with the stone.",
-   "price_zar": 492300.0,
-   "weight": 3.1,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "shape": "Oval",
-    "colour": "H",
-    "clarity": "SI1",
-    "cut_grade": "Very Good",
-    "certificate": "IGI"
-   },
    "status": "sold",
    "review_note": null,
    "image": null,
@@ -844,34 +679,7 @@
    "hours": 20
   },
   {
-   "id": "22222222-0000-4000-8000-000000000022",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "diamond",
-   "name": "4.25 ct Marquise Diamond",
-   "type": "Polished",
-   "description": "Natural marquise diamond, J colour, VS2 clarity. Graded by HRD; the report travels with the stone.",
-   "price_zar": 679800.0,
-   "weight": 4.25,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "shape": "Marquise",
-    "colour": "J",
-    "clarity": "VS2",
-    "cut_grade": "Very Good",
-    "certificate": "HRD"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 2,
-   "hours": 2
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000023",
+   "id": "22222222-0000-4000-8000-000000000014",
    "seller_id": "11111111-0000-4000-8000-000000000014",
    "commodity": "silver",
    "name": "1 kg Silver Bar",
@@ -891,57 +699,28 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 7,
-   "hours": 20
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000024",
-   "seller_id": "11111111-0000-4000-8000-000000000011",
-   "commodity": "diamond",
-   "name": "48.6 ct Rough Diamond Parcel",
-   "type": "Rough",
-   "description": "Mixed rough parcel, mostly sawables in the 1–3 ct range. Sold as one parcel with Kimberley Process certificate.",
-   "price_zar": 1650000.0,
-   "weight": 48.6,
-   "weight_unit": "ct",
-   "quantity": 31,
-   "origin": "South Africa",
-   "specs": {
-    "shape": "Rough / uncut",
-    "colour": "Mixed",
-    "clarity": "Mixed",
-    "cut_grade": "Not graded",
-    "certificate": "None"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
    "days": 66,
    "hours": 0
   },
   {
-   "id": "22222222-0000-4000-8000-000000000025",
-   "seller_id": "11111111-0000-4000-8000-000000000012",
-   "commodity": "diamond",
-   "name": "12.4 ct Rough Diamond Parcel",
-   "type": "Rough",
-   "description": "Small rough parcel from alluvial diggings. Makeable shapes, some coated stones.",
-   "price_zar": 372000.0,
-   "weight": 12.4,
-   "weight_unit": "ct",
-   "quantity": 9,
+   "id": "22222222-0000-4000-8000-000000000015",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "ferrochrome",
+   "name": "2 000 t High-carbon Ferrochrome Cr 50–55%",
+   "type": "Charge chrome",
+   "description": "Charge chrome in 10–50 mm lumps, bagged.",
+   "price_zar": 49000000.0,
+   "weight": 2000,
+   "weight_unit": "t",
+   "quantity": 1,
    "origin": "South Africa",
    "specs": {
-    "shape": "Rough / uncut",
-    "colour": "Mixed",
-    "clarity": "Mixed",
-    "cut_grade": "Not graded",
-    "certificate": "None"
+    "grade": "Cr 50–55%",
+    "delivery": "FOB Durban",
+    "assay": "Intertek"
    },
-   "status": "withdrawn",
-   "review_note": null,
+   "status": "rejected",
+   "review_note": "Weight and description do not match. Please check and submit again.",
    "image": null,
    "image_card": null,
    "image_alt": null,
@@ -949,109 +728,7 @@
    "hours": 2
   },
   {
-   "id": "22222222-0000-4000-8000-000000000026",
-   "seller_id": "11111111-0000-4000-8000-000000000016",
-   "commodity": "tanzanite",
-   "name": "2.36 ct Oval Tanzanite",
-   "type": "Cut",
-   "description": "Violet-blue (AAA) tanzanite, eye clean, cut oval. Treatment: heated.",
-   "price_zar": 19400.0,
-   "weight": 2.36,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Tanzania",
-   "specs": {
-    "shape": "Oval",
-    "colour": "Violet-blue (AAA)",
-    "clarity": "Eye clean",
-    "treatment": "Heated",
-    "certificate": "IGI"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 22,
-   "hours": 21
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000027",
-   "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "platinum",
-   "name": "500 g Platinum Bar",
-   "type": "Bar",
-   "description": "Platinum bar at 999.5 fineness, 500 g.",
-   "price_zar": 304850.0,
-   "weight": 500,
-   "weight_unit": "g",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "999.5",
-    "certificate": "LBMA refiner"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 62,
-   "hours": 9
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000028",
-   "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "silver",
-   "name": "622.07 g Silver Coins",
-   "type": "Coin",
-   "description": "Silver coin at 999 fineness, 622.07 g total.",
-   "price_zar": 13360.0,
-   "weight": 622.07,
-   "weight_unit": "g",
-   "quantity": 20,
-   "origin": "Canada",
-   "specs": {
-    "purity": "999",
-    "certificate": "None"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 36,
-   "hours": 15
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000029",
-   "seller_id": "11111111-0000-4000-8000-000000000011",
-   "commodity": "diamond",
-   "name": "1.52 ct Round Brilliant Diamond",
-   "type": "Polished",
-   "description": "Natural round brilliant diamond, F colour, VS1 clarity. Graded by GIA; the report travels with the stone.",
-   "price_zar": 303700.0,
-   "weight": 1.52,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "shape": "Round Brilliant",
-    "colour": "F",
-    "clarity": "VS1",
-    "cut_grade": "Excellent",
-    "certificate": "GIA"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": "images/lots/D-1048.jpg",
-   "image_card": "images/lots/D-1048-card.jpg",
-   "image_alt": "1.52 ct Round Brilliant Diamond",
-   "days": 70,
-   "hours": 10
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000030",
+   "id": "22222222-0000-4000-8000-000000000016",
    "seller_id": "11111111-0000-4000-8000-000000000016",
    "commodity": "tanzanite",
    "name": "7.80 ct Pear Tanzanite",
@@ -1075,22 +752,95 @@
    "image_card": null,
    "image_alt": null,
    "days": 46,
-   "hours": 7
+   "hours": 15
   },
   {
-   "id": "22222222-0000-4000-8000-000000000031",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "silver",
-   "name": "2.3 kg Silver Jewellery",
-   "type": "Jewellery",
-   "description": "Silver jewellery at 925 fineness, 2.3 kg total.",
-   "price_zar": 45740.0,
-   "weight": 2300,
+   "id": "22222222-0000-4000-8000-000000000017",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "platinum",
+   "name": "500 g Platinum Bar",
+   "type": "Bar",
+   "description": "Platinum bar at 999.5 fineness, 500 g.",
+   "price_zar": 304850.0,
+   "weight": 500,
    "weight_unit": "g",
-   "quantity": 64,
+   "quantity": 1,
    "origin": "South Africa",
    "specs": {
-    "purity": "925",
+    "purity": "999.5",
+    "certificate": "LBMA refiner"
+   },
+   "status": "withdrawn",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 24,
+   "hours": 9
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000018",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "aluminium",
+   "name": "500 t Primary Aluminium Ingot P1020",
+   "type": "Primary ingot",
+   "description": "P1020 ingots from Richards Bay, strapped bundles.",
+   "price_zar": 22500000.0,
+   "weight": 500,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "P1020 (99.7%)",
+    "delivery": "FOB Richards Bay",
+    "assay": "Alex Stewart"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 7,
+   "hours": 22
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000019",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "silver",
+   "name": "800 g Silver Grain",
+   "type": "Grain",
+   "description": "Silver grain at 999 fineness, 800 g total.",
+   "price_zar": 17180.0,
+   "weight": 800,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "999",
+    "certificate": "Independent assay"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 41,
+   "hours": 6
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000020",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "platinum",
+   "name": "74 g Platinum Jewellery",
+   "type": "Jewellery",
+   "description": "Platinum jewellery at 950 fineness, 74 g.",
+   "price_zar": 42880.0,
+   "weight": 74,
+   "weight_unit": "g",
+   "quantity": 8,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "950",
     "certificate": "None"
    },
    "status": "pending",
@@ -1098,26 +848,26 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 3,
-   "hours": 23
+   "days": 1,
+   "hours": 18
   },
   {
-   "id": "22222222-0000-4000-8000-000000000032",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "diamond",
-   "name": "1.75 ct Radiant Diamond",
-   "type": "Polished",
-   "description": "Natural radiant diamond, I colour, SI2 clarity. Not yet certified — grading is the seller’s own.",
-   "price_zar": 146800.0,
-   "weight": 1.75,
+   "id": "22222222-0000-4000-8000-000000000021",
+   "seller_id": "11111111-0000-4000-8000-000000000016",
+   "commodity": "tanzanite",
+   "name": "22.00 ct Rough Tanzanite",
+   "type": "Rough",
+   "description": "Light violet (A) tanzanite, moderately included, rough crystal. Treatment: unheated.",
+   "price_zar": 33000.0,
+   "weight": 22.0,
    "weight_unit": "ct",
    "quantity": 1,
-   "origin": "South Africa",
+   "origin": "Tanzania",
    "specs": {
-    "shape": "Radiant",
-    "colour": "I",
-    "clarity": "SI2",
-    "cut_grade": "Good",
+    "shape": "Rough / uncut",
+    "colour": "Light violet (A)",
+    "clarity": "Moderately included",
+    "treatment": "Unheated",
     "certificate": "None"
    },
    "status": "live",
@@ -1129,34 +879,359 @@
    "hours": 1
   },
   {
-   "id": "22222222-0000-4000-8000-000000000033",
-   "seller_id": "11111111-0000-4000-8000-000000000017",
-   "commodity": "emerald",
-   "name": "38.00 ct Rough Emerald",
-   "type": "Rough",
-   "description": "Green emerald, heavily included, rough crystal. Treatment: none.",
-   "price_zar": 91200.0,
-   "weight": 38.0,
-   "weight_unit": "ct",
+   "id": "22222222-0000-4000-8000-000000000022",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "gold",
+   "name": "100 g 24K Gold Bar",
+   "type": "Bar",
+   "description": "Gold Bar, 24K (999.9) purity, 100 g total weight. Assay: Rand Refinery.",
+   "price_zar": 152420.0,
+   "weight": 100,
+   "weight_unit": "g",
    "quantity": 1,
-   "origin": "Zambia",
+   "origin": "South Africa",
    "specs": {
-    "shape": "Rough / uncut",
-    "colour": "Green",
-    "clarity": "Heavily included",
-    "treatment": "None",
-    "certificate": "None"
+    "purity": "24K (999.9)",
+    "certificate": "Rand Refinery"
    },
    "status": "live",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 32,
+   "days": 34,
    "hours": 12
   },
   {
+   "id": "22222222-0000-4000-8000-000000000023",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "iron_ore",
+   "name": "50 000 t Iron Ore Fines Fe 62–64%",
+   "type": "Fines",
+   "description": "Hematite fines from the Northern Cape, rail to Saldanha Bay.",
+   "price_zar": 72500000.0,
+   "weight": 50000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Fe 62–64%",
+    "delivery": "FOB Saldanha Bay",
+    "assay": "SGS"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 3,
+   "hours": 12
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000024",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "lead",
+   "name": "1 500 t Lead Concentrate Pb 65% and above",
+   "type": "Concentrate",
+   "description": "Galena concentrate, silver credits payable.",
+   "price_zar": 31500000.0,
+   "weight": 1500,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Concentrate Pb 65% and above",
+    "delivery": "FOB Saldanha Bay",
+    "assay": "Intertek"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 54,
+   "hours": 6
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000025",
+   "seller_id": "11111111-0000-4000-8000-000000000016",
+   "commodity": "tanzanite",
+   "name": "2.36 ct Oval Tanzanite",
+   "type": "Cut",
+   "description": "Violet-blue (AAA) tanzanite, eye clean, cut oval. Treatment: heated.",
+   "price_zar": 19400.0,
+   "weight": 2.36,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Tanzania",
+   "specs": {
+    "shape": "Oval",
+    "colour": "Violet-blue (AAA)",
+    "clarity": "Eye clean",
+    "treatment": "Heated",
+    "certificate": "IGI"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 2,
+   "hours": 0
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000026",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "vermiculite",
+   "name": "300 t Vermiculite Medium Grade",
+   "type": "Medium",
+   "description": "Unexfoliated Palabora vermiculite, 1 tonne bags.",
+   "price_zar": 2670000.0,
+   "weight": 300,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Unexfoliated (crude)",
+    "delivery": "FOB Durban",
+    "assay": "Mine laboratory"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 67,
+   "hours": 5
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000027",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "palladium",
+   "name": "100 g Palladium Bar",
+   "type": "Bar",
+   "description": "Palladium bar at 99.95% purity, 100 g, from a Bushveld refinery.",
+   "price_zar": 65000.0,
+   "weight": 100,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "99.95%",
+    "certificate": "LBMA refiner"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 51,
+   "hours": 16
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000028",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "andalusite",
+   "name": "800 t Andalusite Al₂O₃ 58–59%",
+   "type": "Graded",
+   "description": "Refractory-grade andalusite, 0.5–1.5 mm.",
+   "price_zar": 6080000.0,
+   "weight": 800,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Al₂O₃ 58–59%",
+    "delivery": "FOB Durban",
+    "assay": "Mine laboratory"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 8,
+   "hours": 14
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000029",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "phosphate",
+   "name": "10 000 t Phosphate Rock P₂O₅ 35% and above",
+   "type": "Rock concentrate",
+   "description": "Phalaborwa phosphate rock concentrate.",
+   "price_zar": 27000000.0,
+   "weight": 10000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "P₂O₅ 35% and above",
+    "delivery": "FOB Richards Bay",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 44,
+   "hours": 0
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000030",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "cobalt",
+   "name": "12 t Cobalt Sulphate",
+   "type": "Cobalt sulphate",
+   "description": "Battery-grade cobalt sulphate, PGM by-product.",
+   "price_zar": 1176000.0,
+   "weight": 12,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Sulphate Co 20.5%",
+    "delivery": "FOB Durban",
+    "assay": "SGS"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 1,
+   "hours": 17
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000031",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "manganese",
+   "name": "8 000 t Manganese Fines Mn 44% and above",
+   "type": "Fines",
+   "description": "High-grade fines, low phosphorus.",
+   "price_zar": 28800000.0,
+   "weight": 8000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Mn 44% and above",
+    "delivery": "FOB Port Elizabeth (Ngqura)",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 63,
+   "hours": 14
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000032",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "zircon",
+   "name": "1 000 t Premium Zircon",
+   "type": "Premium zircon",
+   "description": "Premium ceramic-grade zircon sand, bagged.",
+   "price_zar": 34000000.0,
+   "weight": 1000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "ZrO₂ 66% and above",
+    "delivery": "FOB Richards Bay",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 68,
+   "hours": 22
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000033",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "ruby",
+   "name": "3.40 ct Oval Ruby",
+   "type": "Cut",
+   "description": "Pinkish red ruby, moderately included, cut oval. Treatment: none.",
+   "price_zar": 61200.0,
+   "weight": 3.4,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Tanzania",
+   "specs": {
+    "shape": "Oval",
+    "colour": "Pinkish red",
+    "clarity": "Moderately included",
+    "treatment": "None",
+    "certificate": "None"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 6,
+   "hours": 1
+  },
+  {
    "id": "22222222-0000-4000-8000-000000000034",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "coal",
+   "name": "25 000 t RB3 Coal 5500 NAR",
+   "type": "RB3",
+   "description": "RB3 thermal coal, monthly lifting possible. Inspection at the mine by appointment.",
+   "price_zar": 33750000.0,
+   "weight": 25000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "5500 kcal/kg NAR",
+    "sulphur": "0.8–1%",
+    "delivery": "FOT mine",
+    "assay": "Bureau Veritas"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 20,
+   "hours": 20
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000035",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "palladium",
+   "name": "1 kg Palladium Sponge",
+   "type": "Sponge",
+   "description": "Palladium sponge at 99.95% purity, 1 kg, from a Bushveld refinery.",
+   "price_zar": 640000.0,
+   "weight": 1000,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "99.95%",
+    "certificate": "Independent assay"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 36,
+   "hours": 23
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000036",
    "seller_id": "11111111-0000-4000-8000-000000000012",
    "commodity": "diamond",
    "name": "1.20 ct Emerald Diamond",
@@ -1179,164 +1254,109 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 32,
-   "hours": 15
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000035",
-   "seller_id": "11111111-0000-4000-8000-000000000017",
-   "commodity": "emerald",
-   "name": "2.75 ct Emerald Emerald",
-   "type": "Cut",
-   "description": "Vivid green emerald, slightly included, cut emerald. Treatment: minor oil.",
-   "price_zar": 203500.0,
-   "weight": 2.75,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "Zambia",
-   "specs": {
-    "shape": "Emerald",
-    "colour": "Vivid green",
-    "clarity": "Slightly included",
-    "treatment": "Minor oil",
-    "certificate": "GRS"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 32,
-   "hours": 13
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000036",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "diamond",
-   "name": "1.01 ct Round Brilliant Diamond",
-   "type": "Polished",
-   "description": "Natural round brilliant diamond, E colour, VS1 clarity. Graded by GIA; the report travels with the stone.",
-   "price_zar": 192200.0,
-   "weight": 1.01,
-   "weight_unit": "ct",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "shape": "Round Brilliant",
-    "colour": "E",
-    "clarity": "VS1",
-    "cut_grade": "Excellent",
-    "certificate": "GIA"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 0,
-   "hours": 0
+   "days": 50,
+   "hours": 10
   },
   {
    "id": "22222222-0000-4000-8000-000000000037",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "gold",
-   "name": "640 g 9K Gold Scrap Lot",
-   "type": "Scrap",
-   "description": "Gold Scrap Lot, 9K (375) purity, 640 g total weight. Assay: Independent assay.",
-   "price_zar": 365860.0,
-   "weight": 640,
-   "weight_unit": "g",
-   "quantity": 1,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "9K (375)",
-    "certificate": "Independent assay"
-   },
-   "status": "pending",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 1,
-   "hours": 15
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000038",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "silver",
-   "name": "5 kg Silver Bar",
-   "type": "Bar",
-   "description": "Silver bar at 999 fineness, 5 kg total.",
-   "price_zar": 107390.0,
-   "weight": 5000,
-   "weight_unit": "g",
-   "quantity": 5,
-   "origin": "South Africa",
-   "specs": {
-    "purity": "999",
-    "certificate": "LBMA refiner"
-   },
-   "status": "live",
-   "review_note": null,
-   "image": null,
-   "image_card": null,
-   "image_alt": null,
-   "days": 64,
-   "hours": 12
-  },
-  {
-   "id": "22222222-0000-4000-8000-000000000039",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
    "commodity": "sapphire",
-   "name": "2.20 ct Pear Sapphire",
+   "name": "3.02 ct Cushion Sapphire",
    "type": "Cut",
-   "description": "Pink sapphire, slightly included, cut pear. Treatment: heated.",
-   "price_zar": 46200.0,
-   "weight": 2.2,
+   "description": "Royal blue sapphire, eye clean, cut cushion. Treatment: heated.",
+   "price_zar": 157000.0,
+   "weight": 3.02,
    "weight_unit": "ct",
    "quantity": 1,
    "origin": "Madagascar",
    "specs": {
-    "shape": "Pear",
-    "colour": "Pink",
-    "clarity": "Slightly included",
+    "shape": "Cushion",
+    "colour": "Royal blue",
+    "clarity": "Eye clean",
     "treatment": "Heated",
-    "certificate": "IGI"
+    "certificate": "GRS"
    },
-   "status": "pending",
-   "review_note": null,
+   "status": "rejected",
+   "review_note": "Weight and description do not match. Please check and submit again.",
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 3,
-   "hours": 11
+   "days": 41,
+   "hours": 5
   },
   {
-   "id": "22222222-0000-4000-8000-000000000040",
-   "seller_id": "11111111-0000-4000-8000-000000000016",
-   "commodity": "tanzanite",
-   "name": "1.45 ct Round Tanzanite",
-   "type": "Cut",
-   "description": "Blue-violet (AA) tanzanite, eye clean, cut round. Treatment: heated.",
-   "price_zar": 6700.0,
-   "weight": 1.45,
-   "weight_unit": "ct",
+   "id": "22222222-0000-4000-8000-000000000038",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "vanadium",
+   "name": "40 t Vanadium Pentoxide Flake",
+   "type": "Vanadium pentoxide flake",
+   "description": "V₂O₅ flake, 98% and above, in 250 kg drums.",
+   "price_zar": 7600000.0,
+   "weight": 40,
+   "weight_unit": "t",
    "quantity": 1,
-   "origin": "Tanzania",
+   "origin": "South Africa",
    "specs": {
-    "shape": "Round",
-    "colour": "Blue-violet (AA)",
-    "clarity": "Eye clean",
-    "treatment": "Heated",
-    "certificate": "None"
+    "grade": "V₂O₅ 98% and above",
+    "delivery": "FOB Durban",
+    "assay": "SGS"
    },
    "status": "live",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 34,
-   "hours": 6
+   "days": 8,
+   "hours": 10
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000039",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "nickel",
+   "name": "60 t Nickel Sulphate",
+   "type": "Nickel sulphate",
+   "description": "Battery-grade nickel sulphate crystals from PGM refining.",
+   "price_zar": 3960000.0,
+   "weight": 60,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Sulphate Ni 22%",
+    "delivery": "FOB Durban",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 44,
+   "hours": 11
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000040",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "platinum",
+   "name": "100 g Platinum Grain",
+   "type": "Grain",
+   "description": "Platinum grain at 999.5 fineness, 100 g.",
+   "price_zar": 60970.0,
+   "weight": 100,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "999.5",
+    "certificate": "Independent assay"
+   },
+   "status": "sold",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 23,
+   "hours": 13
   },
   {
    "id": "22222222-0000-4000-8000-000000000041",
@@ -1362,27 +1382,104 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 52,
-   "hours": 15
+   "days": 47,
+   "hours": 19
   },
   {
    "id": "22222222-0000-4000-8000-000000000042",
-   "seller_id": "11111111-0000-4000-8000-000000000015",
-   "commodity": "sapphire",
-   "name": "1.65 ct Oval Sapphire",
-   "type": "Cut",
-   "description": "Cornflower blue sapphire, eye clean, cut oval. Treatment: none.",
-   "price_zar": 145200.0,
-   "weight": 1.65,
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "coal",
+   "name": "5 000 t Duff Coal 4800 NAR",
+   "type": "Duff / fines",
+   "description": "Duff for local power and brick kilns.",
+   "price_zar": 3600000.0,
+   "weight": 5000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "4800 kcal/kg NAR",
+    "sulphur": "Above 1%",
+    "delivery": "FOT mine",
+    "assay": "Mine laboratory"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 36,
+   "hours": 3
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000043",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "silver",
+   "name": "622.07 g Silver Coins",
+   "type": "Coin",
+   "description": "Silver coin at 999 fineness, 622.07 g total.",
+   "price_zar": 13360.0,
+   "weight": 622.07,
+   "weight_unit": "g",
+   "quantity": 20,
+   "origin": "Canada",
+   "specs": {
+    "purity": "999",
+    "certificate": "None"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 0,
+   "hours": 19
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000044",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "diamond",
+   "name": "4.25 ct Marquise Diamond",
+   "type": "Polished",
+   "description": "Natural marquise diamond, J colour, VS2 clarity. Graded by HRD; the report travels with the stone.",
+   "price_zar": 679800.0,
+   "weight": 4.25,
    "weight_unit": "ct",
    "quantity": 1,
-   "origin": "Sri Lanka",
+   "origin": "South Africa",
    "specs": {
-    "shape": "Oval",
-    "colour": "Cornflower blue",
+    "shape": "Marquise",
+    "colour": "J",
+    "clarity": "VS2",
+    "cut_grade": "Very Good",
+    "certificate": "HRD"
+   },
+   "status": "pending",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 3,
+   "hours": 4
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000045",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
+   "commodity": "ruby",
+   "name": "0.86 ct Round Ruby",
+   "type": "Cut",
+   "description": "Red ruby, eye clean, cut round. Treatment: none.",
+   "price_zar": 58500.0,
+   "weight": 0.86,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Mozambique",
+   "specs": {
+    "shape": "Round",
+    "colour": "Red",
     "clarity": "Eye clean",
     "treatment": "None",
-    "certificate": "SSEF"
+    "certificate": "GIA"
    },
    "status": "live",
    "review_note": null,
@@ -1390,22 +1487,46 @@
    "image_card": null,
    "image_alt": null,
    "days": 57,
-   "hours": 17
+   "hours": 15
   },
   {
-   "id": "22222222-0000-4000-8000-000000000043",
+   "id": "22222222-0000-4000-8000-000000000046",
    "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "platinum",
-   "name": "31.103 g Platinum Coin",
-   "type": "Coin",
-   "description": "Platinum coin at 999.5 fineness, 31.103 g.",
-   "price_zar": 18960.0,
-   "weight": 31.103,
+   "commodity": "gold",
+   "name": "55.2 g 24K Gold Granules",
+   "type": "Dust / granules",
+   "description": "Gold Granules, 24K (999.9) purity, 55.2 g total weight. Assay: Independent assay.",
+   "price_zar": 82460.0,
+   "weight": 55.2,
    "weight_unit": "g",
    "quantity": 1,
+   "origin": "Ghana",
+   "specs": {
+    "purity": "24K (999.9)",
+    "certificate": "Independent assay"
+   },
+   "status": "sold",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 45,
+   "hours": 11
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000047",
+   "seller_id": "11111111-0000-4000-8000-000000000013",
+   "commodity": "gold",
+   "name": "311.035 g 22K Gold Coins",
+   "type": "Coin",
+   "description": "Gold Coins, 22K (916) purity, 311.035 g total weight. Assay: Rand Refinery.",
+   "price_zar": 434650.0,
+   "weight": 311.035,
+   "weight_unit": "g",
+   "quantity": 10,
    "origin": "South Africa",
    "specs": {
-    "purity": "999.5",
+    "purity": "22K (916)",
     "certificate": "Rand Refinery"
    },
    "status": "live",
@@ -1413,11 +1534,90 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 53,
+   "days": 65,
    "hours": 14
   },
   {
-   "id": "22222222-0000-4000-8000-000000000044",
+   "id": "22222222-0000-4000-8000-000000000048",
+   "seller_id": "11111111-0000-4000-8000-000000000017",
+   "commodity": "emerald",
+   "name": "38.00 ct Rough Emerald",
+   "type": "Rough",
+   "description": "Green emerald, heavily included, rough crystal. Treatment: none.",
+   "price_zar": 91200.0,
+   "weight": 38.0,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Zambia",
+   "specs": {
+    "shape": "Rough / uncut",
+    "colour": "Green",
+    "clarity": "Heavily included",
+    "treatment": "None",
+    "certificate": "None"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 18,
+   "hours": 21
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000049",
+   "seller_id": "11111111-0000-4000-8000-000000000017",
+   "commodity": "emerald",
+   "name": "5.10 ct Emerald Emerald",
+   "type": "Cut",
+   "description": "Bluish green emerald, moderately included, cut emerald. Treatment: moderate oil.",
+   "price_zar": 96900.0,
+   "weight": 5.1,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Zambia",
+   "specs": {
+    "shape": "Emerald",
+    "colour": "Bluish green",
+    "clarity": "Moderately included",
+    "treatment": "Moderate oil",
+    "certificate": "None"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 32,
+   "hours": 4
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000050",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "copper",
+   "name": "200 t Copper Cathode Grade A",
+   "type": "Cathode",
+   "description": "LME-registered brand Grade A cathodes, bundled.",
+   "price_zar": 34400000.0,
+   "weight": 200,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Grade A cathode (99.99%)",
+    "delivery": "FOB Durban",
+    "assay": "Alex Stewart"
+   },
+   "status": "rejected",
+   "review_note": "Price is far above comparable lots — please relist with a realistic figure.",
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 29,
+   "hours": 7
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000051",
    "seller_id": "11111111-0000-4000-8000-000000000013",
    "commodity": "gold",
    "name": "412 g 18K Gold Jewellery Lot",
@@ -1432,16 +1632,396 @@
     "purity": "18K (750)",
     "certificate": "None"
    },
+   "status": "rejected",
+   "review_note": "Duplicate of a lot you already have listed.",
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 73,
+   "hours": 9
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000052",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
+   "commodity": "sapphire",
+   "name": "1.12 ct Round Sapphire",
+   "type": "Cut",
+   "description": "Blue sapphire, slightly included, cut round. Treatment: heated.",
+   "price_zar": 19000.0,
+   "weight": 1.12,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Madagascar",
+   "specs": {
+    "shape": "Round",
+    "colour": "Blue",
+    "clarity": "Slightly included",
+    "treatment": "Heated",
+    "certificate": "GIA"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 40,
+   "hours": 20
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000053",
+   "seller_id": "11111111-0000-4000-8000-000000000018",
+   "commodity": "gold",
+   "name": "640 g 9K Gold Scrap Lot",
+   "type": "Scrap",
+   "description": "Gold Scrap Lot, 9K (375) purity, 640 g total weight. Assay: Independent assay.",
+   "price_zar": 365860.0,
+   "weight": 640,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "9K (375)",
+    "certificate": "Independent assay"
+   },
    "status": "pending",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 4,
-   "hours": 19
+   "days": 0,
+   "hours": 8
   },
   {
-   "id": "22222222-0000-4000-8000-000000000045",
+   "id": "22222222-0000-4000-8000-000000000054",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "zinc",
+   "name": "3 000 t Zinc Concentrate Zn 50–55%",
+   "type": "Concentrate",
+   "description": "Concentrate from the Northern Cape, low iron.",
+   "price_zar": 49500000.0,
+   "weight": 3000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Concentrate Zn 50–55%",
+    "delivery": "FOB Saldanha Bay",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 13,
+   "hours": 23
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000055",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "titanium",
+   "name": "5 000 t Ilmenite TiO₂ 46–50%",
+   "type": "Ilmenite",
+   "description": "Heavy mineral sands ilmenite from the West Coast.",
+   "price_zar": 26000000.0,
+   "weight": 5000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "TiO₂ 46–50%",
+    "delivery": "FOB Saldanha Bay",
+    "assay": "Bureau Veritas"
+   },
+   "status": "rejected",
+   "review_note": "Duplicate of a lot you already have listed.",
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 25,
+   "hours": 2
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000056",
+   "seller_id": "11111111-0000-4000-8000-000000000017",
+   "commodity": "emerald",
+   "name": "0.95 ct Pear Emerald",
+   "type": "Cut",
+   "description": "Vivid green emerald, eye clean, cut pear. Treatment: none.",
+   "price_zar": 104500.0,
+   "weight": 0.95,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Zambia",
+   "specs": {
+    "shape": "Pear",
+    "colour": "Vivid green",
+    "clarity": "Eye clean",
+    "treatment": "None",
+    "certificate": "GIA"
+   },
+   "status": "withdrawn",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 32,
+   "hours": 0
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000057",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "iron_ore",
+   "name": "20 000 t Iron Ore Lump Fe 64–66%",
+   "type": "Lump",
+   "description": "High-grade lump ore. Sized 6–31.5 mm.",
+   "price_zar": 35000000.0,
+   "weight": 20000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Fe 64–66%",
+    "delivery": "FCA rail siding",
+    "assay": "Intertek"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 58,
+   "hours": 14
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000058",
+   "seller_id": "11111111-0000-4000-8000-000000000011",
+   "commodity": "diamond",
+   "name": "1.52 ct Round Brilliant Diamond",
+   "type": "Polished",
+   "description": "Natural round brilliant diamond, F colour, VS1 clarity. Graded by GIA; the report travels with the stone.",
+   "price_zar": 303700.0,
+   "weight": 1.52,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "shape": "Round Brilliant",
+    "colour": "F",
+    "clarity": "VS1",
+    "cut_grade": "Excellent",
+    "certificate": "GIA"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": "images/lots/D-1048.jpg",
+   "image_card": "images/lots/D-1048-card.jpg",
+   "image_alt": "1.52 ct Round Brilliant Diamond",
+   "days": 53,
+   "hours": 20
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000059",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "rhodium",
+   "name": "311.035 g Rhodium Sponge",
+   "type": "Sponge",
+   "description": "Rhodium sponge at 99.9% purity, 311.035 g, from a Bushveld refinery.",
+   "price_zar": 917550.0,
+   "weight": 311.035,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "99.9%",
+    "certificate": "Independent assay"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 4,
+   "hours": 9
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000060",
+   "seller_id": "11111111-0000-4000-8000-000000000020",
+   "commodity": "manganese",
+   "name": "15 000 t Manganese Lump Mn 37–40%",
+   "type": "Lump",
+   "description": "Kalahari manganese field lump ore.",
+   "price_zar": 43500000.0,
+   "weight": 15000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Mn 37–40%",
+    "delivery": "FOB Port Elizabeth (Ngqura)",
+    "assay": "Alex Stewart"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 60,
+   "hours": 5
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000061",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
+   "commodity": "diamond",
+   "name": "1.75 ct Radiant Diamond",
+   "type": "Polished",
+   "description": "Natural radiant diamond, I colour, SI2 clarity. Not yet certified — grading is the seller’s own.",
+   "price_zar": 146800.0,
+   "weight": 1.75,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "shape": "Radiant",
+    "colour": "I",
+    "clarity": "SI2",
+    "cut_grade": "Good",
+    "certificate": "None"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 23,
+   "hours": 9
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000062",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "platinum",
+   "name": "31.103 g Platinum Coin",
+   "type": "Coin",
+   "description": "Platinum coin at 999.5 fineness, 31.103 g.",
+   "price_zar": 18960.0,
+   "weight": 31.103,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "999.5",
+    "certificate": "Rand Refinery"
+   },
+   "status": "sold",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 48,
+   "hours": 5
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000063",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "chrome",
+   "name": "12 000 t Chrome Concentrate Cr₂O₃ 40–42%",
+   "type": "Metallurgical concentrate",
+   "description": "UG2 chrome concentrate from the Bushveld.",
+   "price_zar": 49200000.0,
+   "weight": 12000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "Cr₂O₃ 40–42%",
+    "delivery": "FOB Durban",
+    "assay": "SGS"
+   },
+   "status": "sold",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 4,
+   "hours": 12
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000064",
+   "seller_id": "11111111-0000-4000-8000-000000000011",
+   "commodity": "diamond",
+   "name": "48.6 ct Rough Diamond Parcel",
+   "type": "Rough",
+   "description": "Mixed rough parcel, mostly sawables in the 1–3 ct range. Sold as one parcel with Kimberley Process certificate.",
+   "price_zar": 1650000.0,
+   "weight": 48.6,
+   "weight_unit": "ct",
+   "quantity": 31,
+   "origin": "South Africa",
+   "specs": {
+    "shape": "Rough / uncut",
+    "colour": "Mixed",
+    "clarity": "Mixed",
+    "cut_grade": "Not graded",
+    "certificate": "None"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 56,
+   "hours": 4
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000065",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "gold",
+   "name": "31.103 g 22K Krugerrand Gold Coin",
+   "type": "Coin",
+   "description": "Krugerrand Gold Coin, 22K (916) purity, 31.103 g total weight. Assay: Rand Refinery.",
+   "price_zar": 43460.0,
+   "weight": 31.103,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "22K (916)",
+    "certificate": "Rand Refinery"
+   },
+   "status": "rejected",
+   "review_note": "Weight and description do not match. Please check and submit again.",
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 22,
+   "hours": 4
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000066",
+   "seller_id": "11111111-0000-4000-8000-000000000014",
+   "commodity": "gold",
+   "name": "250 g 24K Gold Bar",
+   "type": "Bar",
+   "description": "Gold Bar, 24K (999.9) purity, 250 g total weight. Assay: LBMA refiner.",
+   "price_zar": 381060.0,
+   "weight": 250,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "Switzerland",
+   "specs": {
+    "purity": "24K (999.9)",
+    "certificate": "LBMA refiner"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 72,
+   "hours": 0
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000067",
    "seller_id": "11111111-0000-4000-8000-000000000018",
    "commodity": "sapphire",
    "name": "4.80 ct Oval Sapphire",
@@ -1464,35 +2044,167 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 2,
-   "hours": 23
+   "days": 6,
+   "hours": 17
   },
   {
-   "id": "22222222-0000-4000-8000-000000000046",
-   "seller_id": "11111111-0000-4000-8000-000000000018",
-   "commodity": "platinum",
-   "name": "74 g Platinum Jewellery",
-   "type": "Jewellery",
-   "description": "Platinum jewellery at 950 fineness, 74 g.",
-   "price_zar": 42880.0,
-   "weight": 74,
-   "weight_unit": "g",
-   "quantity": 8,
+   "id": "22222222-0000-4000-8000-000000000068",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "coal",
+   "name": "10 000 t RB1 Steam Coal 6000 NAR",
+   "type": "RB1",
+   "description": "Export-grade thermal coal from the Witbank coalfield. Stockpiled at the mine, rail to Richards Bay available.",
+   "price_zar": 18500000.0,
+   "weight": 10000,
+   "weight_unit": "t",
+   "quantity": 1,
    "origin": "South Africa",
    "specs": {
-    "purity": "950",
-    "certificate": "None"
+    "grade": "6000 kcal/kg NAR and above",
+    "sulphur": "Below 0.8%",
+    "delivery": "FOB Richards Bay",
+    "assay": "SGS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 11,
+   "hours": 18
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000069",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "iridium",
+   "name": "155.5 g Iridium Powder",
+   "type": "Powder",
+   "description": "Iridium powder at 99.9% purity, 155.5 g, from a Bushveld refinery.",
+   "price_zar": 419850.0,
+   "weight": 155.5,
+   "weight_unit": "g",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "purity": "99.9%",
+    "certificate": "Independent assay"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 22,
+   "hours": 12
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000070",
+   "seller_id": "11111111-0000-4000-8000-000000000012",
+   "commodity": "diamond",
+   "name": "0.72 ct Pear Diamond",
+   "type": "Polished",
+   "description": "Natural pear diamond, G colour, VS1 clarity. Graded by EGL; the report travels with the stone.",
+   "price_zar": 97000.0,
+   "weight": 0.72,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "shape": "Pear",
+    "colour": "G",
+    "clarity": "VS1",
+    "cut_grade": "Good",
+    "certificate": "EGL"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 12,
+   "hours": 10
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000071",
+   "seller_id": "11111111-0000-4000-8000-000000000019",
+   "commodity": "fluorspar",
+   "name": "4 000 t Acid-grade Fluorspar",
+   "type": "Acid grade",
+   "description": "Acidspar filter cake, CaF₂ 97% and above.",
+   "price_zar": 39200000.0,
+   "weight": 4000,
+   "weight_unit": "t",
+   "quantity": 1,
+   "origin": "South Africa",
+   "specs": {
+    "grade": "CaF₂ 97% and above",
+    "delivery": "FOB Durban",
+    "assay": "Intertek"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 2,
+   "hours": 17
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000072",
+   "seller_id": "11111111-0000-4000-8000-000000000016",
+   "commodity": "tanzanite",
+   "name": "4.12 ct Cushion Tanzanite",
+   "type": "Cut",
+   "description": "Vivid violet-blue (AAAA) tanzanite, eye clean, cut cushion. Treatment: heated.",
+   "price_zar": 51500.0,
+   "weight": 4.12,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Tanzania",
+   "specs": {
+    "shape": "Cushion",
+    "colour": "Vivid violet-blue (AAAA)",
+    "clarity": "Eye clean",
+    "treatment": "Heated",
+    "certificate": "GIA"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 46,
+   "hours": 11
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000073",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
+   "commodity": "sapphire",
+   "name": "1.65 ct Oval Sapphire",
+   "type": "Cut",
+   "description": "Cornflower blue sapphire, eye clean, cut oval. Treatment: none.",
+   "price_zar": 145200.0,
+   "weight": 1.65,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Sri Lanka",
+   "specs": {
+    "shape": "Oval",
+    "colour": "Cornflower blue",
+    "clarity": "Eye clean",
+    "treatment": "None",
+    "certificate": "SSEF"
    },
    "status": "pending",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 2,
-   "hours": 11
+   "days": 5,
+   "hours": 19
   },
   {
-   "id": "22222222-0000-4000-8000-000000000047",
+   "id": "22222222-0000-4000-8000-000000000074",
    "seller_id": "11111111-0000-4000-8000-000000000016",
    "commodity": "tanzanite",
    "name": "10.50 ct Emerald Tanzanite",
@@ -1515,23 +2227,23 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 41,
-   "hours": 5
+   "days": 22,
+   "hours": 10
   },
   {
-   "id": "22222222-0000-4000-8000-000000000048",
-   "seller_id": "11111111-0000-4000-8000-000000000013",
-   "commodity": "silver",
-   "name": "800 g Silver Grain",
-   "type": "Grain",
-   "description": "Silver grain at 999 fineness, 800 g total.",
-   "price_zar": 17180.0,
-   "weight": 800,
+   "id": "22222222-0000-4000-8000-000000000075",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "ruthenium",
+   "name": "1 kg Ruthenium Powder",
+   "type": "Powder",
+   "description": "Ruthenium powder at 99.9% purity, 1 kg, from a Bushveld refinery.",
+   "price_zar": 320000.0,
+   "weight": 1000,
    "weight_unit": "g",
    "quantity": 1,
    "origin": "South Africa",
    "specs": {
-    "purity": "999",
+    "purity": "99.9%",
     "certificate": "Independent assay"
    },
    "status": "live",
@@ -1539,338 +2251,1251 @@
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 8,
-   "hours": 10
+   "days": 54,
+   "hours": 4
   },
   {
-   "id": "22222222-0000-4000-8000-000000000049",
-   "seller_id": "11111111-0000-4000-8000-000000000014",
-   "commodity": "gold",
-   "name": "31.103 g 22K Krugerrand Gold Coin",
-   "type": "Coin",
-   "description": "Krugerrand Gold Coin, 22K (916) purity, 31.103 g total weight. Assay: Rand Refinery.",
-   "price_zar": 43460.0,
-   "weight": 31.103,
-   "weight_unit": "g",
+   "id": "22222222-0000-4000-8000-000000000076",
+   "seller_id": "11111111-0000-4000-8000-000000000021",
+   "commodity": "chrome",
+   "name": "3 000 t Chrome Lumpy Ore Cr₂O₃ 38–40%",
+   "type": "Lumpy ore",
+   "description": "Lumpy ore for smelters, stockpiled at Rustenburg.",
+   "price_zar": 9900000.0,
+   "weight": 3000,
+   "weight_unit": "t",
    "quantity": 1,
    "origin": "South Africa",
    "specs": {
-    "purity": "22K (916)",
-    "certificate": "Rand Refinery"
+    "grade": "Cr₂O₃ 38–40%",
+    "delivery": "FOT mine",
+    "assay": "Mine laboratory"
    },
    "status": "live",
    "review_note": null,
    "image": null,
    "image_card": null,
    "image_alt": null,
-   "days": 44,
-   "hours": 11
+   "days": 9,
+   "hours": 23
+  },
+  {
+   "id": "22222222-0000-4000-8000-000000000077",
+   "seller_id": "11111111-0000-4000-8000-000000000015",
+   "commodity": "ruby",
+   "name": "2.14 ct Oval Ruby",
+   "type": "Cut",
+   "description": "Pigeon blood red ruby, eye clean, cut oval. Treatment: heated.",
+   "price_zar": 203300.0,
+   "weight": 2.14,
+   "weight_unit": "ct",
+   "quantity": 1,
+   "origin": "Mozambique",
+   "specs": {
+    "shape": "Oval",
+    "colour": "Pigeon blood red",
+    "clarity": "Eye clean",
+    "treatment": "Heated",
+    "certificate": "GRS"
+   },
+   "status": "live",
+   "review_note": null,
+   "image": null,
+   "image_card": null,
+   "image_alt": null,
+   "days": 16,
+   "hours": 7
   }
  ],
  "enquiries": [
   {
-   "lot_id": "22222222-0000-4000-8000-000000000042",
-   "buyer_id": "11111111-0000-4000-8000-000000000036",
-   "message": "Can it be viewed in Johannesburg before purchase?",
-   "status": "answered",
-   "days": 45,
-   "hours": 9
+   "lot_id": "22222222-0000-4000-8000-000000000032",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "Is a site inspection possible before we sign?",
+   "status": "with_seller",
+   "days": 68,
+   "hours": 23,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is a site inspection possible before we sign?\" Please reply here and the desk will pass it on.",
+     "minutes": 99120
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000038",
+   "lot_id": "22222222-0000-4000-8000-000000000014",
    "buyer_id": "11111111-0000-4000-8000-000000000031",
-   "message": "Is this still available? I can pay by EFT this week.",
-   "status": "answered",
-   "days": 37,
-   "hours": 22
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000043",
-   "buyer_id": "11111111-0000-4000-8000-000000000035",
-   "message": "What is your best price if I take it this month?",
-   "status": "closed",
-   "days": 30,
-   "hours": 3
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000008",
-   "buyer_id": "11111111-0000-4000-8000-000000000036",
-   "message": "I am interested. Please call me to discuss.",
-   "status": "answered",
-   "days": 28,
-   "hours": 20
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000009",
-   "buyer_id": "11111111-0000-4000-8000-000000000037",
-   "message": "Do you ship insured to my country, and what would that cost?",
-   "status": "new",
-   "days": 28,
-   "hours": 19
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000049",
-   "buyer_id": "11111111-0000-4000-8000-000000000035",
-   "message": "Can it be viewed in Johannesburg before purchase?",
-   "status": "answered",
-   "days": 27,
-   "hours": 18
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000017",
-   "buyer_id": "11111111-0000-4000-8000-000000000038",
-   "message": "Is this still available? I can pay by EFT this week.",
-   "status": "new",
-   "days": 24,
-   "hours": 21
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000008",
-   "buyer_id": "11111111-0000-4000-8000-000000000033",
-   "message": "I am interested. Please call me to discuss.",
-   "status": "answered",
-   "days": 24,
-   "hours": 0
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000038",
-   "buyer_id": "11111111-0000-4000-8000-000000000037",
-   "message": "Is this still available? I can pay by EFT this week.",
-   "status": "new",
-   "days": 23,
-   "hours": 3
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000028",
-   "buyer_id": "11111111-0000-4000-8000-000000000040",
    "message": "Would you consider selling part of the lot?",
    "status": "new",
-   "days": 21,
-   "hours": 20
+   "days": 64,
+   "hours": 23,
+   "messages": []
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000047",
-   "buyer_id": "11111111-0000-4000-8000-000000000040",
+   "lot_id": "22222222-0000-4000-8000-000000000026",
+   "buyer_id": "11111111-0000-4000-8000-000000000031",
+   "message": "Can the seller offer a letter of credit payment term?",
+   "status": "new",
+   "days": 64,
+   "hours": 12,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000029",
+   "buyer_id": "11111111-0000-4000-8000-000000000033",
+   "message": "Can it be viewed in Johannesburg before purchase?",
+   "status": "seller_replied",
+   "days": 44,
+   "hours": 12,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can it be viewed in Johannesburg before purchase?\" Please reply here and the desk will pass it on.",
+     "minutes": 63900
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000020",
+     "body": "Yes, still available. Viewing in Kimberley any weekday.",
+     "minutes": 63720
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000031",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "What is the price on CIF basis to Qingdao?",
+   "status": "new",
+   "days": 44,
+   "hours": 12,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000036",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
    "message": "What is your best price if I take it this month?",
-   "status": "new",
-   "days": 21,
-   "hours": 5
+   "status": "seller_replied",
+   "days": 33,
+   "hours": 0,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"What is your best price if I take it this month?\" Please reply here and the desk will pass it on.",
+     "minutes": 47340
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000012",
+     "body": "We can hold it until Friday with a deposit.",
+     "minutes": 47160
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000049",
-   "buyer_id": "11111111-0000-4000-8000-000000000040",
-   "message": "Could you send the grading report and a video of the stone?",
-   "status": "new",
-   "days": 17,
-   "hours": 22
+   "lot_id": "22222222-0000-4000-8000-000000000029",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "closed",
+   "days": 29,
+   "hours": 10,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is the price negotiable for a cash buyer?\" Please reply here and the desk will pass it on.",
+     "minutes": 42180
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000020",
+     "body": "Yes, still available. Viewing in Kimberley any weekday.",
+     "minutes": 42000
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 41820
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000041",
-   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "lot_id": "22222222-0000-4000-8000-000000000021",
+   "buyer_id": "11111111-0000-4000-8000-000000000038",
+   "message": "Would you consider selling part of the lot?",
+   "status": "new",
+   "days": 26,
+   "hours": 11,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000010",
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
+   "message": "Can it be viewed in Johannesburg before purchase?",
+   "status": "answered",
+   "days": 25,
+   "hours": 17,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 36840
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000066",
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
    "message": "Please confirm the exact weight and whether VAT is included.",
-   "status": "closed",
-   "days": 17,
-   "hours": 14
+   "status": "with_seller",
+   "days": 24,
+   "hours": 14,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Please confirm the exact weight and whether VAT is included.\" Please reply here and the desk will pass it on.",
+     "minutes": 35220
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000042",
-   "buyer_id": "11111111-0000-4000-8000-000000000040",
-   "message": "Could you send the grading report and a video of the stone?",
-   "status": "closed",
-   "days": 16,
-   "hours": 2
+   "lot_id": "22222222-0000-4000-8000-000000000039",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "Can it be viewed in Johannesburg before purchase?",
+   "status": "with_seller",
+   "days": 22,
+   "hours": 15,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can it be viewed in Johannesburg before purchase?\" Please reply here and the desk will pass it on.",
+     "minutes": 32400
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000008",
+   "lot_id": "22222222-0000-4000-8000-000000000061",
    "buyer_id": "11111111-0000-4000-8000-000000000034",
    "message": "Do you ship insured to my country, and what would that cost?",
-   "status": "new",
-   "days": 15,
-   "hours": 18
+   "status": "with_seller",
+   "days": 21,
+   "hours": 4,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Do you ship insured to my country, and what would that cost?\" Please reply here and the desk will pass it on.",
+     "minutes": 30300
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000027",
+   "lot_id": "22222222-0000-4000-8000-000000000029",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "What is the price on CIF basis to Qingdao?",
+   "status": "with_seller",
+   "days": 20,
+   "hours": 10,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"What is the price on CIF basis to Qingdao?\" Please reply here and the desk will pass it on.",
+     "minutes": 29220
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000035",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "answered",
+   "days": 19,
+   "hours": 18,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 28260
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000034",
+   "buyer_id": "11111111-0000-4000-8000-000000000033",
+   "message": "Can the seller offer a letter of credit payment term?",
+   "status": "answered",
+   "days": 19,
+   "hours": 13,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can the seller offer a letter of credit payment term?\" Please reply here and the desk will pass it on.",
+     "minutes": 27960
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000019",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 27780
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 27600
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000048",
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "closed",
+   "days": 18,
+   "hours": 7,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is the price negotiable for a cash buyer?\" Please reply here and the desk will pass it on.",
+     "minutes": 26160
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000017",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 25980
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 25800
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000032",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "I am interested. Please call me to discuss.",
+   "status": "answered",
+   "days": 17,
+   "hours": 2,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 24420
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000021",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Would you consider selling part of the lot?",
+   "status": "new",
+   "days": 15,
+   "hours": 19,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000045",
    "buyer_id": "11111111-0000-4000-8000-000000000034",
    "message": "Can it be viewed in Johannesburg before purchase?",
    "status": "new",
    "days": 14,
-   "hours": 3
+   "hours": 3,
+   "messages": []
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000040",
+   "lot_id": "22222222-0000-4000-8000-000000000035",
    "buyer_id": "11111111-0000-4000-8000-000000000035",
-   "message": "Would you consider selling part of the lot?",
+   "message": "Could you send the grading report and a video of the stone?",
+   "status": "answered",
+   "days": 13,
+   "hours": 16,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Could you send the grading report and a video of the stone?\" Please reply here and the desk will pass it on.",
+     "minutes": 19500
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000021",
+     "body": "Available, and we can deliver insured to the port.",
+     "minutes": 19320
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 19140
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000035",
+   "buyer_id": "11111111-0000-4000-8000-000000000031",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "with_seller",
+   "days": 12,
+   "hours": 7,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is the price negotiable for a cash buyer?\" Please reply here and the desk will pass it on.",
+     "minutes": 17520
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000032",
+   "buyer_id": "11111111-0000-4000-8000-000000000040",
+   "message": "Can the seller offer a letter of credit payment term?",
    "status": "new",
    "days": 12,
-   "hours": 21
+   "hours": 5,
+   "messages": []
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000040",
-   "buyer_id": "11111111-0000-4000-8000-000000000036",
-   "message": "I am interested. Please call me to discuss.",
+   "lot_id": "22222222-0000-4000-8000-000000000002",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Can you hold this until Friday? I would like to view it.",
+   "status": "with_seller",
+   "days": 10,
+   "hours": 21,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can you hold this until Friday? I would like to view it.\" Please reply here and the desk will pass it on.",
+     "minutes": 15480
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000031",
+   "buyer_id": "11111111-0000-4000-8000-000000000035",
+   "message": "Please send the latest assay and the loading schedule.",
    "status": "answered",
    "days": 9,
-   "hours": 14
+   "hours": 21,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Please send the latest assay and the loading schedule.\" Please reply here and the desk will pass it on.",
+     "minutes": 14040
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000020",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 13860
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 13680
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000048",
+   "lot_id": "22222222-0000-4000-8000-000000000076",
+   "buyer_id": "11111111-0000-4000-8000-000000000041",
+   "message": "Please send the latest assay and the loading schedule.",
+   "status": "answered",
+   "days": 9,
+   "hours": 16,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 13740
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000068",
    "buyer_id": "11111111-0000-4000-8000-000000000031",
-   "message": "Would you consider selling part of the lot?",
-   "status": "new",
-   "days": 8,
-   "hours": 23
+   "message": "Is this still available? I can pay by EFT this week.",
+   "status": "closed",
+   "days": 9,
+   "hours": 9,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is this still available? I can pay by EFT this week.\" Please reply here and the desk will pass it on.",
+     "minutes": 13320
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000019",
+     "body": "We can hold it until Friday with a deposit.",
+     "minutes": 13140
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller can offer 3% below asking if payment clears this week. Shall we prepare terms?",
+     "minutes": 12960
+    }
+   ]
   },
   {
    "lot_id": "22222222-0000-4000-8000-000000000034",
    "buyer_id": "11111111-0000-4000-8000-000000000041",
-   "message": "Could you send the grading report and a video of the stone?",
-   "status": "closed",
-   "days": 8,
-   "hours": 10
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000024",
-   "buyer_id": "11111111-0000-4000-8000-000000000041",
-   "message": "What is your best price if I take it this month?",
-   "status": "new",
-   "days": 7,
-   "hours": 19
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000048",
-   "buyer_id": "11111111-0000-4000-8000-000000000037",
-   "message": "Is this still available? I can pay by EFT this week.",
+   "message": "Can you do monthly lifts of the same quantity?",
    "status": "answered",
    "days": 7,
-   "hours": 10
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000023",
-   "buyer_id": "11111111-0000-4000-8000-000000000034",
-   "message": "Can you hold this until Friday? I would like to view it.",
-   "status": "new",
-   "days": 7,
-   "hours": 4
+   "hours": 2,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 10020
+    }
+   ]
   },
   {
    "lot_id": "22222222-0000-4000-8000-000000000038",
-   "buyer_id": "11111111-0000-4000-8000-000000000041",
-   "message": "Would you consider selling part of the lot?",
-   "status": "answered",
-   "days": 5,
-   "hours": 14
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Could you send the grading report and a video of the stone?",
+   "status": "seller_replied",
+   "days": 6,
+   "hours": 17,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Could you send the grading report and a video of the stone?\" Please reply here and the desk will pass it on.",
+     "minutes": 9480
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000021",
+     "body": "Best price is 3% below asking for payment this week.",
+     "minutes": 9300
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000023",
-   "buyer_id": "11111111-0000-4000-8000-000000000034",
-   "message": "Is the price negotiable for a cash buyer?",
-   "status": "answered",
-   "days": 4,
-   "hours": 18
+   "lot_id": "22222222-0000-4000-8000-000000000058",
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
+   "message": "Can you hold this until Friday? I would like to view it.",
+   "status": "closed",
+   "days": 6,
+   "hours": 15,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can you hold this until Friday? I would like to view it.\" Please reply here and the desk will pass it on.",
+     "minutes": 9360
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000011",
+     "body": "We can hold it until Friday with a deposit.",
+     "minutes": 9180
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 9000
+    }
+   ]
   },
   {
    "lot_id": "22222222-0000-4000-8000-000000000028",
-   "buyer_id": "11111111-0000-4000-8000-000000000041",
-   "message": "Do you ship insured to my country, and what would that cost?",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "What is your best price if I take it this month?",
+   "status": "with_seller",
+   "days": 6,
+   "hours": 11,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"What is your best price if I take it this month?\" Please reply here and the desk will pass it on.",
+     "minutes": 9120
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000018",
+   "buyer_id": "11111111-0000-4000-8000-000000000033",
+   "message": "I am interested. Please call me to discuss.",
+   "status": "answered",
+   "days": 6,
+   "hours": 0,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 8460
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000068",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Is this still available? I can pay by EFT this week.",
+   "status": "with_seller",
+   "days": 5,
+   "hours": 3,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is this still available? I can pay by EFT this week.\" Please reply here and the desk will pass it on.",
+     "minutes": 7200
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000041",
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "message": "Is this still available? I can pay by EFT this week.",
+   "status": "closed",
+   "days": 5,
+   "hours": 2,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is this still available? I can pay by EFT this week.\" Please reply here and the desk will pass it on.",
+     "minutes": 7140
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000011",
+     "body": "We can hold it until Friday with a deposit.",
+     "minutes": 6960
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 6780
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000054",
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "message": "Can you hold this until Friday? I would like to view it.",
+   "status": "new",
+   "days": 4,
+   "hours": 17,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000069",
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "message": "I am interested. Please call me to discuss.",
    "status": "answered",
    "days": 4,
-   "hours": 12
+   "hours": 14,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"I am interested. Please call me to discuss.\" Please reply here and the desk will pass it on.",
+     "minutes": 6420
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000021",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 6240
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller can offer 3% below asking if payment clears this week. Shall we prepare terms?",
+     "minutes": 6060
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000009",
-   "buyer_id": "11111111-0000-4000-8000-000000000038",
-   "message": "Would you consider selling part of the lot?",
-   "status": "new",
-   "days": 4,
-   "hours": 11
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000007",
-   "buyer_id": "11111111-0000-4000-8000-000000000038",
-   "message": "Can you hold this until Friday? I would like to view it.",
+   "lot_id": "22222222-0000-4000-8000-000000000046",
+   "buyer_id": "11111111-0000-4000-8000-000000000041",
+   "message": "Do you ship insured to my country, and what would that cost?",
    "status": "closed",
-   "days": 3,
-   "hours": 16
+   "days": 4,
+   "hours": 12,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Do you ship insured to my country, and what would that cost?\" Please reply here and the desk will pass it on.",
+     "minutes": 6300
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000014",
+     "body": "Yes, still available. Viewing in Kimberley any weekday.",
+     "minutes": 6120
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 5940
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000001",
-   "buyer_id": "11111111-0000-4000-8000-000000000031",
-   "message": "Is this still available? I can pay by EFT this week.",
-   "status": "new",
+   "lot_id": "22222222-0000-4000-8000-000000000028",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Please confirm the exact weight and whether VAT is included.",
+   "status": "answered",
    "days": 3,
-   "hours": 13
+   "hours": 11,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Please confirm the exact weight and whether VAT is included.\" Please reply here and the desk will pass it on.",
+     "minutes": 4800
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000021",
+     "body": "We can hold it until Friday with a deposit.",
+     "minutes": 4620
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller can offer 3% below asking if payment clears this week. Shall we prepare terms?",
+     "minutes": 4440
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000023",
-   "buyer_id": "11111111-0000-4000-8000-000000000031",
-   "message": "Is the price negotiable for a cash buyer?",
-   "status": "new",
-   "days": 3,
-   "hours": 7
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000017",
+   "lot_id": "22222222-0000-4000-8000-000000000029",
    "buyer_id": "11111111-0000-4000-8000-000000000041",
    "message": "Can it be viewed in Johannesburg before purchase?",
    "status": "closed",
    "days": 3,
-   "hours": 5
+   "hours": 5,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can it be viewed in Johannesburg before purchase?\" Please reply here and the desk will pass it on.",
+     "minutes": 4440
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000020",
+     "body": "Best price is 3% below asking for payment this week.",
+     "minutes": 4260
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 4080
+    }
+   ]
   },
   {
-   "lot_id": "22222222-0000-4000-8000-000000000032",
+   "lot_id": "22222222-0000-4000-8000-000000000058",
    "buyer_id": "11111111-0000-4000-8000-000000000042",
    "message": "Please confirm the exact weight and whether VAT is included.",
    "status": "new",
    "days": 2,
-   "hours": 21
+   "hours": 21,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000071",
+   "buyer_id": "11111111-0000-4000-8000-000000000033",
+   "message": "Would you consider selling part of the lot?",
+   "status": "answered",
+   "days": 2,
+   "hours": 17,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Would you consider selling part of the lot?\" Please reply here and the desk will pass it on.",
+     "minutes": 3720
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000019",
+     "body": "Available, and we can deliver insured to the port.",
+     "minutes": 3540
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 3360
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000034",
+   "buyer_id": "11111111-0000-4000-8000-000000000038",
+   "message": "Do you ship insured to my country, and what would that cost?",
+   "status": "new",
+   "days": 2,
+   "hours": 16,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000009",
+   "buyer_id": "11111111-0000-4000-8000-000000000041",
+   "message": "Could you send the grading report and a video of the stone?",
+   "status": "closed",
+   "days": 2,
+   "hours": 15,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Could you send the grading report and a video of the stone?\" Please reply here and the desk will pass it on.",
+     "minutes": 3600
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000014",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 3420
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 3240
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000060",
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "message": "Can the seller offer a letter of credit payment term?",
+   "status": "seller_replied",
+   "days": 2,
+   "hours": 14,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can the seller offer a letter of credit payment term?\" Please reply here and the desk will pass it on.",
+     "minutes": 3540
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000020",
+     "body": "Report and video sent to the desk now.",
+     "minutes": 3360
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000034",
+   "buyer_id": "11111111-0000-4000-8000-000000000037",
+   "message": "Can you do monthly lifts of the same quantity?",
+   "status": "answered",
+   "days": 2,
+   "hours": 8,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Can you do monthly lifts of the same quantity?\" Please reply here and the desk will pass it on.",
+     "minutes": 3180
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000019",
+     "body": "Yes, still available. Viewing in Kimberley any weekday.",
+     "minutes": 3000
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 2820
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000007",
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "answered",
+   "days": 2,
+   "hours": 5,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is the price negotiable for a cash buyer?\" Please reply here and the desk will pass it on.",
+     "minutes": 3000
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000013",
+     "body": "Available, and we can deliver insured to the port.",
+     "minutes": 2820
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller can offer 3% below asking if payment clears this week. Shall we prepare terms?",
+     "minutes": 2640
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000059",
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
+   "message": "Is a site inspection possible before we sign?",
+   "status": "answered",
+   "days": 1,
+   "hours": 21,
+   "messages": [
+    {
+     "channel": "seller",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "A buyer is asking about this lot: \"Is a site inspection possible before we sign?\" Please reply here and the desk will pass it on.",
+     "minutes": 2520
+    },
+    {
+     "channel": "seller",
+     "sender": "seller",
+     "author_id": "11111111-0000-4000-8000-000000000021",
+     "body": "Available, and we can deliver insured to the port.",
+     "minutes": 2340
+    },
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Thank you. The desk will send the report and a video to you here within a day.",
+     "minutes": 2160
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000066",
+   "buyer_id": "11111111-0000-4000-8000-000000000035",
+   "message": "Please confirm the exact weight and whether VAT is included.",
+   "status": "new",
+   "days": 1,
+   "hours": 20,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000038",
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "message": "What is the price on CIF basis to Qingdao?",
+   "status": "answered",
+   "days": 1,
+   "hours": 17,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "The seller confirms it is available. We can arrange a viewing at our Kimberley office.",
+     "minutes": 2280
+    }
+   ]
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000042",
+   "buyer_id": "11111111-0000-4000-8000-000000000042",
+   "message": "What is the price on CIF basis to Qingdao?",
+   "status": "answered",
+   "days": 1,
+   "hours": 8,
+   "messages": [
+    {
+     "channel": "buyer",
+     "sender": "desk",
+     "author_id": "11111111-0000-4000-8000-000000000001",
+     "body": "Yes, insured delivery can be arranged. We will quote it with the terms.",
+     "minutes": 1740
+    }
+   ]
   },
   {
    "lot_id": "22222222-0000-4000-8000-000000000035",
-   "buyer_id": "11111111-0000-4000-8000-000000000040",
-   "message": "Could you send the grading report and a video of the stone?",
-   "status": "new",
-   "days": 2,
-   "hours": 20
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000026",
-   "buyer_id": "11111111-0000-4000-8000-000000000033",
-   "message": "Can it be viewed in Johannesburg before purchase?",
-   "status": "answered",
-   "days": 2,
-   "hours": 4
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000023",
-   "buyer_id": "11111111-0000-4000-8000-000000000037",
-   "message": "Could you send the grading report and a video of the stone?",
-   "status": "answered",
-   "days": 2,
-   "hours": 4
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000021",
-   "buyer_id": "11111111-0000-4000-8000-000000000034",
-   "message": "I am interested. Please call me to discuss.",
-   "status": "closed",
-   "days": 2,
-   "hours": 2
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000008",
-   "buyer_id": "11111111-0000-4000-8000-000000000033",
-   "message": "Can you hold this until Friday? I would like to view it.",
-   "status": "new",
-   "days": 0,
-   "hours": 13
-  },
-  {
-   "lot_id": "22222222-0000-4000-8000-000000000047",
    "buyer_id": "11111111-0000-4000-8000-000000000042",
+   "message": "Is the price negotiable for a cash buyer?",
+   "status": "new",
+   "days": 0,
+   "hours": 11,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000058",
+   "buyer_id": "11111111-0000-4000-8000-000000000042",
+   "message": "Please confirm the exact weight and whether VAT is included.",
+   "status": "new",
+   "days": 0,
+   "hours": 7,
+   "messages": []
+  },
+  {
+   "lot_id": "22222222-0000-4000-8000-000000000045",
+   "buyer_id": "11111111-0000-4000-8000-000000000041",
    "message": "Can it be viewed in Johannesburg before purchase?",
    "status": "new",
    "days": 0,
-   "hours": 0
+   "hours": 0,
+   "messages": []
+  }
+ ],
+ "requests": [
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000031",
+   "commodity": "diamond",
+   "product_type": "Polished",
+   "specs": {
+    "shape": "Round Brilliant",
+    "colour": "F",
+    "clarity": "VS1",
+    "certificate": "GIA"
+   },
+   "quantity": 1.5,
+   "quantity_unit": "ct",
+   "budget_min": 180000,
+   "budget_max": 260000,
+   "delivery_country": "South Africa",
+   "timeframe": "Within a month",
+   "notes": "Engagement ring stone, GIA report needed.",
+   "status": "sourcing",
+   "desk_reply": "We have two sellers checking stock. Expect options within a week.",
+   "days": 2
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000035",
+   "commodity": "diamond",
+   "product_type": "Rough",
+   "specs": {
+    "shape": "Rough / uncut"
+   },
+   "quantity": 500,
+   "quantity_unit": "ct",
+   "budget_min": 3000000,
+   "budget_max": 5000000,
+   "delivery_country": "Belgium",
+   "timeframe": "Ongoing supply",
+   "notes": "Monthly rough parcels, mixed sizes, Kimberley Process certificates.",
+   "status": "new",
+   "desk_reply": null,
+   "days": 5
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000036",
+   "commodity": "gold",
+   "product_type": "Doré bar",
+   "specs": {
+    "purity": "Doré (unrefined)"
+   },
+   "quantity": 20000,
+   "quantity_unit": "g",
+   "budget_min": null,
+   "budget_max": null,
+   "delivery_country": "United Arab Emirates",
+   "timeframe": "Ongoing supply",
+   "notes": "Regular doré supply with export permits.",
+   "status": "sourcing",
+   "desk_reply": "We need your import licence before we can introduce a supplier.",
+   "days": 8
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000038",
+   "commodity": "coal",
+   "product_type": "RB1",
+   "specs": {
+    "grade": "6000 kcal/kg NAR and above",
+    "delivery": "FOB Richards Bay"
+   },
+   "quantity": 50000,
+   "quantity_unit": "t",
+   "budget_min": null,
+   "budget_max": null,
+   "delivery_country": "India",
+   "timeframe": "One to three months",
+   "notes": "Monthly cargoes of 50 000 t, Panamax.",
+   "status": "matched",
+   "desk_reply": "A seller can supply. Terms are on their way by email from the desk.",
+   "days": 11
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000040",
+   "commodity": "chrome",
+   "product_type": "Metallurgical concentrate",
+   "specs": {
+    "grade": "Cr₂O₃ 42–44%",
+    "delivery": "FOB Durban"
+   },
+   "quantity": 20000,
+   "quantity_unit": "t",
+   "budget_min": null,
+   "budget_max": null,
+   "delivery_country": "China",
+   "timeframe": "As soon as possible",
+   "notes": null,
+   "status": "new",
+   "desk_reply": null,
+   "days": 14
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000032",
+   "commodity": "tanzanite",
+   "product_type": "Cut",
+   "specs": {
+    "colour": "Vivid violet-blue (AAAA)"
+   },
+   "quantity": 5,
+   "quantity_unit": "ct",
+   "budget_min": 40000,
+   "budget_max": 90000,
+   "delivery_country": "South Africa",
+   "timeframe": "Flexible",
+   "notes": "Matched pair for earrings.",
+   "status": "closed",
+   "desk_reply": "Closed at your request.",
+   "days": 17
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000034",
+   "commodity": "platinum",
+   "product_type": "Bar",
+   "specs": {
+    "purity": "999.5"
+   },
+   "quantity": 1000,
+   "quantity_unit": "g",
+   "budget_min": null,
+   "budget_max": 700000,
+   "delivery_country": "South Africa",
+   "timeframe": "Within a month",
+   "notes": null,
+   "status": "new",
+   "desk_reply": null,
+   "days": 20
+  },
+  {
+   "buyer_id": "11111111-0000-4000-8000-000000000039",
+   "commodity": "manganese",
+   "product_type": "Lump",
+   "specs": {
+    "grade": "Mn 37–40%"
+   },
+   "quantity": 30000,
+   "quantity_unit": "t",
+   "budget_min": null,
+   "budget_max": null,
+   "delivery_country": "China",
+   "timeframe": "Ongoing supply",
+   "notes": "Quarterly contract.",
+   "status": "sourcing",
+   "desk_reply": null,
+   "days": 23
   }
  ],
  "alerts": [

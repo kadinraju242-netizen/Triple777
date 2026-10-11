@@ -7,7 +7,9 @@
      Listings    every lot, with approve / reject
      Sellers     every seller and what they have listed
      Buyers      every buyer and what they have asked about
-     Enquiries   every message between a buyer and a seller
+     Enquiries   buyers' questions. The desk answers them, or asks the
+                 seller (who never sees the buyer) and relays the reply
+     Requests    commodities buyers asked the desk to find
      Documents   the supporting document filed with each listing
      Alerts      "tell me when new lots list" sign-ups
 
@@ -33,7 +35,8 @@
   const DAY = 86400000;
 
   let me = null;
-  let db = { profiles: [], lots: [], enquiries: [], documents: [], alerts: [] };
+  let db = { profiles: [], lots: [], enquiries: [], documents: [], alerts: [], messages: [], requests: [] };
+  let openEnquiry = null;
   let idx = {};
   let tab = 'overview';
 
@@ -43,18 +46,24 @@
     listings:  { f: {}, sort: 'created_at', dir: -1 },
     sellers:   { f: {}, sort: 'live_value', dir: -1 },
     buyers:    { f: {}, sort: 'created_at', dir: -1 },
-    enquiries: { f: {}, sort: 'created_at', dir: -1 },
+    enquiries: { f: {}, sort: 'last', dir: -1 },
+    requests:  { f: {}, sort: 'created_at', dir: -1 },
     documents: { f: {}, sort: 'created_at', dir: -1 },
     alerts:    { f: {}, sort: 'created_at', dir: -1 }
   };
 
   const TABS = [
     ['overview', 'Overview'], ['listings', 'Listings'], ['sellers', 'Sellers'], ['buyers', 'Buyers'],
-    ['enquiries', 'Enquiries'], ['documents', 'Documents'], ['alerts', 'Alerts']
+    ['enquiries', 'Enquiries'], ['requests', 'Requests'], ['documents', 'Documents'], ['alerts', 'Alerts']
   ];
 
   const DOC_STATUS  = { pending: ['Waiting for review', 'is-wait'], approved: ['Approved', 'is-good'], rejected: ['Rejected', 'is-bad'] };
-  const ENQ_STATUS  = { new: ['New', 'is-new'], answered: ['Answered', 'is-good'], closed: ['Closed', ''] };
+  const ENQ_STATUS  = {};
+  Object.keys(cat.enquiryStatus).forEach(k => { ENQ_STATUS[k] = [cat.enquiryStatus[k].label, 'is-' + cat.enquiryStatus[k].tone]; });
+  const REQ_STATUS  = {};
+  Object.keys(cat.requestStatus).forEach(k => { REQ_STATUS[k] = [cat.requestStatus[k].label, 'is-' + cat.requestStatus[k].tone]; });
+  /* Enquiries waiting for the desk: a new question, or a seller's answer to pass on. */
+  const deskDue = e => e.status === 'new' || e.status === 'seller_replied';
   const USER_STATUS = { active: ['Active', 'is-good'], suspended: ['Suspended', 'is-bad'] };
 
   /* ---------- Small helpers ---------- */
@@ -93,6 +102,10 @@
       if (e.buyer) e.buyer.sent.push(e);
       if (e.seller) e.seller.received.push(e);
     });
+    const msgsBy = {};
+    (db.messages || []).forEach(m => { (msgsBy[m.enquiry_id] = msgsBy[m.enquiry_id] || []).push(m); });
+    db.enquiries.forEach(e => { e.messages = msgsBy[e.id] || []; });
+    (db.requests || []).forEach(r => { r.buyer = byId[r.buyer_id] || null; if (r.buyer) (r.buyer.requests = r.buyer.requests || []).push(r); });
     db.documents.forEach(d => {
       d.lot = lotById[d.lot_id] || null;
       d.seller = byId[d.seller_id] || null;
@@ -107,13 +120,16 @@
       sellers: db.profiles.filter(isSellerFn),
       buyers: db.profiles.filter(isBuyerFn),
       pendingLots: db.lots.filter(l => l.status === 'pending'),
-      pendingDocs: db.documents.filter(d => d.status === 'pending')
+      pendingDocs: db.documents.filter(d => d.status === 'pending'),
+      dueEnquiries: db.enquiries.filter(deskDue),
+      newRequests: (db.requests || []).filter(r => r.status === 'new')
     };
   }
 
   /* ---------- Tabs ---------- */
   function paintTabs() {
-    const counts = { listings: idx.pendingLots.length, documents: idx.pendingDocs.length };
+    const counts = { listings: idx.pendingLots.length, documents: idx.pendingDocs.length,
+                     enquiries: idx.dueEnquiries.length, requests: idx.newRequests.length };
     tabsEl.innerHTML = TABS.map(t =>
       '<button type="button" role="tab" data-tab="' + t[0] + '" aria-selected="' + (tab === t[0]) + '">' + t[1] +
       (counts[t[0]] ? ' <span class="count" title="Waiting for you">' + counts[t[0]] + '</span>' : '') + '</button>').join('');
@@ -184,18 +200,25 @@
 
     const queue = idx.pendingLots.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).slice(0, 5);
 
-    const byCat = cat.order.map(k => ({
-      label: cat.get(k).plural, value: live.filter(l => l.commodity === k).length, go: ['listings', { commodity: k, status: 'live' }]
+    /* Thirty commodities is too many bars: show the groups, and the
+       busiest commodities. */
+    const inGroup = (l, g) => cat.get(l.commodity) && cat.get(l.commodity).group === g.key;
+    const byCat = cat.groups.map(g => ({
+      label: g.label, value: live.filter(l => inGroup(l, g)).length, go: ['listings', { group: g.key, status: 'live' }]
     }));
-    const valueByCat = cat.order.map(k => ({
-      label: cat.get(k).plural, value: sum(live.filter(l => l.commodity === k), l => l.price_zar), go: ['listings', { commodity: k, status: 'live' }]
+    const valueByCat = cat.groups.map(g => ({
+      label: g.label, value: sum(live.filter(l => inGroup(l, g)), l => l.price_zar), go: ['listings', { group: g.key, status: 'live' }]
     }));
+    const top = (rows, n) => rows.filter(r => r.value).sort((a, b) => b.value - a.value).slice(0, n || 8);
     const byStatus = Object.keys(cat.status).map(k => ({
       label: cat.status[k].short, value: db.lots.filter(l => l.status === k).length, tone: cat.status[k].tone, go: ['listings', { status: k }]
     }));
-    const enqByCat = cat.order.map(k => ({
+    const enqByCat = top(cat.order.map(k => ({
       label: cat.get(k).plural, value: db.enquiries.filter(e => e.lot && e.lot.commodity === k).length, go: ['enquiries', { commodity: k }]
-    }));
+    })));
+    const reqByCat = top(cat.order.map(k => ({
+      label: cat.get(k).plural, value: (db.requests || []).filter(r => r.commodity === k).length, go: ['requests', { commodity: k }]
+    })), 6);
     const topSellers = idx.sellers.slice().sort((a, b) => b.live_value - a.live_value).slice(0, 6)
       .map(p => ({ label: p.company || fullName(p), value: p.live_value, go: ['listings', { seller: p.id }] }));
     const countries = {};
@@ -209,7 +232,8 @@
         kpi('Live lots', live.length, cat.moneyShort(sum(live, l => l.price_zar)) + ' asking in total', ['listings', { status: 'live' }]) +
         kpi('Sellers', idx.sellers.length, idx.sellers.filter(p => p.lots.some(l => l.status === 'live')).length + ' with a live lot', ['sellers', {}]) +
         kpi('Buyers', idx.buyers.length, idx.buyers.filter(p => p.sent.length).length + ' have enquired', ['buyers', {}]) +
-        kpi('Enquiries', db.enquiries.length, newEnq.length + ' not yet answered', ['enquiries', {}]) +
+        kpi('Enquiries for the desk', idx.dueEnquiries.length, idx.dueEnquiries.length ? 'New questions or seller replies' : db.enquiries.length + ' in total', ['enquiries', { due: 'yes' }], idx.dueEnquiries.length) +
+        kpi('Buyer requests', idx.newRequests.length, idx.newRequests.length ? 'New, not yet looked at' : (db.requests || []).length + ' in total', ['requests', { status: 'new' }], idx.newRequests.length) +
         kpi('Sold', sold.length, cat.moneyShort(sum(sold, l => l.price_zar)) + ' at asking price', ['listings', { status: 'sold' }]) +
         kpi('New accounts this week', joined, db.alerts.length + ' alert sign-ups', ['buyers', {}]) +
       '</div>' +
@@ -231,12 +255,13 @@
       '</section>' +
 
       '<div class="two-col">' +
-        '<section class="card"><div class="card-head"><h2>Live lots by category</h2><p>Number of lots</p></div>' + bars(byCat) + '</section>' +
-        '<section class="card"><div class="card-head"><h2>Value on the board by category</h2><p>Asking prices, live lots</p></div>' + bars(valueByCat, { format: cat.moneyShort }) + '</section>' +
+        '<section class="card"><div class="card-head"><h2>Live lots by group</h2><p>Number of lots</p></div>' + bars(byCat, { wide: true }) + '</section>' +
+        '<section class="card"><div class="card-head"><h2>Value on the board by group</h2><p>Asking prices, live lots</p></div>' + bars(valueByCat, { format: cat.moneyShort, wide: true }) + '</section>' +
       '</div>' +
       '<div class="two-col">' +
         '<section class="card"><div class="card-head"><h2>All lots by status</h2><p>' + db.lots.length + ' lots ever listed</p></div>' + bars(byStatus) + '</section>' +
-        '<section class="card"><div class="card-head"><h2>Enquiries by category</h2><p>What buyers ask about</p></div>' + bars(enqByCat) + '</section>' +
+        '<section class="card"><div class="card-head"><h2>Enquiries by commodity</h2><p>What buyers ask about most</p></div>' + (enqByCat.length ? bars(enqByCat) : '<p class="card-sub">No enquiries yet.</p>') +
+          (reqByCat.length ? '<div class="card-head" style="margin-top:22px"><h2>Requests by commodity</h2><p>What buyers want sourced</p></div>' + bars(reqByCat) : '') + '</section>' +
       '</div>' +
       '<div class="two-col">' +
         '<section class="card"><div class="card-head"><h2>New listings per week</h2><p>Last 12 weeks</p></div>' + weekly(db.lots, 'listings') + '</section>' +
@@ -260,13 +285,15 @@
       title: 'Listings', rows: () => db.lots, open: 'lot',
       filters(f) {
         return search(f, 'Lot, ID, seller…') +
-          sel('commodity', 'Category', cat.order.map(k => [k, cat.get(k).plural]), f, 'All categories') +
+          sel('group', 'Group', cat.groups.map(g => [g.key, g.label]), f, 'All groups') +
+          sel('commodity', 'Commodity', cat.order.map(k => [k, cat.get(k).plural]), f, 'All commodities') +
           sel('status', 'Status', Object.keys(cat.status).map(k => [k, cat.status[k].short]), f, 'Any status') +
           sel('seller', 'Seller', idx.sellers.map(p => [p.id, p.company || fullName(p)]).sort((a, b) => a[1].localeCompare(b[1])), f, 'All sellers') +
           sel('cert', 'Certificate', [['yes', 'Certified'], ['no', 'Not certified']], f, 'Any') +
           range('min', 'max', 'Price from (R)', 'Price to (R)', f) + dates(f);
       },
       match(l, f) {
+        if (f.group && (!cat.get(l.commodity) || cat.get(l.commodity).group !== f.group)) return false;
         if (f.commodity && l.commodity !== f.commodity) return false;
         if (f.status && l.status !== f.status) return false;
         if (f.seller && l.seller_id !== f.seller) return false;
@@ -283,7 +310,7 @@
         { key: 'commodity', label: 'Category', get: l => cat.label(l.commodity) },
         { key: 'seller', label: 'Seller', get: l => (l.seller ? l.seller.company || fullName(l.seller) : ''), html: l => (l.seller ? esc(l.seller.company || fullName(l.seller)) + '<span class="muted" style="display:block">' + esc(l.seller.email) + '</span>' : '—') },
         { key: 'price_zar', label: 'Asking price', num: true, get: l => Number(l.price_zar), html: l => '<span class="strong">' + esc(cat.money(l.price_zar)) + '</span>' },
-        { key: 'weight', label: 'Weight', num: true, get: l => (l.weight_unit === 'ct' ? Number(l.weight) * 0.2 : Number(l.weight)) || 0, html: l => esc(cat.weight(l)), csv: l => cat.weight(l) },
+        { key: 'weight', label: 'Quantity', num: true, get: l => (Number(l.weight) * ({ ct: 0.2, g: 1, t: 1e6 }[l.weight_unit] || 1)) || 0, html: l => esc(cat.weight(l)), csv: l => cat.weight(l) },
         { key: 'enq', label: 'Enquiries', num: true, get: l => l.enquiries.length },
         { key: 'created_at', label: 'Listed', get: l => l.created_at, cls: 'nw', html: l => esc(dateShort(l.created_at)), csv: l => l.created_at },
         { key: 'status', label: 'Status', get: l => cat.status[l.status].short, html: lotPill },
@@ -348,27 +375,62 @@
       title: 'Enquiries', rows: () => db.enquiries, open: 'enquiry',
       filters(f) {
         return search(f, 'Ref, buyer, lot, message…') +
+          sel('due', 'Show', [['yes', 'Waiting for the desk']], f, 'All enquiries') +
           sel('status', 'Status', Object.keys(ENQ_STATUS).map(k => [k, ENQ_STATUS[k][0]]), f, 'Any status') +
-          sel('commodity', 'Category', cat.order.map(k => [k, cat.get(k).plural]), f, 'All categories') +
+          sel('commodity', 'Commodity', cat.order.map(k => [k, cat.get(k).plural]), f, 'All commodities') +
           sel('seller', 'Seller', idx.sellers.map(p => [p.id, p.company || fullName(p)]).sort((a, b) => a[1].localeCompare(b[1])), f, 'All sellers') + dates(f, 'Sent');
       },
       match(e, f) {
+        if (f.due && !deskDue(e)) return false;
         if (f.status && e.status !== f.status) return false;
         if (f.commodity && (!e.lot || e.lot.commodity !== f.commodity)) return false;
         if (f.seller && e.seller_id !== f.seller) return false;
         if (f.buyer && e.buyer_id !== f.buyer) return false;
         if (!inDates(e.created_at, f)) return false;
-        if (f.q && txt(e, [e.ref, e.buyer_name, e.buyer_email, e.message, e.lot && e.lot.name, e.lot && e.lot.lot_id, e.seller && e.seller.company, e.seller && fullName(e.seller)]).indexOf(f.q.toLowerCase()) === -1) return false;
+        if (f.q && txt(e, [e.ref, e.buyer_name, e.buyer_email, e.message, e.lot && e.lot.name, e.lot && e.lot.lot_id, e.seller && e.seller.company, e.seller && fullName(e.seller)]
+          .concat(e.messages.map(m => m.body))).indexOf(f.q.toLowerCase()) === -1) return false;
         return true;
       },
       cols: [
         { key: 'ref', label: 'Ref', get: e => e.ref, html: e => '<span class="muted">' + esc(e.ref) + '</span>' },
-        { key: 'buyer', label: 'Buyer', get: e => e.buyer_name || '', html: e => '<span class="cell-main">' + esc(e.buyer_name || '—') + '</span><span class="muted">' + esc(e.buyer_email || '') + '</span>' },
+        { key: 'buyer', label: 'Buyer', get: e => e.buyer_name || e.buyer_email || '', html: e => '<span class="cell-main">' + esc(e.buyer_name || '—') + '</span><span class="muted">' + esc(e.buyer_email || '') + '</span>' },
         { key: 'lot', label: 'Lot', get: e => (e.lot ? e.lot.name : ''), html: e => (e.lot ? esc(e.lot.name) + '<span class="muted" style="display:block">' + esc(e.lot.lot_id) + ' · ' + esc(cat.money(e.lot.price_zar)) + '</span>' : '—') },
         { key: 'seller', label: 'Seller', get: e => (e.seller ? e.seller.company || fullName(e.seller) : ''), html: e => esc(e.seller ? e.seller.company || fullName(e.seller) : '—') },
-        { key: 'message', label: 'Message', get: e => e.message, html: e => '<span style="display:block;max-width:320px">' + esc(e.message.length > 90 ? e.message.slice(0, 88) + '…' : e.message) + '</span>' },
-        { key: 'created_at', label: 'Sent', get: e => e.created_at, cls: 'nw', html: e => esc(T7.ago(e.created_at)), csv: e => e.created_at },
+        { key: 'message', label: 'Latest', get: e => { const m = e.messages.slice(-1)[0]; return m ? m.body : e.message; }, html: e => {
+            const m = e.messages.slice(-1)[0];
+            const who = m ? (m.sender === 'desk' ? 'You to the ' + m.channel : m.sender === 'seller' ? 'Seller' : 'Buyer') : 'Buyer';
+            const body = m ? m.body : e.message;
+            return '<span style="display:block;max-width:320px"><b class="muted">' + esc(who) + ':</b> ' + esc(body.length > 80 ? body.slice(0, 78) + '…' : body) + '</span>'; } },
+        { key: 'last', label: 'Last activity', get: e => e.last_message_at || e.created_at, cls: 'nw', html: e => esc(T7.ago(e.last_message_at || e.created_at)), csv: e => e.last_message_at || e.created_at },
         { key: 'status', label: 'Status', get: e => ENQ_STATUS[e.status][0], html: e => pill(ENQ_STATUS[e.status]) }
+      ]
+    },
+
+    requests: {
+      title: 'Buyer requests', rows: () => db.requests || [], open: 'request',
+      filters(f) {
+        return search(f, 'Ref, buyer, notes…') +
+          sel('status', 'Status', Object.keys(REQ_STATUS).map(k => [k, REQ_STATUS[k][0]]), f, 'Any status') +
+          sel('commodity', 'Commodity', cat.order.map(k => [k, cat.get(k).plural]), f, 'All commodities') + dates(f, 'Sent');
+      },
+      match(r, f) {
+        if (f.status && r.status !== f.status) return false;
+        if (f.commodity && r.commodity !== f.commodity) return false;
+        if (f.buyer && r.buyer_id !== f.buyer) return false;
+        if (!inDates(r.created_at, f)) return false;
+        if (f.q && txt(r, [r.ref, r.notes, r.product_type, r.delivery_country, r.buyer && fullName(r.buyer), r.buyer && r.buyer.email, r.buyer && r.buyer.company]).indexOf(f.q.toLowerCase()) === -1) return false;
+        return true;
+      },
+      cols: [
+        { key: 'ref', label: 'Ref', get: r => r.ref, html: r => '<span class="muted">' + esc(r.ref) + '</span>' },
+        { key: 'buyer', label: 'Buyer', get: r => (r.buyer ? fullName(r.buyer) : ''), html: r => (r.buyer ? '<span class="cell-main">' + esc(fullName(r.buyer)) + '</span><span class="muted">' + esc(r.buyer.company || r.buyer.email) + '</span>' : '—') },
+        { key: 'commodity', label: 'Wants', get: r => cat.label(r.commodity), html: r => '<span class="cell-main">' + esc(cat.label(r.commodity)) + '</span><span class="muted">' + esc([r.product_type].concat(Object.keys(r.specs || {}).map(k => r.specs[k])).filter(Boolean).join(', ')) + '</span>' },
+        { key: 'quantity', label: 'Quantity', num: true, get: r => Number(r.quantity) || 0, html: r => (r.quantity ? esc(cat.amount(r.quantity, r.quantity_unit)) : '<span class="muted">Not given</span>'), csv: r => (r.quantity ? cat.amount(r.quantity, r.quantity_unit) : '') },
+        { key: 'budget', label: 'Budget', num: true, get: r => Number(r.budget_max || r.budget_min) || 0, html: r => (r.budget_min || r.budget_max ? esc([r.budget_min ? cat.moneyShort(r.budget_min) : '', r.budget_max ? cat.moneyShort(r.budget_max) : ''].filter(Boolean).join(' to ')) : '<span class="muted">Open</span>') },
+        { key: 'delivery_country', label: 'Deliver to', get: r => r.delivery_country || '' },
+        { key: 'timeframe', label: 'When', get: r => r.timeframe || '' },
+        { key: 'created_at', label: 'Sent', get: r => r.created_at, cls: 'nw', html: r => esc(T7.ago(r.created_at)), csv: r => r.created_at },
+        { key: 'status', label: 'Status', get: r => REQ_STATUS[r.status][0], html: r => pill(REQ_STATUS[r.status]) }
       ]
     },
 
@@ -524,6 +586,7 @@
   }
 
   function openSheet(html) {
+    if (!/data-chat-desk/.test(html)) { sheet.classList.remove('is-wide'); openEnquiry = null; }
     sheetBody.innerHTML = '<div class="sheet-inner"><button type="button" class="sheet-close" data-close aria-label="Close">×</button>' + html + '</div>';
     if (!sheet.open) sheet.showModal();
   }
@@ -571,7 +634,8 @@
     const isSeller = as ? as === 'seller' : (isSellerFn(p) && !isBuyerFn(p));
     const list = isSeller
       ? p.lots.slice(0, 8).map(l => '<div><dt>' + esc(l.lot_id) + ' · ' + esc(l.name) + '</dt><dd>' + esc(cat.money(l.price_zar)) + ' ' + lotPill(l) + '</dd></div>').join('')
-      : p.sent.slice(0, 8).map(e => '<div><dt>' + esc(e.ref) + ' · ' + esc(e.lot ? e.lot.name : 'Lot removed') + '</dt><dd>' + pill(ENQ_STATUS[e.status]) + '</dd></div>').join('');
+      : p.sent.slice(0, 8).map(e => '<div><dt>' + esc(e.ref) + ' · ' + esc(e.lot ? e.lot.name : 'Lot removed') + '</dt><dd>' + pill(ENQ_STATUS[e.status]) + '</dd></div>').join('') +
+        (p.requests || []).slice(0, 4).map(r => '<div><dt>' + esc(r.ref) + ' · wants ' + esc(cat.label(r.commodity)) + '</dt><dd>' + pill(REQ_STATUS[r.status]) + '</dd></div>').join('');
     openSheet(
       '<h2 id="sheet-title">' + esc(isSeller ? (p.company || fullName(p)) : fullName(p)) + '</h2>' +
       '<p class="muted">' + esc(sides(p)) + ' account</p>' +
@@ -582,7 +646,7 @@
         ['Joined', dateTime(p.created_at)]
       ].concat(isSeller
         ? [['Lots listed', p.lots.length], ['Live value', cat.money(p.live_value)], ['Enquiries received', p.received.length]]
-        : [['Enquiries sent', p.sent.length]])) +
+        : [['Enquiries sent', p.sent.length], ['Requests sent', (p.requests || []).length]])) +
       (list ? '<h3 style="font-size:14px;font-weight:700;margin-top:22px">' + (isSeller ? 'Their lots' : 'Their enquiries') + '</h3><dl class="spec-list" style="margin-top:6px">' + list + '</dl>' : '') +
       '<p class="form-error" id="sheet-error" role="alert" hidden></p>' +
       '<div class="action-row">' +
@@ -595,22 +659,51 @@
       '</div>');
   }
 
+  /* The full conversation, both sides. The desk sees the buyer's
+     contact details; the seller never does. */
   function enquirySheet(e) {
+    openEnquiry = e.id;
+    const buyerCard = '<div class="chat-buyer-card">' + dl([
+      ['Buyer', (e.buyer_name || '—') + ' · ' + (e.buyer_email || '')], ['Buyer phone', e.buyer_phone],
+      ['Seller', e.seller ? (e.seller.company || fullName(e.seller)) + ' · ' + e.seller.email + (e.seller.phone ? ' · ' + e.seller.phone : '') : '—'],
+      ['Sent', dateTime(e.created_at)]
+    ]) + '</div>';
+    sheet.classList.add('is-wide');
+    openSheet('<div data-chat-desk></div><h2 id="sheet-title">Enquiry ' + esc(e.ref) + '</h2>' +
+      T7.chat.thread(e, 'desk', { buyerCard: buyerCard, sellerName: e.seller ? e.seller.company || fullName(e.seller) : '',
+        extraActions: e.lot ? '<button type="button" class="btn-line btn-sm" data-open="lot" data-id="' + e.lot.id + '">Open the lot</button>' : '' }) +
+      '<p class="form-error" id="sheet-error" role="alert" hidden></p>');
+  }
+
+  function requestSheet(r) {
+    const c = cat.get(r.commodity);
+    const specs = Object.keys(r.specs || {}).map(k => {
+      const f = c && c.fields.find(x => x.key === k);
+      return [f ? f.label : k, r.specs[k]];
+    });
     openSheet(
-      '<h2 id="sheet-title">Enquiry ' + esc(e.ref) + '</h2><p class="muted">' + esc(dateTime(e.created_at)) + '</p>' +
-      '<p style="margin-top:16px;font-size:15px;white-space:pre-wrap">' + esc(e.message) + '</p>' +
+      '<h2 id="sheet-title">Request ' + esc(r.ref) + '</h2><p class="muted">' + esc(dateTime(r.created_at)) + '</p>' +
       dl([
-        ['Status', pill(ENQ_STATUS[e.status]), true],
-        ['Buyer', (e.buyer_name || '—') + ' · ' + (e.buyer_email || '')], ['Buyer phone', e.buyer_phone],
-        ['Lot', e.lot ? e.lot.lot_id + ' · ' + e.lot.name : 'Removed'], ['Asking price', e.lot ? cat.money(e.lot.price_zar) : ''],
-        ['Seller', e.seller ? (e.seller.company || fullName(e.seller)) + ' · ' + e.seller.email : '—']
-      ]) +
+        ['Status', pill(REQ_STATUS[r.status]), true],
+        ['Buyer', r.buyer ? fullName(r.buyer) + ' · ' + r.buyer.email + (r.buyer.phone ? ' · ' + r.buyer.phone : '') : '—'],
+        ['Company', r.buyer && r.buyer.company],
+        ['Commodity', cat.label(r.commodity)],
+        [c ? c.typeLabel : 'Form', r.product_type]
+      ].concat(specs).concat([
+        ['Quantity', r.quantity ? cat.amount(r.quantity, r.quantity_unit) : ''],
+        ['Budget from', r.budget_min ? cat.money(r.budget_min) : ''],
+        ['Budget up to', r.budget_max ? cat.money(r.budget_max) : ''],
+        ['Deliver to', r.delivery_country],
+        ['When', r.timeframe],
+        ['Notes', r.notes]
+      ])) +
+      '<div class="field" style="margin-top:18px;max-width:280px"><label for="request-status">Status</label><select id="request-status">' +
+        Object.keys(REQ_STATUS).map(k => '<option value="' + k + '"' + (k === r.status ? ' selected' : '') + '>' + esc(REQ_STATUS[k][0]) + '</option>').join('') + '</select></div>' +
+      '<div class="field"><label for="request-reply">Reply to the buyer <span class="opt">(they see this in their account)</span></label>' +
+        '<textarea id="request-reply" rows="3" placeholder="What the desk has found, or what it needs from the buyer">' + esc(r.desk_reply || '') + '</textarea></div>' +
       '<p class="form-error" id="sheet-error" role="alert" hidden></p>' +
-      '<div class="action-row">' +
-        (e.status !== 'closed' ? '<button type="button" class="btn-line" data-enq="closed" data-id="' + e.id + '">Close Enquiry</button>'
-                               : '<button type="button" class="btn-line" data-enq="new" data-id="' + e.id + '">Reopen</button>') +
-        (e.lot ? '<button type="button" class="btn-line" data-open="lot" data-id="' + e.lot.id + '">Open The Lot</button>' : '') +
-      '</div>');
+      '<div class="action-row"><button type="button" class="btn-desk" data-save-request="' + r.id + '">Save and update the buyer</button>' +
+        (r.buyer ? '<a class="btn-line" href="mailto:' + esc(r.buyer.email) + '?subject=' + encodeURIComponent('Your request ' + r.ref) + '">Email the buyer</a>' : '') + '</div>');
   }
 
   function documentSheet(d) {
@@ -642,6 +735,7 @@
     if (kind === 'lot') { const l = find(db.lots, id); if (l) lotSheet(l, intent); }
     if (kind === 'user') { const p = find(db.profiles, id); if (p) userSheet(p, tab === 'sellers' ? 'seller' : tab === 'buyers' ? 'buyer' : null); }
     if (kind === 'enquiry') { const e = find(db.enquiries, id); if (e) enquirySheet(e); }
+    if (kind === 'request') { const r = find(db.requests || [], id); if (r) requestSheet(r); }
     if (kind === 'document') { const d = find(db.documents, id); if (d) documentSheet(d); }
   }
 
@@ -671,7 +765,14 @@
     const t = e.target;
     if (t.closest('[data-stop]')) return;
 
-    if (t.closest('[data-close]') || t === sheet) { sheet.close(); return; }
+    if (t.closest('[data-close]') || t === sheet) { sheet.close(); openEnquiry = null; return; }
+
+    const saveReq = t.closest('[data-save-request]');
+    if (saveReq) {
+      act(saveReq, () => T7.api.admin.updateRequest(saveReq.dataset.saveRequest,
+        document.getElementById('request-status').value, document.getElementById('request-reply').value.trim()), 'Request updated');
+      return;
+    }
 
     /* The only way an admin reaches the Trade board: these buttons set a
        pass for this tab, which trade.html and lot.html check. */
@@ -722,7 +823,7 @@
 
     const enq = t.closest('[data-enq]');
     if (enq) {
-      act(enq, () => T7.api.admin.setEnquiryStatus(enq.dataset.id, enq.dataset.enq), 'Enquiry updated');
+      act(enq, () => T7.api.admin.setEnquiryStatus(enq.dataset.id, enq.dataset.enq), enq.dataset.enq === 'closed' ? 'Enquiry closed' : 'Enquiry reopened');
       return;
     }
 
@@ -785,10 +886,18 @@
     render();
   }
 
+  /* A message from the desk: save it, reload, and keep the
+     conversation open. */
+  T7.chat.wire(sheetBody, async id => {
+    await load(true);
+    const e = find(db.enquiries, id);
+    if (e) enquirySheet(e);
+  });
+
   T7.auth.require(['admin']).then(p => {
     if (!p) return;
     me = p;
-    document.getElementById('desk-sub').textContent = 'Signed in as ' + T7.auth.displayName(p) + '. Everything on the Trade Desk: accounts, lots, enquiries and documents.';
+    document.getElementById('desk-sub').textContent = 'Signed in as ' + T7.auth.displayName(p) + '. Accounts, lots, enquiries, requests and documents.';
     return load();
   }).catch(err => {
     console.error(err);

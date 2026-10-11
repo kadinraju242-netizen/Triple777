@@ -20,6 +20,8 @@
      - a new lot always starts "pending"; only an admin approves it
      - an account can buy, sell, or both; buying and selling each
        need that side switched on, and nobody enquires on their own lot
+     - enquiries go through the desk: a seller never sees who the
+       buyer is, and a buyer never sees the seller's replies directly
      - nobody becomes an admin through the website. Use:
            node local-db/admin.js make-admin someone@example.com
 
@@ -31,7 +33,18 @@ const path = require('path');
 const crypto = require('crypto');
 
 const DAY = 86400000;
-const COMMODITIES = { diamond: 'D', gold: 'G', platinum: 'P', silver: 'S', ruby: 'R', sapphire: 'SA', emerald: 'E', tanzanite: 'T' };
+/* Every commodity the desk trades, with its lot number prefix. Keep
+   in step with js/catalog.js. */
+const COMMODITIES = {
+  diamond: 'D', ruby: 'R', sapphire: 'SA', emerald: 'E', tanzanite: 'T',
+  gold: 'G', silver: 'S',
+  platinum: 'P', palladium: 'PD', rhodium: 'RH', iridium: 'IR', ruthenium: 'RU',
+  iron_ore: 'FE', manganese: 'MN', chrome: 'CR', ferrochrome: 'FC', vanadium: 'V',
+  copper: 'CU', nickel: 'NI', cobalt: 'CO', zinc: 'ZN', lead: 'PB', aluminium: 'AL',
+  coal: 'C',
+  titanium: 'TI', zircon: 'ZR', fluorspar: 'FL', phosphate: 'PH', andalusite: 'AN', vermiculite: 'VM'
+};
+const UNITS = ['ct', 'g', 't'];
 
 /* ---------- Connection ---------- */
 function readConfig() {
@@ -99,6 +112,20 @@ async function init() {
    database in place the first time the new server starts; it does
    nothing on a database that is already up to date. */
 async function upgrade(p) {
+  await upgradeRoles(p);
+  /* October 2026: 30 commodities, tonnes, and enquiries through the desk. */
+  const [fwd] = await p.query("SHOW COLUMNS FROM enquiries LIKE 'forwarded_at'");
+  if (!fwd.length) {
+    await p.query('ALTER TABLE lots MODIFY commodity VARCHAR(20) NOT NULL');
+    await p.query("ALTER TABLE lots MODIFY weight_unit ENUM('ct','g','t') NULL");
+    await p.query("ALTER TABLE enquiries MODIFY status ENUM('new','with_seller','seller_replied','answered','closed') NOT NULL DEFAULT 'new'");
+    await p.query('ALTER TABLE enquiries ADD COLUMN forwarded_at DATETIME(3) NULL AFTER status, ADD COLUMN last_message_at DATETIME(3) NULL AFTER forwarded_at');
+    await p.query('UPDATE enquiries SET last_message_at = updated_at');
+    console.log('Database upgraded: 30 commodities, buyer requests, and enquiries through the desk.');
+  }
+}
+
+async function upgradeRoles(p) {
   const [cols] = await p.query("SHOW COLUMNS FROM profiles LIKE 'is_buyer'");
   if (cols.length) return;
   await p.query('ALTER TABLE profiles ADD COLUMN is_buyer TINYINT(1) NOT NULL DEFAULT 0 AFTER role, ADD COLUMN is_seller TINYINT(1) NOT NULL DEFAULT 0 AFTER is_buyer');
@@ -165,6 +192,23 @@ async function seed() {
     const res = await q('INSERT INTO enquiries (id, lot_id, buyer_id, seller_id, buyer_name, buyer_email, buyer_phone, message, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
       [id, lot.id, buyer.id, lot.seller_id, (buyer.first_name + ' ' + buyer.last_name).trim(), buyer.email, buyer.phone, e.message, e.status, created, created]);
     await q('UPDATE enquiries SET ref = ? WHERE id = ?', ['ENQ-' + res.insertId, id]);
+    let forwarded = null, last = created;
+    for (const m of (e.messages || [])) {
+      const at = new Date(now - m.minutes * 60000);
+      await q('INSERT INTO enquiry_messages (id, enquiry_id, channel, sender, author_id, body, created_at) VALUES (?,?,?,?,?,?,?)',
+        [crypto.randomUUID(), id, m.channel, m.sender, m.author_id, m.body, at]);
+      if (m.channel === 'seller' && (!forwarded || at < forwarded)) forwarded = at;
+      if (at > last) last = at;
+    }
+    await q('UPDATE enquiries SET forwarded_at = ?, last_message_at = ? WHERE id = ?', [forwarded, last, id]);
+  }
+
+  for (const r of (data.requests || [])) {
+    const id = crypto.randomUUID();
+    const res = await q('INSERT INTO buy_requests (id, buyer_id, commodity, product_type, specs, quantity, quantity_unit, budget_min, budget_max, delivery_country, timeframe, notes, status, desk_reply, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [id, r.buyer_id, r.commodity, r.product_type, JSON.stringify(r.specs || {}), r.quantity, r.quantity_unit, r.budget_min, r.budget_max,
+       r.delivery_country, r.timeframe, r.notes, r.status, r.desk_reply, ago(r.days), ago(r.days)]);
+    await q('UPDATE buy_requests SET ref = ? WHERE id = ?', ['REQ-' + res.insertId, id]);
   }
 
   for (const a of data.alerts) {
@@ -192,6 +236,22 @@ function lotRow(l) {
 }
 function alertRow(a) { a.interests = String(a.interests || '').split(',').filter(Boolean); return a; }
 function enquiryRow(e) { delete e.enquiry_number; return e; }
+function requestRow(r) {
+  if (typeof r.specs === 'string') { try { r.specs = JSON.parse(r.specs); } catch (e) { r.specs = {}; } }
+  if (!r.specs) r.specs = {};
+  delete r.request_number;
+  return r;
+}
+const num = v => (v === '' || v == null || !isFinite(Number(v)) ? null : Number(v));
+
+async function messagesFor(ids, channel) {
+  if (!ids.length) return {};
+  const rows = await q('SELECT id, enquiry_id, channel, sender, body, created_at FROM enquiry_messages WHERE enquiry_id IN (?)' +
+    (channel ? ' AND channel = ?' : '') + ' ORDER BY created_at', channel ? [ids, channel] : [ids]);
+  const by = {};
+  rows.forEach(m => { (by[m.enquiry_id] = by[m.enquiry_id] || []).push(m); });
+  return by;
+}
 
 /* An enquiry with a small summary of its lot attached, as the pages expect. */
 const ENQ_WITH_LOT =
@@ -339,7 +399,7 @@ const FN = {
     if (!lot) refuse('That lot does not exist.');
     if (lot.status !== 'live') refuse('This lot is no longer open for enquiries.');
     if (lot.seller_id === me.id) refuse('This is your own lot.');
-    if (clean(a.message).length < 2) refuse('Write a short message for the seller first.');
+    if (clean(a.message).length < 2) refuse('Write a short message first.');
     const id = crypto.randomUUID();
     /* Name, email and phone come from the buyer's own profile, not from
        anything the browser sends. */
@@ -349,12 +409,70 @@ const FN = {
     return enquiryRow(await one('SELECT * FROM enquiries WHERE id = ?', [id]));
   },
 
+  /* The buyer's enquiries with their side of the conversation only. */
   async myEnquiries(a, me) {
     need(me);
-    return (await q(ENQ_WITH_LOT + 'WHERE e.buyer_id = ? ORDER BY e.created_at DESC', [me.id])).map(withLot).map(e => {
+    const rows = (await q(ENQ_WITH_LOT + 'WHERE e.buyer_id = ? ORDER BY COALESCE(e.last_message_at, e.created_at) DESC', [me.id])).map(withLot).map(e => {
       if (e.lot && e.lot.status !== 'live') e.lot = null;        // a buyer cannot see lots that left the board
       return e;
     });
+    const msgs = await messagesFor(rows.map(r => r.id), 'buyer');
+    rows.forEach(r => { r.messages = msgs[r.id] || []; });
+    return rows;
+  },
+
+  /* One message into a conversation. Who you are decides which side
+     it goes to: a buyer always writes to the desk, a seller always
+     writes to the desk, and only the desk can choose either side. */
+  async sendMessage(a, me) {
+    need(me);
+    const e = await one('SELECT id, buyer_id, seller_id, status, forwarded_at FROM enquiries WHERE id = ?', [clean(a.enquiry_id)]);
+    if (!e) refuse('That enquiry does not exist.');
+    const body = clean(a.body);
+    if (!body) refuse('Write a message first.');
+    if (body.length > 3000) refuse('That message is too long.');
+    let channel, sender;
+    if (me.role === 'admin') { sender = 'desk'; channel = a.channel === 'seller' ? 'seller' : 'buyer'; }
+    else if (e.buyer_id === me.id) { sender = 'buyer'; channel = 'buyer'; }
+    else if (e.seller_id === me.id && e.forwarded_at) { sender = 'seller'; channel = 'seller'; }
+    else refuse('This is not your enquiry.');
+    if (e.status === 'closed' && sender !== 'desk') refuse('This enquiry is closed. Send a new one from the lot page.');
+    const id = crypto.randomUUID();
+    await q('INSERT INTO enquiry_messages (id, enquiry_id, channel, sender, author_id, body) VALUES (?,?,?,?,?,?)', [id, e.id, channel, sender, me.id, body]);
+    const status = sender === 'buyer' ? 'new' : sender === 'seller' ? 'seller_replied' : channel === 'seller' ? 'with_seller' : 'answered';
+    await q('UPDATE enquiries SET status = ?, forwarded_at = ' + (channel === 'seller' ? 'COALESCE(forwarded_at, UTC_TIMESTAMP(3))' : 'forwarded_at') +
+            ', last_message_at = UTC_TIMESTAMP(3), updated_at = UTC_TIMESTAMP(3) WHERE id = ?', [status, e.id]);
+    return one('SELECT id, enquiry_id, channel, sender, body, created_at FROM enquiry_messages WHERE id = ?', [id]);
+  },
+
+  /* ----- buyer requests ----- */
+  async createRequest(a, me) {
+    need(me, ['buyer']);
+    if (!COMMODITIES[a.commodity]) refuse('Choose what you are looking for.');
+    const min = num(a.budget_min), max = num(a.budget_max), qty = num(a.quantity);
+    if (qty != null && !(qty > 0)) refuse('Enter a quantity above zero.');
+    if ((min != null && min < 0) || (max != null && max < 0)) refuse('A budget cannot be negative.');
+    if (min != null && max != null && max < min) refuse('The highest budget is lower than the lowest.');
+    if (clean(a.notes).length > 2000) refuse('Keep the notes under 2 000 characters.');
+    const id = crypto.randomUUID();
+    const res = await q('INSERT INTO buy_requests (id, buyer_id, commodity, product_type, specs, quantity, quantity_unit, budget_min, budget_max, delivery_country, timeframe, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      [id, me.id, a.commodity, clean(a.product_type).slice(0, 60) || null, JSON.stringify(a.specs && typeof a.specs === 'object' ? a.specs : {}),
+       qty, UNITS.indexOf(a.quantity_unit) !== -1 ? a.quantity_unit : null, min, max,
+       clean(a.delivery_country).slice(0, 80) || null, clean(a.timeframe).slice(0, 60) || null, clean(a.notes) || null]);
+    await q('UPDATE buy_requests SET ref = ? WHERE id = ?', ['REQ-' + res.insertId, id]);
+    return requestRow(await one('SELECT * FROM buy_requests WHERE id = ?', [id]));
+  },
+
+  async myRequests(a, me) {
+    need(me);
+    return (await q('SELECT * FROM buy_requests WHERE buyer_id = ? ORDER BY created_at DESC', [me.id])).map(requestRow);
+  },
+
+  async withdrawRequest(a, me) {
+    need(me);
+    const res = await q("UPDATE buy_requests SET status = 'closed', updated_at = UTC_TIMESTAMP(3) WHERE id = ? AND buyer_id = ?", [clean(a.id), me.id]);
+    if (!res.affectedRows) refuse('This is not your request.');
+    return requestRow(await one('SELECT * FROM buy_requests WHERE id = ?', [clean(a.id)]));
   },
 
   /* ----- sellers ----- */
@@ -378,7 +496,7 @@ const FN = {
       const [res] = await conn.query('INSERT INTO lots (id, seller_id, commodity, name, type, description, price_zar, weight, weight_unit, quantity, origin, specs) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
         [id, me.id, a.commodity, clean(a.name).slice(0, 90), clean(a.type) || null, clean(a.description).slice(0, 1200) || null,
          Math.round(Number(a.price_zar) * 100) / 100, a.weight != null && a.weight !== '' ? Number(a.weight) : null,
-         a.weight_unit === 'g' ? 'g' : 'ct', Math.max(1, Math.floor(Number(a.quantity) || 1)), clean(a.origin) || null,
+         UNITS.indexOf(a.weight_unit) !== -1 ? a.weight_unit : 'ct', Math.max(1, Math.floor(Number(a.quantity) || 1)), clean(a.origin) || null,
          JSON.stringify(a.specs && typeof a.specs === 'object' ? a.specs : {})]);
       await conn.query('UPDATE lots SET lot_id = ? WHERE id = ?', [COMMODITIES[a.commodity] + '-' + res.insertId, id]);
       /* The empty supporting document that goes with every listing. */
@@ -409,31 +527,51 @@ const FN = {
     return q('SELECT * FROM seller_documents WHERE seller_id = ?', [me.id]);
   },
 
+  /* Only the enquiries the desk has asked this seller about, and never
+     who the buyer is: no buyer columns leave the server. */
   async sellerEnquiries(a, me) {
     need(me, ['seller']);
-    return (await q(ENQ_WITH_LOT + 'WHERE e.seller_id = ? ORDER BY e.created_at DESC', [me.id])).map(withLot);
+    const rows = (await q('SELECT e.id, e.ref, e.lot_id, e.status, e.forwarded_at, e.last_message_at, e.created_at, ' +
+      'l.lot_id AS l_lot_id, l.name AS l_name, l.commodity AS l_commodity, l.price_zar AS l_price, l.status AS l_status ' +
+      'FROM enquiries e JOIN lots l ON l.id = e.lot_id WHERE e.seller_id = ? AND e.forwarded_at IS NOT NULL ' +
+      'ORDER BY COALESCE(e.last_message_at, e.created_at) DESC', [me.id])).map(withLot);
+    const msgs = await messagesFor(rows.map(r => r.id), 'seller');
+    rows.forEach(r => { r.messages = msgs[r.id] || []; });
+    return rows;
   },
 
+  /* The desk opens or closes an enquiry. */
   async setEnquiryStatus(a, me) {
-    need(me, ['seller', 'admin']);
-    if (['new', 'answered', 'closed'].indexOf(a.status) === -1) refuse('Unknown status.');
-    const e = await one('SELECT id, seller_id FROM enquiries WHERE id = ?', [clean(a.id)]);
-    if (!e || (me.role !== 'admin' && e.seller_id !== me.id)) refuse('This is not your enquiry.');
-    await q('UPDATE enquiries SET status = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?', [a.status, e.id]);
-    return enquiryRow(await one('SELECT * FROM enquiries WHERE id = ?', [e.id]));
+    need(me, ['admin']);
+    if (['new', 'with_seller', 'seller_replied', 'answered', 'closed'].indexOf(a.status) === -1) refuse('Unknown status.');
+    const res = await q('UPDATE enquiries SET status = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?', [a.status, clean(a.id)]);
+    if (!res.affectedRows) refuse('That enquiry does not exist.');
+    return enquiryRow(await one('SELECT * FROM enquiries WHERE id = ?', [clean(a.id)]));
+  },
+
+  async updateRequest(a, me) {
+    need(me, ['admin']);
+    if (['new', 'sourcing', 'matched', 'closed'].indexOf(a.status) === -1) refuse('Unknown status.');
+    const res = await q('UPDATE buy_requests SET status = ?, desk_reply = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = ?',
+      [a.status, clean(a.desk_reply) || null, clean(a.id)]);
+    if (!res.affectedRows) refuse('That request does not exist.');
+    return requestRow(await one('SELECT * FROM buy_requests WHERE id = ?', [clean(a.id)]));
   },
 
   /* ----- admin ----- */
   async adminLoad(a, me) {
     need(me, ['admin']);
-    const [profiles, lots, enquiries, documents, alerts] = await Promise.all([
+    const [profiles, lots, enquiries, documents, alerts, messages, requests] = await Promise.all([
       q('SELECT ' + PROFILE_COLS + ' FROM profiles ORDER BY created_at DESC'),
       q('SELECT * FROM lots ORDER BY created_at DESC'),
       q('SELECT * FROM enquiries ORDER BY created_at DESC'),
       q('SELECT * FROM seller_documents ORDER BY created_at DESC'),
-      q('SELECT * FROM lot_alerts ORDER BY created_at DESC')
+      q('SELECT * FROM lot_alerts ORDER BY created_at DESC'),
+      q('SELECT id, enquiry_id, channel, sender, body, created_at FROM enquiry_messages ORDER BY created_at'),
+      q('SELECT * FROM buy_requests ORDER BY created_at DESC')
     ]);
-    return { profiles: profiles.map(profileRow), lots: lots.map(lotRow), enquiries: enquiries.map(enquiryRow), documents: documents, alerts: alerts.map(alertRow) };
+    return { profiles: profiles.map(profileRow), lots: lots.map(lotRow), enquiries: enquiries.map(enquiryRow), documents: documents,
+             alerts: alerts.map(alertRow), messages: messages, requests: requests.map(requestRow) };
   },
 
   async reviewLot(a, me) {

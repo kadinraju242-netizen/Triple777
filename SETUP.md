@@ -30,7 +30,7 @@ All use the password **`Triple7-Test!`**
 | Sign in as | Email | Lands on |
 |---|---|---|
 | Admin | `desk+admin@triple7.test` | Dashboard |
-| Seller | `seller1@triple7.test` … `seller8@triple7.test` | Seller dashboard |
+| Seller | `seller1@triple7.test` … `seller11@triple7.test` | Seller dashboard (seller9–11 trade coal, ores, base metals and PGMs) |
 | Buyer | `buyer1@triple7.test` … `buyer12@triple7.test` | Trade board |
 
 `buyer9` is suspended, to show what that looks like. `seller1` can also buy, to show one account doing both.
@@ -86,7 +86,7 @@ About 15 minutes, once.
 
 1. In Supabase open **SQL Editor** (left menu) → **New query**.
 2. Open `supabase/01_schema.sql` from this folder, copy everything, paste, press **Run**. It should say "Success".
-3. New query again. Copy in `supabase/02_test_data.sql` and **Run**. The result lists 21 accounts, 49 lots, 49 documents, 38 enquiries.
+3. New query again. Copy in `supabase/02_test_data.sql` and **Run**. The result lists 24 accounts, 77 lots, 77 documents, 52 enquiries, 76 enquiry messages and 8 buyer requests.
 
 ### 3. Connect the site
 
@@ -150,7 +150,22 @@ The button is built but hidden for now. To switch it on:
 2. In Supabase **Authentication → URL Configuration**, change **Site URL** to `https://your-site.vercel.app/signin.html` and add `https://your-site.vercel.app/**` to **Redirect URLs** (keep the localhost one for testing).
 3. **Before sharing the link**, run `supabase/99_remove_test_data.sql`. It removes every `@triple7.test` account, including the test admin whose password is written in this file.
 
-### Already set up before buyers could also sell?
+### Already set up before October 2026?
+
+Run these once each, in order, in **SQL Editor → New query** (paste the whole file, press **Run**). Neither deletes anything.
+
+1. `supabase/04_buyers_can_sell.sql`: one account can buy and sell. Skip it if you have run it before (running it again does no harm).
+2. `supabase/05_trade_desk_update.sql`: the 30 commodities, buyer requests, and enquiries that go through the desk. It ends with a small table counting enquiry messages, buyer requests and enquiries; that table means it worked.
+
+A fresh project that runs the current `01_schema.sql` needs neither.
+
+### How enquiries work now
+
+A buyer's question goes to the desk, never to the seller. In the admin dashboard, open it under **Enquiries**: answer the buyer, or ask the seller (the box is filled in for you without the buyer's details). The seller answers under **Questions from the desk** on their dashboard and never sees who the buyer is. The seller's answer comes back to the desk, which replies to the buyer. Buyers read everything under **My enquiries** (`buyer.html`).
+
+Buyers who cannot find something use **Request a commodity** (`buyer.html#request`). Requests appear under **Requests** in the dashboard, where the desk sets a status and replies.
+
+### Older note: buyers who also sell
 
 If your Supabase project was set up before October 2026, open **SQL Editor → New query**, paste in `supabase/04_buyers_can_sell.sql` and **Run** once. It keeps every account, lot and enquiry and lets accounts hold both sides. (A fresh project that runs the current `01_schema.sql` does not need it.)
 

@@ -36,19 +36,50 @@ window.T7 = window.T7 || {};
     ruby: GEM, sapphire: GEM, emerald: GEM, tanzanite: GEM
   };
 
+  /* Stones get a cut outline; everything else (metals, ores, coal,
+     minerals) gets its chemical symbol, set like a periodic-table tile. */
   T7.lotMark = function (commodity) {
-    return '<svg class="lot-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' +
-             (MARKS[commodity] || MARKS.diamond) + '</svg>';
+    const c = T7.catalog && T7.catalog.get(commodity);
+    if (MARKS[commodity] && (!c || c.unit === 'ct')) {
+      return '<svg class="lot-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' + MARKS[commodity] + '</svg>';
+    }
+    if (c && c.symbol) {
+      return '<span class="lot-symbol' + (c.symbol.length > 3 ? ' is-long' : '') + '" aria-hidden="true"><b>' + T7.esc(c.symbol) + '</b><small>' + T7.esc(c.label) + '</small></span>';
+    }
+    return '<svg class="lot-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' + (MARKS[commodity] || MARKS.diamond) + '</svg>';
   };
 
   T7.lotMedia = function (lot, opts) {
     const o = opts || {};
     const src = o.card ? (lot.image_card || lot.image) : lot.image;
     const alt = lot.image_alt || lot.name || '';
-    return '<div class="lot-media c-' + T7.esc(lot.commodity || 'diamond') + (o.wide ? ' is-wide' : '') + (o.thumb ? ' is-thumb' : '') + '">' +
+    const group = T7.catalog && T7.catalog.groupOf(lot.commodity);
+    return '<div class="lot-media c-' + T7.esc(lot.commodity || 'diamond') + (group ? ' g-' + group.key : '') + (o.wide ? ' is-wide' : '') + (o.thumb ? ' is-thumb' : '') + '">' +
              T7.lotMark(lot.commodity) +
              (src ? '<img class="lot-photo" src="' + T7.esc(src) + '" alt="' + T7.esc(alt) + '" loading="lazy" decoding="async">' : '') +
            '</div>';
+  };
+
+  /* One lot on the board (and under "More …" on a lot page). */
+  T7.lotCard = function (l) {
+    const esc = T7.esc, cat = T7.catalog;
+    const href = 'lot.html?id=' + encodeURIComponent(l.lot_id);
+    return '<article class="lot-card">' +
+             '<a href="' + href + '" aria-hidden="true" tabindex="-1">' + T7.lotMedia(l, { card: true }) + '</a>' +
+             '<div class="lot-card-body">' +
+               '<div class="lot-meta">' +
+                 '<span class="tag">' + esc(cat.label(l.commodity)) + '</span>' +
+                 (l.latest ? '<span class="tag is-verified">New</span>' : '') +
+                 '<span class="lot-id">' + esc(l.lot_id) + '</span>' +
+               '</div>' +
+               '<a class="lot-name" href="' + href + '">' + esc(l.name) + '</a>' +
+               '<p class="lot-desc">' + esc(cat.summary(l).join(', ')) + '</p>' +
+               '<div class="lot-foot">' +
+                 '<span class="lot-price">' + esc(cat.money(l.price_zar)) + '</span>' +
+                 '<a class="text-link lot-open" href="' + href + '">View lot</a>' +
+               '</div>' +
+             '</div>' +
+           '</article>';
   };
 
   document.addEventListener('load', e => {

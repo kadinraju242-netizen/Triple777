@@ -1,4 +1,19 @@
 /* Shared October update. Full-width photographic heroes restored at owner request. */
+.page-index .hero-caption{border-bottom:1px solid #fff;padding-bottom:22px}
+.home-footprint-layout{display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
+.home-footprint-photo{margin:0}.home-footprint-photo img{display:block;width:100%;height:390px;object-fit:cover;border-radius:14px}
+.page-index .home-footprint .grading{margin-top:28px}.page-index .home-footprint .grading-item{padding:15px 0}.page-index .home-footprint .grading-num{font-size:48px}
+.page-index .service-photo{display:block;width:100%;height:220px;object-fit:cover;border-radius:9px;margin-bottom:24px}
+.page-index #service-panel-2 .service-photo,.page-index #service-panel-4 .service-photo{object-fit:contain;background:#000}
+@media(max-width:760px){.home-footprint-layout{grid-template-columns:1fr;gap:28px}.home-footprint-photo img{height:290px}.page-index .service-photo{height:210px}}
+.nav-layout{display:flex;align-items:center;justify-content:space-between;gap:28px;width:100%}
+.nav-layout .nav-links{flex:1;justify-content:space-between;gap:24px;margin-left:26px}
+.nav-layout .nav-primary{flex:1;justify-content:center}
+.nav-primary,.nav-utility{display:flex;align-items:center;gap:clamp(10px,1.1vw,20px)}
+.nav-utility{border-left:1px solid #ffffff35;padding-left:22px;margin-left:auto}
+.nav-utility a{white-space:nowrap}.nav-layout .nav-mark{flex-shrink:0}.nav-layout .nav-mark img{height:36px}
+@media(min-width:1101px) and (max-width:1250px){.nav-layout{gap:14px}.nav-layout .nav-links{margin-left:0;gap:14px}.nav-primary,.nav-utility{gap:11px}.nav-utility{padding-left:14px}.nav-layout .nav-links a{font-size:12px}.nav-layout .nav-cta{padding:9px 16px}}
+@media(max-width:1100px){.nav-layout .nav-links{margin-left:0;justify-content:flex-start;gap:28px}.nav-primary,.nav-utility{flex-direction:column;align-items:flex-start;gap:22px;width:100%}.nav-layout .nav-primary{flex:0;justify-content:flex-start}.nav-utility{border-left:0;border-top:1px solid #ffffff35;margin-left:0;padding:26px 0 0}.nav-layout .nav-links a{font-size:18px}}
 .nav,.nav.is-scrolled{background:#17365a;backdrop-filter:none}
 .nav-links{gap:clamp(12px,1.4vw,23px)}
 .nav-links a{font-size:14px}

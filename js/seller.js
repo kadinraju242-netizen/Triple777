@@ -7,7 +7,9 @@
      list a lot      pick a category, fill in its details, name a
                      price in rand, submit for approval
      your lots       every listing and where it stands
-     enquiries       messages from buyers, with their contact details
+     questions       what the Triple 7 desk asks about a lot on a
+                     buyer's behalf. Sellers never see who the buyer
+                     is: every conversation goes through the desk.
 
    A new lot is never live straight away. The database marks it
    "pending" and an admin approves or rejects it; nothing this file
@@ -24,15 +26,15 @@
   let profile = null;
   let lots = [];
   let documents = [];
-  let enquiries = [];
+  let enquiries = [];   /* only the ones the desk has asked about */
   let lotFilter = 'all';
+  let openQuestion = null;
 
   /* What the seller has typed so far, so re-drawing the form (for
      example after picking a different category) loses nothing. */
   let draft = { commodity: 'diamond', specs: {}, titleEdited: false };
 
   const DOC_STATUS = { pending: ['Document waiting for review', 'is-wait'], approved: ['Document approved', 'is-good'], rejected: ['Document not accepted', 'is-bad'] };
-  const ENQ_STATUS = { new: ['New', 'is-new'], answered: ['Answered', 'is-good'], closed: ['Closed', ''] };
 
   const dateShort = iso => new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -46,11 +48,11 @@
   function numbers() {
     const by = s => lots.filter(l => l.status === s);
     const liveValue = by('live').reduce((sum, l) => sum + Number(l.price_zar), 0);
-    const fresh = enquiries.filter(e => e.status === 'new').length;
+    const due = enquiries.filter(e => e.status === 'with_seller').length;
     return '<div class="kpi-grid">' +
       kpi('Live on the board', by('live').length, by('live').length ? cat.money(liveValue) + ' asking in total' : 'Nothing live yet') +
       kpi('Waiting for approval', by('pending').length, by('pending').length ? 'The desk reviews each lot' : 'Nothing waiting') +
-      kpi('New enquiries', fresh, enquiries.length + ' in total', fresh ? ' is-action' : '') +
+      kpi('Questions from the desk', due, due ? 'Waiting for your reply' : enquiries.length + ' in total', due ? ' is-action' : '') +
       kpi('Sold', by('sold').length, by('rejected').length ? by('rejected').length + ' not approved' : '') +
     '</div>';
   }
@@ -59,7 +61,8 @@
   function suggestTitle() {
     const c = cat.get(draft.commodity);
     const s = draft.specs;
-    const w = draft.weight ? Number(draft.weight) + ' ' + c.unit : '';
+    const w = draft.weight ? cat.amount(Number(draft.weight), c.unit) : '';
+    if (c.unit === 't') return [w, c.label, draft.type && draft.type !== c.label ? draft.type : '', s.grade].filter(Boolean).join(' ');
     if (c.unit === 'ct') {
       const shape = s.shape && s.shape !== 'Rough / uncut' ? s.shape : (draft.type === 'Rough' ? 'Rough' : '');
       return [w, shape, c.label].filter(Boolean).join(' ');
@@ -81,10 +84,11 @@
     return '<div class="form-3">' +
         select('type', c.typeLabel, c.types, draft.type) +
         '<div class="field"><label for="f-weight">' + esc(c.unitLabel) + '</label>' +
-          '<input id="f-weight" name="weight" type="number" inputmode="decimal" min="0" step="0.001" placeholder="' + (c.unit === 'ct' ? 'e.g. 1.52' : 'e.g. 100') + '" value="' + esc(draft.weight || '') + '"><p class="field-error"></p></div>' +
+          '<input id="f-weight" name="weight" type="number" inputmode="decimal" min="0" step="0.001" placeholder="' + ({ ct: 'e.g. 1.52', g: 'e.g. 100', t: 'e.g. 10000' })[c.unit] + '" value="' + esc(draft.weight || '') + '"><p class="field-error"></p></div>' +
         c.fields.map(f => select('spec.' + f.key, f.label, f.options, draft.specs[f.key])).join('') +
+        (c.unit === 't' ? '<input type="hidden" name="quantity" value="1">' :
         '<div class="field"><label for="f-quantity">Number of pieces</label>' +
-          '<input id="f-quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" value="' + esc(draft.quantity || 1) + '"><p class="field-error"></p></div>' +
+          '<input id="f-quantity" name="quantity" type="number" inputmode="numeric" min="1" step="1" value="' + esc(draft.quantity || 1) + '"><p class="field-error"></p></div>') +
         '<div class="field"><label for="f-origin">Country of origin <span class="opt">(optional)</span></label>' +
           '<input id="f-origin" name="origin" type="text" list="origin-list" value="' + esc(draft.origin || '') + '">' +
           '<datalist id="origin-list">' + cat.countries.filter(x => x !== 'Other').map(x => '<option value="' + esc(x) + '">').join('') + '</datalist></div>' +
@@ -92,15 +96,11 @@
   }
 
   function listingForm() {
-    const picks = cat.order.map(key =>
-      '<label class="role-card"><input type="radio" name="commodity" value="' + key + '"' + (draft.commodity === key ? ' checked' : '') + '>' +
-      '<span class="role-title">' + esc(cat.get(key).label) + '</span></label>').join('');
-
-    return '<section class="card" id="new">' +
-      '<div class="card-head"><h2>List a lot</h2><p>Five short steps. The desk approves it before buyers see it.</p></div>' +
+    return '<section class="card td-form-card" id="new">' +
+      '<div class="card-head"><div><p class="eyebrow">List a lot</p><h2 class="section-title td-small-title">Five short steps.<br><em>The desk does the rest.</em></h2></div>' +
+        '<p>The desk checks every lot before buyers see it.</p></div>' +
       '<form id="lot-form" novalidate>' +
-        '<div class="sell-step"><b>1</b><div><h3>What are you selling?</h3>' +
-          '<fieldset class="pick"><legend class="sr-only">Category</legend><div class="pick-grid">' + picks + '</div></fieldset></div></div>' +
+        '<div class="sell-step"><b>1</b><div><h3>What are you selling?</h3>' + T7.picker.html('commodity', draft.commodity) + '</div></div>' +
 
         '<div class="sell-step"><b>2</b><div><h3>Its details</h3><div id="detail-fields">' + detailFields() + '</div></div></div>' +
 
@@ -157,14 +157,16 @@
       form.elements.name.value = draft.name;
     }
 
+    function pick(key) {
+      /* Details differ per commodity, so start that step afresh. */
+      draft = Object.assign(readDraft(form), { commodity: key, specs: {}, type: '', weight: '', quantity: 1 });
+      document.getElementById('detail-fields').innerHTML = detailFields();
+      syncTitle();
+    }
+    T7.picker.wire(form, pick);
+
     form.addEventListener('change', e => {
-      if (e.target.name === 'commodity') {
-        /* Details differ per category, so start that step afresh. */
-        draft = Object.assign(readDraft(form), { commodity: e.target.value, specs: {}, type: '', weight: '' });
-        document.getElementById('detail-fields').innerHTML = detailFields();
-        syncTitle();
-        return;
-      }
+      if (e.target.name === 'commodity') { pick(e.target.value); return; }
       draft = readDraft(form);
       syncTitle();
     });
@@ -198,9 +200,9 @@
       };
 
       if (!draft.type) bad('type', 'Please choose one.');
-      if (!(Number(draft.weight) > 0)) bad('weight', 'Enter the weight in ' + (c.unit === 'ct' ? 'carats' : 'grams') + '.');
+      if (!(Number(draft.weight) > 0)) bad('weight', 'Enter the ' + ({ ct: 'weight in carats', g: 'weight in grams', t: 'quantity in tonnes' })[c.unit] + '.');
       c.fields.forEach(f => { if (!draft.specs[f.key]) bad('spec.' + f.key, 'Please choose one.'); });
-      if (!(Number(draft.quantity) >= 1)) bad('quantity', 'At least 1.');
+      if (c.unit !== 't' && !(Number(draft.quantity) >= 1)) bad('quantity', 'At least 1.');
       if (!draft.name || draft.name.length < 3) bad('name', 'Give the listing a title.');
       if (!(Number(draft.price_zar) > 0)) bad('price_zar', 'Enter your asking price in rand.');
 
@@ -245,7 +247,7 @@
       const st = cat.status[l.status];
       const doc = documents.find(d => d.lot_id === l.id);
       const ds = doc ? DOC_STATUS[doc.status] : null;
-      const n = enquiries.filter(e => e.lot_id === l.id).length;
+      const n = enquiries.filter(e => e.lot && e.lot.id === l.id).length;
       const actions = [];
       if (l.status === 'live') actions.push('<button type="button" class="btn-line btn-sm" data-lot-status="sold" data-id="' + l.id + '">Mark Sold</button>');
       if (['live', 'pending', 'rejected'].indexOf(l.status) !== -1) actions.push('<button type="button" class="btn-line btn-sm btn-danger" data-lot-status="withdrawn" data-id="' + l.id + '">Withdraw</button>');
@@ -265,38 +267,30 @@
       '<h2>Your lots</h2>' +
       (lots.length
         ? '<div class="filters"><div class="seg" role="group" aria-label="Show lots by status">' + seg + '</div></div>' +
-          '<div class="table-wrap"><table class="data-table"><thead><tr><th>Lot</th><th class="num">Asking price</th><th>Status</th><th>Document</th><th class="num">Enquiries</th><th></th></tr></thead>' +
+          '<div class="table-wrap"><table class="data-table"><thead><tr><th>Lot</th><th class="num">Asking price</th><th>Status</th><th>Document</th><th class="num">Questions</th><th></th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table></div>'
         : '<div class="empty"><h3>You have not listed anything yet</h3><p>Use the form above. Your first lot will show here as soon as you submit it.</p></div>') +
     '</section>';
   }
 
-  /* ---------- Enquiries ---------- */
-  function enquiriesTable() {
-    const rows = enquiries.map(e => {
-      const s = ENQ_STATUS[e.status] || [e.status, ''];
-      const lot = e.lot || lots.find(l => l.id === e.lot_id);
-      const subject = encodeURIComponent('Your enquiry ' + e.ref + (lot ? ' about ' + lot.name : ''));
-      const actions = [];
-      if (e.buyer_email) actions.push('<a class="btn-line btn-sm" href="mailto:' + esc(e.buyer_email) + '?subject=' + subject + '">Reply By Email</a>');
-      if (e.status === 'new') actions.push('<button type="button" class="btn-line btn-sm" data-enq-status="answered" data-id="' + e.id + '">Mark Answered</button>');
-      if (e.status !== 'closed') actions.push('<button type="button" class="btn-line btn-sm" data-enq-status="closed" data-id="' + e.id + '">Close</button>');
-      return '<tr>' +
-        '<td><span class="cell-main">' + esc(e.buyer_name || 'Buyer') + '</span>' +
-          '<span class="muted">' + esc(e.buyer_email || '') + (e.buyer_phone ? ' · ' + esc(e.buyer_phone) : '') + '</span></td>' +
-        '<td>' + (lot ? '<a class="textlink" href="lot.html?id=' + encodeURIComponent(lot.lot_id) + '">' + esc(lot.name) + '</a>' : '') +
-          '<span class="muted" style="display:block">' + esc(e.ref) + ' · ' + esc(T7.ago(e.created_at)) + '</span></td>' +
-        '<td style="min-width:220px">' + esc(e.message) + '</td>' +
-        '<td><span class="pill ' + s[1] + '">' + s[0] + '</span></td>' +
-        '<td class="actions">' + actions.join('') + '</td>' +
-      '</tr>';
-    }).join('');
-
-    return '<section class="dash-section" id="enquiries">' +
-      '<h2>Enquiries from buyers</h2>' +
-      (enquiries.length
-        ? '<div class="table-wrap"><table class="data-table"><thead><tr><th>Buyer</th><th>About</th><th>Message</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-        : '<div class="empty"><h3>No enquiries yet</h3><p>When a buyer asks about one of your live lots, their message and contact details appear here.</p></div>') +
+  /* ---------- Questions from the desk ---------- */
+  function questions() {
+    if (!enquiries.length) {
+      return '<section class="dash-section" id="questions"><div class="td-section-head"><div><p class="eyebrow">Questions from the desk</p>' +
+        '<h2 class="section-title td-small-title">Nothing to answer</h2></div></div>' +
+        '<div class="empty"><h3>No questions yet</h3><p>When a buyer is interested in one of your lots, the Triple 7 desk asks you here. ' +
+        'You never need to deal with buyers directly.</p></div></section>';
+    }
+    const open = enquiries.find(e => e.id === openQuestion) || enquiries.find(e => e.status === 'with_seller') || enquiries[0];
+    openQuestion = open.id;
+    return '<section class="dash-section" id="questions">' +
+      '<div class="td-section-head"><div><p class="eyebrow">Questions from the desk</p>' +
+        '<h2 class="section-title td-small-title">Buyers ask.<br><em>The desk relays.</em></h2></div>' +
+        '<p class="muted">Buyers’ details stay with the desk. Reply here and Triple 7 takes it from there.</p></div>' +
+      '<div class="chat-layout">' +
+        '<div class="chat-side">' + T7.chat.list(enquiries, open.id, 'seller') + '</div>' +
+        '<div class="chat-main">' + T7.chat.thread(open, 'seller') + '</div>' +
+      '</div>' +
     '</section>';
   }
 
@@ -304,18 +298,18 @@
   function render() {
     root.innerHTML =
       '<div class="dash-head">' +
-        '<div><p class="market-state">Seller account</p>' +
+        '<div><p class="eyebrow">Seller account</p>' +
           '<p class="dash-name">' + esc(profile.company || T7.auth.displayName(profile)) + '</p>' +
           '<p class="muted">' + esc(T7.auth.displayName(profile)) + ' · ' + esc(profile.email) + '</p></div>' +
-        '<div class="action-row"><a class="btn-desk" href="#new">List A Lot</a>' +
-          '<a class="btn-line" href="trade.html">Browse Lots</a>' +
-          '<a class="btn-line" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>' +
-          '<a class="btn-line" href="signin.html?signout=1">Sign Out</a></div>' +
+        '<div class="action-row"><a class="btn-desk" href="#new">List a lot</a>' +
+          '<a class="btn-line" href="trade.html">Browse lots</a>' +
+          '<a class="btn-line" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch to buying' : 'Start buying') + '</a>' +
+          '<a class="btn-line" href="signin.html?signout=1">Sign out</a></div>' +
       '</div>' +
       numbers() +
+      questions() +
       listingForm() +
-      lotsTable() +
-      enquiriesTable();
+      lotsTable();
     wireForm();
   }
 
@@ -362,20 +356,22 @@
       return;
     }
 
-    const enqBtn = e.target.closest('[data-enq-status]');
-    if (enqBtn) {
-      enqBtn.disabled = true;
-      try {
-        await T7.api.setEnquiryStatus(enqBtn.dataset.id, enqBtn.dataset.enqStatus);
-        const form = document.getElementById('lot-form');
-        if (form) draft = readDraft(form);
-        await load();
-      } catch (err) {
-        console.error(err);
-        enqBtn.disabled = false;
-        T7.toast(err.message || 'That did not work. Please try again.');
-      }
+    const chat = e.target.closest('[data-chat]');
+    if (chat) {
+      openQuestion = chat.dataset.chat;
+      const form = document.getElementById('lot-form');
+      if (form) draft = readDraft(form);
+      render();
+      const t = document.getElementById('q-' + openQuestion);
+      if (t && window.innerWidth < 900) t.scrollIntoView({ block: 'start' });
     }
+  });
+
+  T7.chat.wire(root, async id => {
+    openQuestion = id;
+    const form = document.getElementById('lot-form');
+    if (form) draft = readDraft(form);
+    await load();
   });
 
   T7.auth.require(['seller']).then(p => {
@@ -383,7 +379,9 @@
     profile = p;
     return load().then(() => {
       if (location.hash) {
-        const target = document.getElementById(location.hash.slice(1));
+        const hash = location.hash.slice(1);
+        if (/^q-/.test(hash) && enquiries.some(e => 'q-' + e.id === hash)) { openQuestion = hash.slice(2); render(); }
+        const target = document.getElementById(/^q-/.test(hash) ? 'questions' : hash);
         if (target) target.scrollIntoView({ block: 'start' });
       }
     });

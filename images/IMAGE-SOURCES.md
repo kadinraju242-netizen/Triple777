@@ -27,3 +27,11 @@
 - live-mine.jpg: https://triple7holdings.co.za/brand/mine-bucklands.jpg
 
 Retrieved at the user's request as reference assets. The operations and mine files contain the same photograph; their exact geographic location is unverified. They are not used as authenticated mine photographs in the new investment page. Existing diamond/product and community images remain in the original library.
+
+## About team reference — 10 October 2026
+Company information and team names/roles taken from https://triple7holdings.co.za/about.
+- team-daniel.jpg: https://triple7holdings.co.za/brand/ceo.jpg
+- team-ofentse.jpg: https://triple7holdings.co.za/uploads/team/1787638609825-a9a41cd58ec0.jpg
+- team-revonia.jpg: https://triple7holdings.co.za/uploads/1787307501646-830d657a4e19.jpg
+Used as company reference assets at the owner's request. Other team members use initials because the reference does not publish their photographs.
+Additional mineral illustrations are CSS preview graphics; the six extra mineral entries are mock listings.

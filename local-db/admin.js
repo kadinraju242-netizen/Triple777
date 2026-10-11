@@ -54,7 +54,7 @@ async function main() {
     console.log(p.email + ' deleted, with their lots, documents and enquiries.');
   } else if (cmd === 'reset') {
     await store.q('SET FOREIGN_KEY_CHECKS = 0');
-    for (const t of ['sessions', 'enquiries', 'seller_documents', 'lots', 'lot_alerts', 'profiles']) await store.q('DROP TABLE IF EXISTS ' + t);
+    for (const t of ['sessions', 'enquiry_messages', 'buy_requests', 'enquiries', 'seller_documents', 'lots', 'lot_alerts', 'profiles']) await store.q('DROP TABLE IF EXISTS ' + t);
     await store.q('SET FOREIGN_KEY_CHECKS = 1');
     await store.end();
     console.log('Tables dropped. Start the site again (node serve.js) and the test data is reloaded.');

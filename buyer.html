@@ -3,14 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Buyer — Trade Desk — Triple 7 Holdings</title>
+<title>My Enquiries — Trade Desk — Triple 7 Holdings</title>
+<meta name="description" content="Your enquiries and requests on the Triple 7 Holdings Trade Desk.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="images/logo-icon.png?v=2">
-<!-- Buyers do not have a separate dashboard: the Trade Desk board is their home. This page is kept only so older links to buyer.html still work. -->
-<script>location.replace('trade.html');</script>
-<noscript><meta http-equiv="refresh" content="0; url=trade.html"></noscript>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/trade.css">
+<link rel="stylesheet" href="css/refresh.css">
+<link rel="stylesheet" href="css/site-update.css?v=20261009nav2">
+<link rel="stylesheet" href="css/content-update.css?v=20261010">
+<link rel="stylesheet" href="css/portal.css?v=20261011">
+<link rel="stylesheet" href="css/trade-desk.css?v=20261011">
+<script>try{if(!JSON.parse(localStorage.getItem('t7.session')||'null')){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}}catch(e){}</script>
+
 </head>
-<body>
-<p style="font-family:Arial,sans-serif;padding:40px">Taking you to the <a href="trade.html">Trade Desk</a>…</p>
+<body class="page-buyer td-page">
+
+<nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html" class="is-active" aria-current="page">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html">Mine Projects</a></div><div class="nav-utility" aria-label="Account and contact"><a href="signin.html?mode=signup" data-nav-register>Register</a><a href="signin.html" data-nav-signin>Sign In</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
+
+<main id="main-content">
+<header class="pagehead td-head"><div class="pagehead-media"><img src="images/hero-douglas1.jpg" alt="Loader filling a haul truck"></div><div class="wrap"><p class="eyebrow">Your buyer account</p><h1 class="pagehead-title" id="desk-title">Your enquiries.<br><em>Answered by our desk.</em></h1><p class="pagehead-sub" id="desk-sub">Questions you have asked about lots, and commodities you have asked us to find.</p></div></header>
+<nav class="market-strip td-strip" aria-label="Trade Desk sections"><div class="market-strip-inner"><div class="market-primary"><a href="trade.html">Browse lots</a><a href="buyer.html" aria-current="page">My enquiries</a><a href="buyer.html#request">Request a commodity</a><a href="how-to-buy.html">How to buy</a></div><div class="market-accounts" id="strip-account"></div></div></nav>
+<section class="section td-body"><div class="wrap">
+  <div id="buyer-root" aria-live="polite"><p class="auth-wait">Loading your account…</p></div>
+</div></section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <a href="index.html" class="footer-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a>
+        <p>Natural, untreated, ethically-sourced diamonds mined, sorted, and supplied across Southern Africa.</p>
+      </div>
+      <div>
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="minerals.html">Minerals</a></li>
+          <li><a href="trade.html">Trade</a></li>
+          <li><a href="mine-projects.html">Mine Projects</a></li>
+          <li><a href="investors.html">Invest</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Trade Desk</h4>
+        <ul>
+          <li><a href="trade.html">Browse lots</a></li>
+          <li><a href="buyer.html#request">Request a commodity</a></li>
+          <li><a href="how-to-buy.html">How to buy</a></li>
+          <li><a href="provenance.html">Origin &amp; documentation</a></li>
+          <li><a href="signin.html">Sign in</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li>25 Villiers Street, Kimberley</li>
+          <li><a href="tel:+27735694045">+27 73 569 4045</a></li>
+          <li><a href="tel:+27213001460">+27 21 300 1460</a></li>
+          <li><a href="mailto:info@triple7holdings.co.za">info@triple7holdings.co.za</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Triple 7 Holdings. All rights reserved.</span>
+      <span>Kimberley, South Africa</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=20261008"></script>
+<script src="js/config.js"></script>
+<script src="js/vendor/supabase.js"></script>
+<script src="js/catalog.js?v=20261011"></script>
+<script src="js/trade.js?v=20261011"></script>
+<script src="js/auth.js?v=20261011"></script>
+<script src="js/api.js?v=20261011"></script>
+<script src="js/desk-chat.js?v=20261011"></script>
+<script src="js/commodity-picker.js?v=20261011"></script>
+<script src="js/buyer.js?v=20261011"></script>
+<script src="js/account-menu.js?v=20261011"></script>
 </body>
 </html>

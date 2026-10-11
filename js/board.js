@@ -5,9 +5,14 @@
    straight back here.
 
    Built for few clicks:
-     1 click  pick a category (the row of buttons)
-     1 click  open a lot
-     1 click  send the enquiry (the message is pre-written)
+     1 click  pick a group (precious stones, PGMs, ferrous …)
+     1 click  pick a commodity within it (optional)
+     1 click  open a lot, and ask the desk about it
+
+   Thirty commodities sit in seven groups (see js/catalog.js). A
+   commodity button shows how many lots it has; a commodity with
+   none is still offered, so a buyer can see what the desk trades
+   and ask us to source it.
 
    Filters are BUILT FROM THE DATA, so the board never offers a
    filter that returns nothing. Pick a category and the filters
@@ -27,8 +32,8 @@
   const resetBtn  = document.getElementById('reset');
   const toggle    = document.getElementById('filters-toggle');
   const tabsEl    = document.getElementById('commodity-tabs');
+  const groupsEl  = document.getElementById('commodity-groups');
   const welcomeEl = document.getElementById('trade-welcome');
-  const mineEl    = document.getElementById('my-enquiries');
   if (!board) return;
 
   const cat = T7.catalog;
@@ -36,13 +41,17 @@
 
   let lots = [];
   let state = { sort: 'newest', f: {} };
+  const PAGE = 12;
+  let pageSize = PAGE;
 
   /* ---------- URL <-> state ---------- */
   function readUrl() {
     const q = new URLSearchParams(location.search);
     const next = { sort: q.get('sort') || 'newest', f: {} };
     const c = q.get('commodity');
-    if (c && cat.get(c)) next.commodity = c;
+    if (c && cat.get(c)) { next.commodity = c; next.group = cat.get(c).group; }
+    const g = q.get('group');
+    if (!next.group && g && cat.group(g)) next.group = g;
     if (q.get('q')) next.q = q.get('q');
     if (q.get('min')) next.min = q.get('min');
     if (q.get('max')) next.max = q.get('max');
@@ -55,6 +64,7 @@
   function writeUrl() {
     const q = new URLSearchParams();
     if (state.commodity) q.set('commodity', state.commodity);
+    else if (state.group) q.set('group', state.group);
     if (state.q) q.set('q', state.q);
     if (state.min) q.set('min', state.min);
     if (state.max) q.set('max', state.max);
@@ -65,22 +75,39 @@
     resetBtn.hidden = !qs;
   }
 
-  /* ---------- Category buttons ---------- */
+  /* ---------- Group and commodity buttons ---------- */
+  function counts() {
+    const n = {};
+    lots.forEach(l => { n[l.commodity] = (n[l.commodity] || 0) + 1; });
+    return n;
+  }
+
   function paintTabs() {
-    const counts = {};
-    lots.forEach(l => { counts[l.commodity] = (counts[l.commodity] || 0) + 1; });
-    const btn = (key, label, n) =>
-      '<button type="button" data-commodity="' + key + '" aria-pressed="' + ((state.commodity || '') === key) + '">' +
-        esc(label) + ' <span>' + n + '</span></button>';
-    tabsEl.innerHTML = btn('', 'All Lots', lots.length) +
-      cat.order.map(key => btn(key, cat.get(key).plural, counts[key] || 0)).join('');
+    const n = counts();
+    const inGroup = g => g.items.reduce((sum, k) => sum + (n[k] || 0), 0);
+    groupsEl.innerHTML =
+      '<button type="button" data-group="" aria-pressed="' + !state.group + '">All<span>' + lots.length + '</span></button>' +
+      cat.groups.map(g => '<button type="button" data-group="' + g.key + '" aria-pressed="' + (state.group === g.key) + '">' +
+        esc(g.label) + '<span>' + inGroup(g) + '</span></button>').join('');
+
+    const group = state.group && cat.group(state.group);
+    if (!group) { tabsEl.innerHTML = ''; tabsEl.hidden = true; return; }
+    tabsEl.hidden = false;
+    const btn = (key, label, count) =>
+      '<button type="button" data-commodity="' + key + '" aria-pressed="' + ((state.commodity || '') === key) + '"' +
+        (key && !count ? ' class="is-empty"' : '') + '>' + esc(label) + ' <span>' + count + '</span></button>';
+    tabsEl.innerHTML = btn('', 'All ' + group.label.toLowerCase(), inGroup(group)) +
+      group.items.map(key => btn(key, cat.get(key).plural, n[key] || 0)).join('');
   }
 
   /* ---------- Filters ---------- */
   /* A filter is either a column on the lot ("type", "origin") or one of
      the per-commodity details kept in lot.specs. */
   function facetList() {
-    const list = [{ key: 'type', label: state.commodity ? cat.get(state.commodity).typeLabel : 'Type', get: l => l.type }];
+    /* "Type" (cut, bar, lump, cathode …) only means something within a
+       group or a commodity; across all thirty it is just a long list. */
+    const list = state.commodity || state.group
+      ? [{ key: 'type', label: state.commodity ? cat.get(state.commodity).typeLabel : 'Type', get: l => l.type }] : [];
     if (state.commodity) {
       cat.get(state.commodity).fields.forEach(f => {
         list.push({ key: f.key, label: f.label, order: f.options, get: l => (l.specs || {})[f.key] });
@@ -90,7 +117,10 @@
     return list;
   }
 
-  const inCategory = () => lots.filter(l => !state.commodity || l.commodity === state.commodity);
+  const inCategory = () => lots.filter(l =>
+    state.commodity ? l.commodity === state.commodity
+      : state.group ? cat.get(l.commodity) && cat.get(l.commodity).group === state.group
+      : true);
 
   function buildFilters() {
     const pool = inCategory();
@@ -130,6 +160,7 @@
 
   /* ---------- Filtering ---------- */
   function apply() {
+    pageSize = PAGE;
     const term = (state.q || '').trim().toLowerCase();
     const min = Number(state.min) || 0;
     const max = Number(state.max) || 0;
@@ -161,54 +192,45 @@
     };
     list.sort(by[state.sort] || by.newest);
 
-    tabsEl.querySelectorAll('[data-commodity]').forEach(b =>
-      b.setAttribute('aria-pressed', String((state.commodity || '') === b.dataset.commodity)));
+    paintTabs();
     render(list);
     writeUrl();
   }
 
   /* ---------- Render ---------- */
-  function lotCard(l) {
-    const href = 'lot.html?id=' + encodeURIComponent(l.lot_id);
-    return '<article class="lot-card">' +
-             '<a href="' + href + '" aria-hidden="true" tabindex="-1">' + T7.lotMedia(l, { card: true }) + '</a>' +
-             '<div class="lot-card-body">' +
-               '<div class="lot-meta">' +
-                 '<span class="lot-id">' + esc(l.lot_id) + '</span>' +
-                 '<span class="tag">' + esc(cat.label(l.commodity)) + '</span>' +
-                 (l.latest ? '<span class="tag is-verified">New</span>' : '') +
-               '</div>' +
-               '<a class="lot-name textlink" href="' + href + '">' + esc(l.name) + '</a>' +
-               '<p class="lot-desc">' + esc(cat.summary(l).join(' · ')) + '</p>' +
-               '<div class="lot-foot">' +
-                 '<span class="lot-price">' + esc(cat.money(l.price_zar)) + '</span>' +
-                 '<a class="lot-open" href="' + href + '">View lot</a>' +
-               '</div>' +
-             '</div>' +
-           '</article>';
-  }
-
   function render(list) {
-    const label = state.commodity ? cat.get(state.commodity).label.toLowerCase() + ' ' : '';
+    const label = state.commodity ? cat.get(state.commodity).label.toLowerCase() + ' '
+      : state.group ? cat.group(state.group).label.toLowerCase().replace(/s$/, '') + ' ' : '';
     countEl.textContent = list.length
       ? list.length + ' ' + label + (list.length === 1 ? 'lot' : 'lots')
       : 'No lots match';
 
     if (!list.length) {
+      const wanted = state.commodity ? cat.get(state.commodity).plural.toLowerCase() : 'it';
+      const ask = 'buyer.html?commodity=' + encodeURIComponent(state.commodity || '') + '#request';
       board.innerHTML =
-        '<div class="empty">' +
-          '<h3>' + (lots.length ? 'Nothing matches that' : 'No lots are listed yet') + '</h3>' +
-          '<p>' + (lots.length
-            ? 'Try another category or clear your filters. You can also tell the desk what you are looking for.'
-            : 'New lots appear here as soon as the desk approves them.') + '</p>' +
-          (lots.length ? '<button type="button" class="btn-desk" id="empty-reset">Clear Filters</button>'
-                       : '<a href="contact.html" class="btn-desk">Contact The Desk</a>') +
+        '<div class="empty td-empty">' +
+          '<h3>' + (inCategory().length ? 'Nothing matches those filters' : 'Nothing listed here right now') + '</h3>' +
+          '<p>' + (inCategory().length
+            ? 'Clear a filter or two, or tell the desk exactly what you need and we will look for it.'
+            : 'The desk can still source ' + esc(wanted) + ' for you. Tell us the grade, quantity and where it should go.') + '</p>' +
+          '<div class="action-row">' +
+            '<a href="' + ask + '" class="btn-desk">Request ' + esc(state.commodity ? cat.get(state.commodity).label.toLowerCase() : 'a commodity') + '</a>' +
+            (inCategory().length ? '<button type="button" class="btn-line" id="empty-reset">Clear filters</button>' : '') +
+          '</div>' +
         '</div>';
       const r = document.getElementById('empty-reset');
       if (r) r.addEventListener('click', reset);
       return;
     }
-    board.innerHTML = '<div class="board-grid">' + list.map(lotCard).join('') + '</div>';
+    /* A page at a time, so a long board stays quick to scan. */
+    const shown = list.slice(0, pageSize);
+    board.innerHTML = '<div class="board-grid">' + shown.map(T7.lotCard).join('') + '</div>' +
+      (list.length > shown.length
+        ? '<div class="td-more"><button type="button" class="btn-line" id="show-more">Show ' + Math.min(PAGE, list.length - shown.length) + ' more</button>' +
+          '<span class="muted">' + shown.length + ' of ' + list.length + '</span></div>' : '');
+    const more = document.getElementById('show-more');
+    if (more) more.addEventListener('click', () => { pageSize += PAGE; render(list); });
   }
 
   function reset() {
@@ -221,47 +243,50 @@
 
   /* ---------- Who is here ---------- */
   function paintWelcome(profile) {
-    const name = T7.auth.displayName(profile);
-    const who = '<p><b>' + esc(name) + '</b>' + esc({ buyer: 'Buying', seller: 'Selling', admin: 'Admin, viewing the board' }[profile.role]) + '</p>';
     let action = '';
-    if (profile.role === 'seller') action = '<a class="btn-desk" href="seller.html#new">List A Lot</a><a class="btn-line" href="seller.html">My Dashboard</a>';
-    if (profile.role === 'buyer')  action = '<a class="btn-line" href="#my-enquiries" id="jump-enquiries" hidden>My Enquiries</a>';
-    if (profile.role === 'admin')  action = '<a class="btn-desk" href="admin.html">Back To Dashboard</a>';
-    /* The same account can switch sides, or add the side it lacks. */
-    if (profile.role === 'buyer')  action += '<a class="btn-line" href="signin.html?as=seller">' + (profile.is_seller ? 'Switch To Selling' : 'Start Selling') + '</a>';
-    if (profile.role === 'seller') action += '<a class="btn-line" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch To Buying' : 'Start Buying') + '</a>';
-    action += '<a class="btn-line" href="signin.html?signout=1">Sign Out</a>';
-    welcomeEl.innerHTML = who + action;
+    if (profile.role === 'buyer') {
+      action = '<a class="btn btn-solid" href="buyer.html#request">Request a commodity</a>' +
+               '<a class="btn btn-ghost" href="buyer.html" id="jump-enquiries">My enquiries</a>' +
+               '<a class="btn btn-ghost" href="signin.html?as=seller">' + (profile.is_seller ? 'Switch to selling' : 'Start selling') + '</a>';
+    }
+    if (profile.role === 'seller') {
+      action = '<a class="btn btn-solid" href="seller.html#new">List a lot</a>' +
+               '<a class="btn btn-ghost" href="seller.html">My dashboard</a>' +
+               '<a class="btn btn-ghost" href="signin.html?as=buyer">' + (profile.is_buyer ? 'Switch to buying' : 'Start buying') + '</a>';
+    }
+    if (profile.role === 'admin') action = '<a class="btn btn-solid" href="admin.html">Back to dashboard</a>';
+    welcomeEl.innerHTML = action +
+      '<p class="td-signed-in">Signed in as <b>' + esc(T7.auth.displayName(profile)) + '</b>, ' +
+        esc({ buyer: 'buying', seller: 'selling', admin: 'desk admin' }[profile.role]) + '.</p>';
+    const cta = document.getElementById('request-cta');
+    if (cta && profile.role === 'seller') cta.href = 'signin.html?as=buyer&next=' + encodeURIComponent('buyer.html#request');
   }
 
-  async function paintMyEnquiries() {
+  async function countEnquiries() {
     let rows;
-    try { rows = await T7.api.myEnquiries(); } catch (e) { console.error(e); return; }
-    if (!rows.length) return;
-    const STATUS = { new: ['Sent', 'is-new'], answered: ['Seller replied', 'is-good'], closed: ['Closed', ''] };
-    mineEl.hidden = false;
-    mineEl.innerHTML =
-      '<h2>Your enquiries <span class="muted">' + rows.length + '</span></h2>' +
-      '<div class="table-wrap"><table class="data-table"><thead><tr><th>Ref</th><th>Lot</th><th>Your message</th><th>Sent</th><th>Status</th></tr></thead><tbody>' +
-      rows.map(r => {
-        const s = STATUS[r.status] || [r.status, ''];
-        const lot = r.lot
-          ? '<a class="cell-main textlink" href="lot.html?id=' + encodeURIComponent(r.lot.lot_id) + '">' + esc(r.lot.name) + '</a><span class="muted">' + esc(r.lot.lot_id) + ' · ' + esc(cat.money(r.lot.price_zar)) + '</span>'
-          : '<span class="muted">No longer on the board</span>';
-        return '<tr><td class="muted">' + esc(r.ref) + '</td><td>' + lot + '</td><td>' + esc(r.message) + '</td>' +
-               '<td class="muted">' + esc(T7.ago(r.created_at)) + '</td><td><span class="pill ' + s[1] + '">' + s[0] + '</span></td></tr>';
-      }).join('') + '</tbody></table></div>';
+    try { rows = await T7.api.myEnquiries(); } catch (e) { return; }
+    const waiting = rows.filter(r => r.status === 'answered').length;
     const jump = document.getElementById('jump-enquiries');
-    if (jump) { jump.hidden = false; jump.textContent = 'My Enquiries (' + rows.length + ')'; }
+    if (jump && rows.length) jump.textContent = 'My enquiries (' + rows.length + ')' + (waiting ? ' · ' + waiting + ' answered' : '');
   }
 
   /* ---------- Events ---------- */
+  groupsEl.addEventListener('click', e => {
+    const button = e.target.closest('[data-group]');
+    if (!button) return;
+    if (button.dataset.group) state.group = button.dataset.group; else delete state.group;
+    delete state.commodity;
+    state.f = {};
+    buildFilters();
+    apply();
+  });
+
   tabsEl.addEventListener('click', e => {
     const button = e.target.closest('[data-commodity]');
     if (!button) return;
     if (button.dataset.commodity) state.commodity = button.dataset.commodity;
     else delete state.commodity;
-    state.f = {};   /* a diamond's clarity means nothing for gold */
+    state.f = {};   /* a diamond's clarity means nothing for coal */
     buildFilters();
     apply();
   });
@@ -325,15 +350,14 @@
     if (!profile) return;
     if (profile.role === 'admin') {
       if (!adminPass()) { location.replace('admin.html'); return; }
-      document.querySelectorAll('.buying-summary, .catalogue-support, #alerts').forEach(el => { el.hidden = true; });
+      document.querySelectorAll('.td-steps, .td-request-cta, #alerts').forEach(el => { el.hidden = true; });
       document.getElementById('trade-intro').textContent = 'The board as buyers and sellers see it. Manage lots from the dashboard.';
     }
     paintWelcome(profile);
-    if (profile.role === 'buyer') paintMyEnquiries();
+    if (profile.role === 'buyer') countEnquiries();
 
     return T7.api.listLots().then(rows => {
       lots = rows;
-      paintTabs();
       buildFilters();
       apply();
     });

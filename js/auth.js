@@ -421,6 +421,7 @@ window.T7 = window.T7 || {};
     if (!s || !s.role) { el.innerHTML = '<a href="signin.html">Sign in</a>'; return; }
     const home = s.role === 'admin' ? '<a href="admin.html">Dashboard</a>'
                : s.role === 'seller' ? '<a href="seller.html">My dashboard</a>' : '';
+    /* The strip's own links already include the buyer's pages. */
     const other = s.role === 'buyer' ? 'seller' : s.role === 'seller' ? 'buyer' : null;
     const swap = other ? '<a href="' + T7.auth.switchUrl(other) + '">' + (other === 'seller' ? 'Sell' : 'Buy') + '</a>' : '';
     el.innerHTML = '<span>' + T7.auth.displayName(s).replace(/[&<>"]/g, '') + ' · ' + (s.role === 'admin' ? 'Admin' : s.role === 'seller' ? 'Selling' : 'Buying') + '</span>' +
