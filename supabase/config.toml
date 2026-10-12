@@ -1,0 +1,3 @@
+[functions.investor-notifications]
+# This scheduled server-only endpoint validates its own worker token.
+verify_jwt = false
