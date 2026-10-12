@@ -35,4 +35,4 @@ Existing Trade accounts can be enrolled by a trusted admin in SQL Editor by inse
 ## Still to connect
 Private document uploads, investment balances, statements, and automatic approval notifications are not implemented. No sensitive file upload control is presented as working. Admins can review applications and interests in Supabase Table Editor; there is no investor approval UI yet.
 
-The migration has not been executed against the remote project. Run it and test email delivery and permissions before using real applications. Never put a service-role key or database password in frontend JavaScript.
+A read-only schema check on 12 October 2026 confirmed all three investor tables exist in the configured remote project. Authentication and row-level permissions still need end-to-end validation. The new interest review migration (07_investor_interest_review.sql) has not been applied; see INVESTOR-INTEREST-SETUP.md for email and tracking activation. Never put a service-role key or database password in frontend JavaScript.

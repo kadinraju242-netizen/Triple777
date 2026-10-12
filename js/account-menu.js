@@ -39,7 +39,6 @@
   }
 
   function paint() {
-    if (document.body.classList.contains("investor-portal")) return;
     const utility = document.querySelector('.nav-utility');
     if (utility) {
       repointTrade();
@@ -47,9 +46,9 @@
       const signin = utility.querySelector('[data-nav-signin]');
       const register = utility.querySelector('[data-nav-register]');
       if (signin && register) {
-        signin.textContent = s ? 'Dashboard' : 'Sign In';
+        signin.textContent = s ? 'Dashboard' : 'Login';
         signin.href = s ? (s.role === 'admin' ? 'admin.html' : s.role === 'seller' ? 'seller.html' : 'buyer.html') : 'signin.html';
-        register.textContent = s ? 'Sign Out' : 'Register';
+        register.textContent = s ? 'Sign Out' : 'Sign Up';
         register.href = s ? 'signin.html?signout=1' : 'signin.html?mode=signup';
       }
       return;

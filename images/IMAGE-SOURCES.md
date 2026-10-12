@@ -35,3 +35,6 @@ Company information and team names/roles taken from https://triple7holdings.co.z
 - team-revonia.jpg: https://triple7holdings.co.za/uploads/1787307501646-830d657a4e19.jpg
 Used as company reference assets at the owner's request. Other team members use initials because the reference does not publish their photographs.
 Additional mineral illustrations are CSS preview graphics; the six extra mineral entries are mock listings.
+`mineral-collection.jpg`: The High Fin Sperm Whale, https://commons.wikimedia.org/wiki/File:Mineral_collection.JPG, CC BY-SA 3.0. Original file unchanged; illustrative specimen collection, not Triple 7 inventory.
+mineral-collection-v2.jpg: Mr. Pugo / Pexels, https://www.pexels.com/photo/collection-of-various-natural-mineral-specimens-33203193/, Pexels License. Illustrative collection; not Triple 7 inventory.
+minerals-mine-stones.jpg: Paul Seling / Pexels, https://www.pexels.com/photo/close-up-shot-of-mine-stones-12275694/, Pexels License. User-selected pyrite photograph; illustrative, not Triple 7 inventory.
