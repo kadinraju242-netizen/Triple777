@@ -368,3 +368,51 @@
 .td-page .td-small-title em{display:inline;font-size:1.12em;letter-spacing:-.03em}
 .td-page .dash-section .td-section-head h2{border-bottom:0;padding:0;justify-content:flex-start}
 @media (max-width:640px){.td-strip .market-accounts{display:none}}
+
+/* ============================================================
+   Trade Desk strip — floating pill
+   Was a full-bleed white bar running edge to edge under the main
+   nav. Now a contained pill that hugs its own content, so the row
+   reads as one control rather than a second full-width header.
+   Only this strip is affected.
+   ============================================================ */
+.td-strip{
+  background: transparent;
+  border-bottom: 0;
+  padding: 12px 0;
+  top: calc(var(--nav-height, 80px) + 4px);
+}
+.td-strip .market-strip-inner{
+  /* fit-content is what actually shortens it: the pill ends where
+     the links end instead of stretching to the page width. */
+  width: fit-content;
+  max-width: calc(100% - (var(--gutter, 24px) * 2));
+  margin: 0 auto;
+  gap: 26px;
+  padding: 0 8px;
+  background: #fff;
+  border: 1px solid var(--td-line);
+  border-radius: 999px;
+  box-shadow: 0 6px 22px rgba(16, 24, 40, .07);
+}
+/* Tighter rows so the pill does not become a tall slab. */
+.td-strip a,
+.td-strip .market-primary button{ padding: 12px 14px; }
+.td-strip .market-accounts a{ padding: 12px 10px; }
+
+/* A bottom-border underline sits awkwardly against a rounded edge,
+   so the current page is marked with a soft fill instead. */
+.td-strip a[aria-current="page"],
+.td-strip .market-primary button[aria-selected="true"]{
+  border-bottom-color: transparent;
+  background: var(--td-wash, #eef2f7);
+  border-radius: 999px;
+}
+
+@media (max-width: 760px){
+  .td-strip .market-strip-inner{
+    width: auto;
+    gap: 12px;
+    border-radius: 22px;
+  }
+}

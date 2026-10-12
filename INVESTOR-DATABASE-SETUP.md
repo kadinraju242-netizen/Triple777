@@ -12,6 +12,18 @@ Investor login/register routes and the browser auth storage key (t7.investor.aut
 6. Register a NEW test email on investor-register.html, confirm it by email, and sign in on investor-login.html. Its application should be pending in investor_applications.
 7. Approve a reviewed application using SQL Editor:
    update public.investor_applications set status='approved', reviewed_at=now() where email='YOUR_TEST_EMAIL';
+
+### Test accounts without the email round trip
+
+Steps 6 and 7 need a mailbox you control and a manual approval. To skip both, run supabase/06_investor_test_data.sql once instead. It creates three confirmed accounts on the @triple7.test domain, all with the password Triple7-Test!, one in each review state:
+
+- investor1@triple7.test — approved, lands on investor-dashboard.html
+- investor2@triple7.test — pending, lands on investor-pending.html
+- investor3@triple7.test — rejected, lands on investor-pending.html in its contact-the-team state
+
+It also publishes Bucklands and Longlands in investor_projects so the approved dashboard has something to list. The descriptions are the ones already on the site's own Mines pages; no funding target, allocation or return is stated, and the table has no column for one.
+
+These accounts carry a published password, so they must not exist on a live site. 99_remove_test_data.sql removes them and the two seeded opportunities.
 8. Sign in again. The dashboard reads the application and published projects from the database. It does not show fabricated balances or statements.
 9. Add reviewed opportunities in investor_projects and set published=true. Approved investors can register interest; records appear in investor_interests.
 

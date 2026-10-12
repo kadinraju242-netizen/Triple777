@@ -1,0 +1,300 @@
+/* ============================================================
+   Triple 7 Holdings — "What We Offer" stage
+   ------------------------------------------------------------
+   The photograph IS the block. Six existing offer stages play
+   automatically inside one rounded frame, with each stage's number,
+   category, heading and description set over the image itself.
+
+   Scope: every selector is nested under .offer-stage or
+   .offer-stage-head, which exist only in the What We Offer section
+   of index.html. The .offer-card-grid rules in content-update.css
+   are untouched and still drive the same section on about.html.
+
+   Only opacity and transform animate, so the browser can keep the
+   whole thing on the compositor.
+   ============================================================ */
+
+/* ---------- heading, on the page background ---------- */
+.offer-stage-head{
+  max-width: 670px;
+  margin-bottom: clamp(26px, 3vw, 40px);
+}
+.offer-stage-head .section-title{ margin: 10px 0 0; }
+.offer-stage-head-sub{
+  margin: 18px 0 0;
+  color: var(--text-dark-2);
+}
+
+/* ---------- the block ---------- */
+.offer-stage{
+  --os-pad:  clamp(22px, 3.6vw, 56px);
+  --os-ease: cubic-bezier(.22, .61, .36, 1);
+  --os-fade: .85s;
+
+  position: relative;
+  isolation: isolate;
+  /* Definite width, or the height bounds below would stretch the box
+     sideways to keep the ratio instead of just reshaping it. */
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* Capped so the frame and the heading above it stay on one screen
+     on a laptop, rather than the block running past the fold. */
+  max-height: min(78vh, 760px);
+  min-height: 360px;
+  border-radius: clamp(18px, 2.2vw, 28px);
+  overflow: hidden;
+  background: #0b1b2f;
+  color: #fff;
+}
+
+/* ---------- media ---------- */
+.offer-stage-media{
+  position: absolute;
+  inset: 0;
+  display: grid;                             /* all slides share one */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);  /* cell, pinned to */
+}                                            /* the frame            */
+.offer-slide{
+  grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  opacity: 0;
+  transform: scale(1.045);
+  transition: opacity var(--os-fade) var(--os-ease),
+              transform 1.6s var(--os-ease);
+  /* No will-change: six permanently promoted layers costs more on a
+     low-end phone than promoting the one slide mid-transition. */
+}
+.offer-slide.is-active{ opacity: 1; transform: scale(1); }
+.offer-slide img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* The sorted rough stone is a cut-out on black rather than a scene,
+   so unlike the other five it has a subject the centred copy can
+   collide with. The origin sits on the stone and it is lifted into
+   the clear band above the text; only black leaves the frame. */
+.offer-slide[data-fit="contain"]{ background: #000; }
+.offer-slide[data-fit="contain"] img{
+  object-fit: contain;
+  transform-origin: 50% 38%;
+  transform: translateY(-11%) scale(.95);
+}
+
+/* ---------- readability ----------
+   Gradients, not a panel. The vignette is centred on the copy and
+   fades out well before the corners, and the flat tint underneath is
+   light enough to leave a bright frame (the gold bars) looking like a
+   photograph rather than a dimmed one. */
+.offer-stage::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(78% 64% at 50% 50%,
+      rgba(6, 16, 30, .78) 0%,
+      rgba(6, 16, 30, .62) 38%,
+      rgba(6, 16, 30, .28) 68%,
+      rgba(6, 16, 30, 0)  100%),
+    linear-gradient(rgba(6, 16, 30, .18), rgba(6, 16, 30, .18));
+  transition: opacity var(--os-fade) var(--os-ease);
+}
+/* The stone is already on a black field, so the full veil only makes
+   it look grey. Eased, so it fades in step with the crossfade. Older
+   engines without :has() simply keep the standard veil. */
+.offer-stage:has(.offer-slide[data-fit="contain"].is-active)::after{
+  opacity: .5;
+}
+
+/* ---------- copy, centred over the image ---------- */
+.offer-stage-overlay{
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--os-pad);
+  text-align: center;
+  text-shadow: 0 1px 16px rgba(4, 12, 24, .45);
+}
+
+.offer-stage-text{
+  display: grid;              /* stacked like the media, so the      */
+  justify-items: center;      /* tallest stage sets the height and    */
+  width: 100%;                /* nothing shifts between slides        */
+  max-width: min(680px, 82%);
+}
+.offer-text{
+  grid-area: 1 / 1;
+  /* The stack is as tall as the longest stage, so each shorter one
+     centres itself inside it rather than hanging from the top. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s var(--os-ease);
+}
+.offer-text.is-active{ opacity: 1; pointer-events: auto; }
+
+/* Each line enters just behind the one above it. */
+.offer-text .eyebrow,
+.offer-text h3,
+.offer-text .offer-text-desc{
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .62s var(--os-ease), transform .62s var(--os-ease);
+}
+.offer-text.is-active .eyebrow        { opacity: 1; transform: none; transition-delay: .10s; }
+.offer-text.is-active h3              { opacity: 1; transform: none; transition-delay: .18s; }
+.offer-text.is-active .offer-text-desc{ opacity: 1; transform: none; transition-delay: .26s; }
+
+/* Leaving copy lifts away instead of dropping back down. */
+.offer-text.is-out .eyebrow,
+.offer-text.is-out h3,
+.offer-text.is-out .offer-text-desc{
+  opacity: 0;
+  transform: translateY(-12px);
+  transition-delay: 0s;
+  transition-duration: .34s;
+}
+
+.offer-text .eyebrow{ color: rgba(255, 255, 255, .74); }
+/* The heading carries the slide; the category and description sit
+   deliberately below it in weight and size. */
+.offer-text h3{
+  margin: 12px 0 0;
+  color: #fff;
+  font-size: clamp(28px, 3.5vw, 50px);
+  line-height: 1.12;
+}
+.offer-text-desc{
+  margin: 16px auto 0;
+  max-width: 52ch;
+  color: rgba(255, 255, 255, .86);
+}
+
+/* ---------- progress rail (display only — not a control) ---------- */
+.offer-rail{
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 3;
+  display: flex;
+  gap: 3px;
+  padding: 0 3px 3px;
+}
+.offer-rail span{
+  position: relative;
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .26);
+  overflow: hidden;
+}
+.offer-rail span::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.offer-rail span.is-done::after{ transform: scaleX(1); }
+.offer-rail span.is-live::after{
+  transform: scaleX(1);
+  transition: transform var(--os-dur, 6s) linear;
+}
+
+/* ---------- tablet ---------- */
+@media (max-width: 900px){
+  .offer-stage{ aspect-ratio: 3 / 2; max-height: none; }
+  .offer-stage-text{ max-width: 88%; }
+}
+
+/* ---------- phone ----------
+   Deliberately re-proportioned rather than scaled down: a portrait
+   frame, so the photograph still reads above the copy instead of the
+   overlay swallowing a letterbox. The min-height guarantees room for
+   the longest stage (Consulting) without the text ever leaving the
+   image. */
+@media (max-width: 620px){
+  .offer-stage{
+    --os-pad: 20px;
+    aspect-ratio: 3 / 4;
+    /* Tall enough that the copy never claims more than about half the
+       frame, so the photograph still leads on a narrow screen. */
+    min-height: 540px;
+    border-radius: 18px;
+  }
+  .offer-stage-head{ margin-bottom: 22px; }
+  .offer-stage-text{ max-width: 100%; }
+  /* A taller, narrower vignette for a portrait frame, so the copy sits
+     in a soft column rather than a wide ellipse. */
+  .offer-stage::after{
+    background:
+      radial-gradient(92% 54% at 50% 50%,
+        rgba(6, 16, 30, .82) 0%,
+        rgba(6, 16, 30, .66) 42%,
+        rgba(6, 16, 30, .26) 74%,
+        rgba(6, 16, 30, 0)  100%),
+      linear-gradient(rgba(6, 16, 30, .20), rgba(6, 16, 30, .20));
+  }
+  .offer-text h3{ font-size: clamp(23px, 6.6vw, 32px); }
+  .offer-text-desc{ font-size: 14.5px; margin-top: 12px; }
+}
+@media (max-width: 360px){
+  /* The copy block is sized by the longest stage (Consulting), which
+     needs a line more at this width — so the frame grows with it and
+     the photograph keeps the same share of the block. */
+  .offer-stage{ --os-pad: 16px; min-height: 560px; }
+  .offer-text-desc{ font-size: 14px; }
+  .offer-rail{ gap: 2px; }
+}
+
+/* ---------- reduced motion ----------
+   The slideshow still plays, because it is the content; only the
+   movement is removed. Slides cut rather than glide. */
+@media (prefers-reduced-motion: reduce){
+  .offer-slide,
+  .offer-text,
+  .offer-text .eyebrow,
+  .offer-text h3,
+  .offer-text .offer-text-desc{
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+  .offer-slide,
+  .offer-slide.is-active,
+  .offer-text .eyebrow,
+  .offer-text h3,
+  .offer-text .offer-text-desc{ transform: none !important; }
+  .offer-rail span.is-live::after{ transition: none; }
+}
+
+/* Screen readers get the full six stages as a static list, so nothing
+   depends on catching a slide as it passes. */
+.offer-stage-sr{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media print{
+  .offer-slide, .offer-text{ opacity: 1 !important; }
+}

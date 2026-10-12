@@ -50,7 +50,18 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+/* Lenis owns smooth scrolling now (js/smooth-scroll.js). Native
+   scroll-behavior:smooth fights it, so the document stays auto —
+   this is required by Lenis, not a styling choice. */
+html{ scroll-behavior: auto; }
+
+/* Lenis's required rules. Without the height:auto pair the page
+   cannot be measured correctly; the rest stop it hijacking scroll
+   inside iframes and opted-out panes. */
+html.lenis, html.lenis body{ height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped{ overflow: clip; }
+.lenis.lenis-smooth [data-lenis-prevent]{ overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe{ pointer-events: none; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   *, *::before, *::after{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
