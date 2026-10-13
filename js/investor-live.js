@@ -15,23 +15,56 @@
  const client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'t7.investor.auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const session=unwrap(await client.auth.getSession()).session;
  async function application(){const user=unwrap(await client.auth.getUser()).user;if(!user)return null;return unwrap(await client.from('investor_applications').select('*').eq('user_id',user.id).maybeSingle());}
+ function answersFrom(data){const answers={};for(const key of ['capacity','funds','verification','experience','risk','timing','signature','signature-date'])answers[key]=data.get(key);answers.investment_types=data.getAll('investment-type');return answers;}
+ /* Files the application against the account that is already signed in.
+    Supabase Auth holds one row per email, so somebody who registered
+    through Trade cannot sign up again — auth.signUp() returns success,
+    inserts nothing and sends no mail, which means the trigger that
+    normally creates the application never fires. Signing in proves the
+    account is theirs; this records the application for it. */
+ async function fileApplication(data){return unwrap(await client.rpc('submit_investor_application',{p_full_name:data.get('full-name'),p_phone:data.get('phone'),p_country:data.get('country'),p_company:data.get('company'),p_application:answersFrom(data)}));}
  document.querySelectorAll('[data-investor-signout]').forEach(button=>button.addEventListener('click',async()=>{try{unwrap(await client.auth.signOut({scope:'local'}));location.href='investor-login.html';}catch(e){message(friendly(e),true);}}));
  if(form){
   const submit=form.querySelector('[type=submit]');submit.disabled=false;
+  /* The form doubles as "apply on the account I am already signed in to".
+     In that mode the address comes from the session and there is no new
+     password to choose, so section E is put away rather than asking for
+     credentials that would be ignored. */
+  if(form.id==='investor-intake'&&session){
+   const email=form.querySelector('#email');if(email){email.value=session.user.email;email.readOnly=true;}
+   const creds=form.querySelector('#password')&&form.querySelector('#password').closest('fieldset');
+   if(creds){creds.hidden=true;creds.querySelectorAll('input').forEach(i=>{i.required=false;i.disabled=true;});}
+   message('Signed in as '+session.user.email+'. Complete this form to add investor access to that account.');
+  }
   form.addEventListener('submit',async event=>{
    event.preventDefault();if(!form.reportValidity())return;submit.disabled=true;message('Connecting…');
    try{
     const data=new FormData(form);
     if(form.id==='investor-login'){
      unwrap(await client.auth.signInWithPassword({email:data.get('login-email'),password:data.get('login-password')}));
-     const record=await application();if(!record){await client.auth.signOut({scope:'local'});throw new Error('This account has no investor application. Use Investor Registration to create an investor account.');}
+     const record=await application();
+     /* Signed in, but no application on file — a Trade account that has
+        never applied. Keep the session and send them to the form, which
+        now files against this account. Signing them out here left them
+        with no way through at all. */
+     if(!record){location.href='investor-register.html';return;}
      location.href=record.status==='approved'?'investor-dashboard.html':'investor-pending.html';
     }else{
+     /* Already signed in: the account exists, so skip sign-up entirely. */
+     if(session){await fileApplication(data);location.href='investor-pending.html';return;}
      if(data.get('password')!==data.get('password-confirm'))throw new Error('Passwords do not match.');
-     const answers={};for(const key of ['capacity','funds','verification','experience','risk','timing','signature','signature-date'])answers[key]=data.get(key);answers.investment_types=data.getAll('investment-type');
-     const result=unwrap(await client.auth.signUp({email:data.get('email'),password:data.get('password'),options:{emailRedirectTo:new URL('investor-login.html',location.href).href,data:{portal:'investor',full_name:data.get('full-name'),phone:data.get('phone'),country:data.get('country'),company:data.get('company'),investor_application:answers}}}));
+     const result=unwrap(await client.auth.signUp({email:data.get('email'),password:data.get('password'),options:{emailRedirectTo:new URL('investor-login.html',location.href).href,data:{portal:'investor',full_name:data.get('full-name'),phone:data.get('phone'),country:data.get('country'),company:data.get('company'),investor_application:answersFrom(data)}}}));
      if(result.session){location.href='investor-pending.html';return;}
-     form.reset();message('Check your email to confirm your account, then use Investor Login. If you already have an account, sign in with your existing password.');
+     /* An empty identities array is how Supabase reports "that address is
+        already registered" without confirming it to whoever is asking.
+        Nothing was created and no mail was sent, so do not promise one. */
+     if(result.user&&Array.isArray(result.user.identities)&&!result.user.identities.length){
+      message('That email already has a Triple 7 account. Sign in with its password and you can finish this application on the same account.',true);
+      const el=document.getElementById('investor-feedback');
+      const link=document.createElement('a');link.href='investor-login.html';link.className='textlink';link.textContent='Go to Investor Login';link.style.marginLeft='8px';el.append(link);
+      return;
+     }
+     form.reset();message('Check your email to confirm your account, then use Investor Login.');
     }
    }catch(error){message(friendly(error),true);}finally{submit.disabled=false;}
   });
@@ -41,7 +74,9 @@
  if(document.body.hasAttribute('data-investor-protected')){
   if(!session){location.replace('investor-login.html');return;}
   try{
-   const record=await application();if(!record){location.replace('investor-login.html');return;}
+   /* Signed in with no application: send them to the form, not back to a
+      sign-in they have already passed. */
+   const record=await application();if(!record){location.replace('investor-register.html');return;}
    if(record.status!=='approved'&&document.body.hasAttribute('data-approved-only')){location.replace('investor-pending.html');return;}
    if(record.status==='approved'&&!document.body.hasAttribute('data-approved-only')){location.replace('investor-dashboard.html');return;}
    main.replaceChildren();const section=document.createElement('section');section.className='portal-section';const wrap=document.createElement('div');wrap.className='wrap';section.append(wrap);main.append(section);
