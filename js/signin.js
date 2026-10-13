@@ -257,20 +257,18 @@
         '<section id="signin-card" role="tabpanel" aria-labelledby="tab-signin">' +
           (GOOGLE ? '<button type="button" class="btn-google" id="google"><span>Continue with Google</span></button><div class="auth-divider"><span>or use your email</span></div>' : '') +
           '<form class="form" id="signin-form" novalidate>' +
+            '<fieldset class="signin-mode"><legend>Sign in as</legend><div class="signin-mode-track"><label><input type="radio" name="login-side" value="buyer"' + (leaning === 'buyer' ? ' checked' : '') + '><span>Buyer</span></label><label><input type="radio" name="login-side" value="seller"' + (leaning === 'seller' ? ' checked' : '') + '><span>Seller</span></label><i aria-hidden="true"></i></div></fieldset>' +
             '<div class="field"><label for="si-email">Email</label><input id="si-email" name="email" type="email" autocomplete="username" required><p class="field-error"></p></div>' +
             passwordField('si-password', 'Password', 'current-password') +
             '<p class="form-error" role="alert" hidden></p>' +
-            sideButtons('Sign In') +
+            '<button type="submit" class="btn-desk auth-submit">Sign In</button>' +
           '</form>' +
           '<p class="auth-foot"><button type="button" class="linklike" id="forgot">Forgot your password?</button>' +
           '<span>New here? <button type="button" class="linklike" data-tab="signup">Create an account</button></span></p>' +
         '</section>' +
 
         '<section id="signup-card" role="tabpanel" aria-labelledby="tab-signup">' +
-          '<div class="auth-kind" role="group" aria-label="Create an account to buy or to sell">' +
-            '<button type="button" data-kind="buyer" aria-pressed="false">Sign Up As Buyer</button>' +
-            '<button type="button" data-kind="seller" aria-pressed="false">Sign Up As Seller</button>' +
-          '</div>' +
+          '<fieldset class="signin-mode"><legend>Sign up as</legend><div class="signin-mode-track"><label><input type="radio" name="signup-side" value="buyer"' + (leaning === 'buyer' ? ' checked' : '') + '><span>Buyer</span></label><label><input type="radio" name="signup-side" value="seller"' + (leaning === 'seller' ? ' checked' : '') + '><span>Seller</span></label><i aria-hidden="true"></i></div></fieldset>' +
           '<p class="auth-card-sub" id="kind-sub"></p>' +
           '<form class="form" id="signup-form" novalidate>' +
             '<div id="seller-fields">' + profileFields({}, 'su-') + '</div>' +
@@ -334,11 +332,7 @@
     function kind(which, focus) {
       form.dataset.kind = which;
       const selling = which === 'seller';
-      root.querySelectorAll('[data-kind]').forEach(b => {
-        const on = b.dataset.kind === which;
-        b.classList.toggle('is-on', on);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
+      root.querySelectorAll('input[name="signup-side"]').forEach(r => { r.checked = r.value === which; });
       const extra = document.getElementById('seller-fields');
       extra.hidden = !selling;
       extra.querySelectorAll('input, select').forEach(el => { el.disabled = !selling; });
@@ -353,7 +347,7 @@
       form.querySelectorAll('.is-invalid').forEach(f => { f.classList.remove('is-invalid'); const er = f.querySelector('.field-error'); if (er) er.textContent = ''; });
       if (focus) document.getElementById(selling ? 'su-first' : 'su-email').focus();
     }
-    root.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => kind(b.dataset.kind, true)));
+    root.querySelectorAll('input[name="signup-side"]').forEach(r => r.addEventListener('change', () => { if (r.checked) kind(r.value, false); }));
     kind(leaning, false);
 
     show(current, false);
@@ -363,7 +357,7 @@
     clearOnInput(form);
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      const side = pressed(e);
+      const side = form.querySelector('input[name="login-side"]:checked')?.value || pressed(e);
       const email = form.elements.email.value.trim();
       const password = form.elements.password.value;
       if (!EMAIL.test(email)) { setError(form, 'email', 'Enter your email address.'); form.elements.email.focus(); return; }
