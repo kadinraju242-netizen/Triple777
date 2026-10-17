@@ -14,7 +14,7 @@
 </head>
 <body class="page-mine-projects">
 
-<nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html" class="is-active" aria-current="page">Mine Projects</a></div><div class="nav-utility" aria-label="Trade account and contact"><a href="signin.html" data-nav-signin>Login</a><a href="signin.html?mode=signup" data-nav-register>Sign Up</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
+<nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html" class="is-active" aria-current="page">Mine Projects</a></div><div class="nav-utility" aria-label="Trade account and contact"><a href="signin.html" data-nav-signin>Account</a><a href="signin.html?mode=signup" data-nav-register>Sign Up</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
 
 <header class="pagehead">
   <div class="pagehead-media"><img src="images/mines/mine-projects.jpg" alt=""></div>
@@ -40,18 +40,123 @@
   </div>
 </section>
 
-<section class="section" style="padding-top:0">
-  <div class="wrap">
-    <div class="section-head reveal">
+<section class="section req-section" style="padding-top:0">
+  <div class="req-block">
+    <div class="req-block-head reveal">
       <p class="eyebrow">What we will need</p>
       <h2 class="section-title">Before we can assess it.</h2>
+      <p class="req-block-sub">Four things tell us whether a project fits. Step through the deck.</p>
     </div>
-    <div class="req-grid reveal">
-      <div class="req-item"><h3>The ground</h3><p>Provide valid Mining Right or Prospecting Right details, GPS/cadastral coordinates, geological survey reports, historical sampling data, and current environmental compliance and permitting status.</p></div>
-      <div class="req-item"><h3>Your position</h3><p>Indicate whether you represent the property owner, licence holder, funding partner, or operating contractor, alongside your preferred joint-venture structure or partnership model.</p></div>
-      <div class="req-item"><h3>Stage reached</h3><p>Detail current project milestone status — from early-stage exploration and sampling, through bulk sampling, to fully permitted sites or operational mines seeking joint-venture expansion or Trade Desk access.</p></div>
-      <div class="req-item"><h3>What is needed</h3><p>Specify the key resources requested from Triple 7 Holdings, such as earthmoving equipment, technical geological oversight, processing infrastructure, working capital, or access to our direct trade and rough diamond export pathways.</p></div>
+    <div class="req-deck reveal" data-req-deck>
+      <div class="req-deck-stack">
+        <article class="req-card" data-req-card>
+          <div class="req-card-media"><img src="images/mine-projects/req-ground.webp" alt="Open-pit mining operation with haul trucks" loading="lazy" decoding="async"></div>
+          <div class="req-card-body"><h3>The ground</h3><p>Provide valid Mining Right or Prospecting Right details, GPS/cadastral coordinates, geological survey reports, historical sampling data, and current environmental compliance and permitting status.</p></div>
+        </article>
+        <article class="req-card" data-req-card>
+          <div class="req-card-media"><img src="images/mine-projects/req-position.jpg" alt="Mining team meeting around a table" loading="lazy" decoding="async"></div>
+          <div class="req-card-body"><h3>Your position</h3><p>Indicate whether you represent the property owner, licence holder, funding partner, or operating contractor, alongside your preferred joint-venture structure or partnership model.</p></div>
+        </article>
+        <article class="req-card" data-req-card>
+          <div class="req-card-media"><img src="images/mine-projects/req-stage.webp" alt="Miners walking through an underground tunnel" loading="lazy" decoding="async"></div>
+          <div class="req-card-body"><h3>Stage reached</h3><p>Detail current project milestone status — from early-stage exploration and sampling, through bulk sampling, to fully permitted sites or operational mines seeking joint-venture expansion or Trade Desk access.</p></div>
+        </article>
+        <article class="req-card" data-req-card>
+          <div class="req-card-media"><img src="images/mine-projects/req-needed.jpeg" alt="Operator monitoring ore on a processing conveyor" loading="lazy" decoding="async"></div>
+          <div class="req-card-body"><h3>What is needed</h3><p>Specify the key resources requested from Triple 7 Holdings, such as earthmoving equipment, technical geological oversight, processing infrastructure, working capital, or access to our direct trade and rough diamond export pathways.</p></div>
+        </article>
+      </div>
+      <div class="req-deck-bar">
+        <span class="req-deck-count" data-req-count aria-live="polite">01 / 04</span>
+        <div class="req-deck-controls">
+          <button type="button" data-req-step="-1" aria-label="Previous requirement">&#8592;</button>
+          <button type="button" data-req-step="1" aria-label="Next requirement">&#8594;</button>
+        </div>
+      </div>
     </div>
+</section>
+
+
+
+
+<section class="section sites-section" id="sites">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Our current sites</p>
+      <h2 class="section-title">The ground we work.</h2>
+      <p class="section-body">Ten operations across six provinces. Search by name, province, commodity, mine type or status.</p>
+    </div>
+    <div class="site-search reveal">
+      <label class="site-search-field">
+        <span class="sr-only">Search sites</span>
+        <input type="search" id="site-search" placeholder="Search sites — gold, Limpopo, open pit&hellip;" autocomplete="off" data-site-search>
+      </label>
+      <p class="site-search-count" role="status" data-site-count></p>
+    </div>
+    <div class="grid sites-grid" data-site-grid>
+      <a href="mine-bucklands.html" class="card mine-card reveal" data-site data-search="bucklands project douglas, northern cape diamond open pit operational">
+        <div class="card-media"><img src="images/mines/bucklands-card.jpg" alt="Bucklands Project" loading="lazy"><span class="mine-card-overlay">Bucklands</span></div>
+        <h3 class="card-name">Bucklands Project</h3>
+        <p class="card-meta">Diamond &middot; Douglas, Northern Cape</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-longlands.html" class="card mine-card reveal" data-site data-search="longlands project northern cape, south africa diamond open pit operational">
+        <div class="card-media"><img src="images/mines/longlands-card.jpg" alt="Longlands Project" loading="lazy"><span class="mine-card-overlay">Longlands</span></div>
+        <h3 class="card-name">Longlands Project</h3>
+        <p class="card-meta">Diamond &middot; Northern Cape, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-kalahari-ridge.html" class="card mine-card reveal" data-site data-search="kalahari ridge mine northern cape, south africa manganese open pit operational">
+        <div class="card-media"><img src="images/mines/site-03.jpg" alt="Kalahari Ridge Mine" loading="lazy"><span class="mine-card-overlay">Kalahari Ridge</span></div>
+        <h3 class="card-name">Kalahari Ridge Mine</h3>
+        <p class="card-meta">Manganese &middot; Northern Cape, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-blackstone.html" class="card mine-card reveal" data-site data-search="blackstone mine limpopo, south africa coal open pit operational">
+        <div class="card-media"><img src="images/mines/site-04.jpg" alt="Blackstone Mine" loading="lazy"><span class="mine-card-overlay">Blackstone</span></div>
+        <h3 class="card-name">Blackstone Mine</h3>
+        <p class="card-meta">Coal &middot; Limpopo, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-golden-ridge.html" class="card mine-card reveal" data-site data-search="golden ridge mine free state, south africa gold underground operational">
+        <div class="card-media"><img src="images/mines/site-05.jpg" alt="Golden Ridge Mine" loading="lazy"><span class="mine-card-overlay">Golden Ridge</span></div>
+        <h3 class="card-name">Golden Ridge Mine</h3>
+        <p class="card-meta">Gold &middot; Free State, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Underground</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-mamba-ridge.html" class="card mine-card reveal" data-site data-search="mamba ridge mine limpopo, south africa platinum group metals underground development">
+        <div class="card-media"><img src="images/mines/site-06.jpg" alt="Mamba Ridge Mine" loading="lazy"><span class="mine-card-overlay">Mamba Ridge</span></div>
+        <h3 class="card-name">Mamba Ridge Mine</h3>
+        <p class="card-meta">Platinum Group Metals &middot; Limpopo, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Underground</span><span class="site-tag is-development">Development</span></p>
+      </a>
+      <a href="mine-vaal-river.html" class="card mine-card reveal" data-site data-search="vaal river mine north west, south africa gold underground operational">
+        <div class="card-media"><img src="images/mines/site-07.jpg" alt="Vaal River Mine" loading="lazy"><span class="mine-card-overlay">Vaal River</span></div>
+        <h3 class="card-name">Vaal River Mine</h3>
+        <p class="card-meta">Gold &middot; North West, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Underground</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-northern-star.html" class="card mine-card reveal" data-site data-search="northern star mine mpumalanga, south africa coal underground operational">
+        <div class="card-media"><img src="images/mines/site-08.jpg" alt="Northern Star Mine" loading="lazy"><span class="mine-card-overlay">Northern Star</span></div>
+        <h3 class="card-name">Northern Star Mine</h3>
+        <p class="card-meta">Coal &middot; Mpumalanga, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Underground</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-redstone.html" class="card mine-card reveal" data-site data-search="redstone mine northern cape, south africa iron ore open pit operational">
+        <div class="card-media"><img src="images/mines/site-09.jpg" alt="Redstone Mine" loading="lazy"><span class="mine-card-overlay">Redstone</span></div>
+        <h3 class="card-name">Redstone Mine</h3>
+        <p class="card-meta">Iron Ore &middot; Northern Cape, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-operational">Operational</span></p>
+      </a>
+      <a href="mine-highveld.html" class="card mine-card reveal" data-site data-search="highveld mine mpumalanga, south africa coal open pit expansion">
+        <div class="card-media"><img src="images/mines/site-10.jpg" alt="Highveld Mine" loading="lazy"><span class="mine-card-overlay">Highveld</span></div>
+        <h3 class="card-name">Highveld Mine</h3>
+        <p class="card-meta">Coal &middot; Mpumalanga, South Africa</p>
+        <p class="site-tags"><span class="site-tag">Open Pit</span><span class="site-tag is-expansion">Expansion</span></p>
+      </a>
+    </div>
+    <p class="site-search-empty" data-site-empty hidden>No sites match that search. <button type="button" class="reset-link" data-site-clear>Show all ten</button></p>
+  </div>
 </section>
 
 <section class="section" style="padding-top:0">
@@ -115,6 +220,8 @@
 <script src="js/trade.js"></script>
 <script src="js/account-menu.js?v=20261009nav"></script>
 <script src="js/lenis.min.js"></script>
+<script src="js/site-search.js?v=20261016"></script>
+<script src="js/req-deck.js?v=20261014"></script>
 <script src="js/smooth-scroll.js"></script>
 </body>
 </html>

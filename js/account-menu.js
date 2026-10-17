@@ -46,7 +46,12 @@
       const signin = utility.querySelector('[data-nav-signin]');
       const register = utility.querySelector('[data-nav-register]');
       if (signin && register) {
-        signin.textContent = s ? 'Dashboard' : 'Login';
+        /* Signed out, Login and Sign Up both led to signin.html, so only
+           Login is shown — that page offers Create Account itself. Signed
+           in the pair becomes Dashboard and Sign Out, which are two
+           different actions, so the second link comes back. */
+        utility.classList.toggle('is-authed', !!s);
+        signin.textContent = s ? 'Dashboard' : 'Account';
         signin.href = s ? (s.role === 'admin' ? 'admin.html' : s.role === 'seller' ? 'seller.html' : 'buyer.html') : 'signin.html';
         register.textContent = s ? 'Sign Out' : 'Sign Up';
         register.href = s ? 'signin.html?signout=1' : 'signin.html?mode=signup';

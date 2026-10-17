@@ -7,3 +7,17 @@
 @media(min-width:761px){.page-about .services-panel.is-enhanced{grid-template-columns:.8fr 1.2fr;column-gap:40px}.page-about .service-description{max-width:none}}
 @media(max-width:1000px){.about-intro-layout,.footprint-layout,.about-responsibility-layout,.about-partnership-layout{gap:35px}.footprint-photo img{height:410px}.page-about .service-choice{font-size:25px}}
 @media(max-width:760px){.page-about .section{padding:54px 0}.about-intro-layout,.footprint-layout,.about-responsibility-layout,.about-partnership-layout{grid-template-columns:1fr;gap:28px}.about-footprint{padding:50px 0}.footprint-photo img{height:320px}.footprint-numbers{gap:65px}.about-intro-layout .about-lead{font-size:20px}.page-about .services-panel{padding:23px}.page-about .service-item+.service-item{border-top-color:#d7e1eb}.page-about .is-enhanced .service-description{border-left:0;padding:0 0 24px}.page-about .service-photo{height:210px}.page-about .service-choice{font-size:25px}.page-about #csr .split-media img{height:350px}.about-partnership-layout figure img{height:300px}.page-about .sdg-section{padding:40px 0}.page-about .invest-faq{padding-top:30px}}
+
+/* Vision & mission: the two statements in the right-hand column. */
+.statement + .statement{margin-top:34px;padding-top:30px;border-top:1px solid #d7e1eb}
+/* .split-text h3 in refresh.css is (0,1,1); this needs to outrank it. */
+.statement .statement-title{font-size:19px;line-height:1.4;letter-spacing:-.01em;color:#17365a;margin:0 0 12px}
+.statement p{margin:0;color:#52667d;line-height:1.75;font-size:16px}
+@media(max-width:700px){
+  .statement + .statement{margin-top:26px;padding-top:24px}
+  .statement .statement-title{font-size:17px}
+}
+
+/* The statements now live inside the photo section, below its copy. */
+.about-statements{margin-top:34px;padding-top:30px;border-top:1px solid #d7e1eb}
+.about-statements .statement + .statement{margin-top:28px;padding-top:24px}

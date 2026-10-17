@@ -21,3 +21,197 @@
 .mineral-directory-heading{margin-bottom:40px}.mineral-directory-heading>p:last-child{margin-top:20px;color:#52667d;font-size:14px}.mineral-browser{display:grid;grid-template-columns:.8fr 1.2fr;gap:30px;align-items:start}.mineral-name-list li{padding:0;border:0;background:transparent}.mineral-name-list button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:19px 24px;font:inherit;font-size:18px;color:#17365a;background:#fff;border:1px solid #cbd6e0;text-align:left;cursor:pointer;transition:background .25s ease-in-out,color .25s ease-in-out}.mineral-name-list button[aria-pressed=true]{background:#21466f;color:white;border-color:#21466f}.mineral-name-list button[aria-pressed=true] .mineral-symbol{color:#e0e8f1}.mineral-name-list button:focus-visible{outline:3px solid #3977c6;outline-offset:3px}.mineral-view{margin:0;border:1px solid #cbd6e0;background:#fff}.mineral-view>img{display:block;width:100%;height:440px;object-fit:contain;background:#000}.mineral-view>img[src*="G-2201"]{object-fit:cover}.mineral-view figcaption{padding:25px}.mineral-view h3{font-size:28px}.mineral-view p{font-size:13px;color:#52667d;margin-top:12px}.page-minerals .pagehead-media{top:var(--nav-height,80px);bottom:0}.page-minerals .pagehead-media img{width:100%;height:100%;padding:18px;object-fit:contain;object-position:center}.page-about #service-panel-4 .service-photo{object-fit:cover;background:transparent;object-position:center 50%}
 @media(max-width:760px){.mineral-browser{grid-template-columns:1fr;gap:25px}.mineral-name-list{grid-template-columns:1fr 1fr;gap:10px}.mineral-name-list button{font-size:15px;padding:15px 12px}.mineral-view>img{height:300px}.page-minerals .pagehead-media img{padding:15px}.mineral-view figcaption{padding:22px}}
 .project-glance>.textlink{display:block;width:fit-content;margin-bottom:24px}.project-glance>.eyebrow{display:block;margin-top:0!important;margin-bottom:24px}
+
+.mineral-intro{max-width:72ch;margin-top:22px;font-size:17px;line-height:1.75;color:#3c4f66}
+@media(max-width:760px){.mineral-intro{font-size:15.5px;line-height:1.7;margin-top:18px}}
+
+/* Nav: one account link when signed out (Login and Sign Up both opened signin.html).
+   The second link returns as Sign Out once account-menu.js marks the bar authed.
+   Hidden in CSS rather than markup so there is no flash of both before JS runs. */
+.nav-utility [data-nav-register]{display:none}
+.nav-utility.is-authed [data-nav-register]{display:block}
+
+/* ============================================================
+   Mine Projects — "Before we can assess it" card deck
+   Replaces the four-up .req-grid with one card at a time and a
+   stack peeking behind it. Scoped to .req-deck, which exists only
+   on mine-projects.html; the old .req-grid rules are untouched.
+   ============================================================ */
+.req-deck{--req-radius:16px;max-width:800px}
+.req-deck-stack{display:grid;position:relative}
+.req-card{
+  grid-area:1/1;display:grid;grid-template-columns:minmax(0,1fr);align-items:start;                      /* stacked, so the tallest card sets the height */
+  background:#fff;border:1px solid #d7e1eb;border-radius:var(--req-radius);overflow:hidden;
+  /* --d is how far back in the deck this card sits; the JS sets it. */
+  transform:translate(calc(var(--d,0)*11px + var(--px,0px)),calc(var(--d,0)*14px + var(--py,0px))) rotate(calc(var(--d,0)*0.85deg)) scale(calc(1 - var(--d,0)*.042));
+  opacity:calc(1 - var(--d,0)*.4);
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),opacity .5s cubic-bezier(.22,.61,.36,1);
+  pointer-events:none;
+  box-shadow:0 18px 40px rgba(16,32,51,.07)
+}
+.req-card.is-front{pointer-events:auto}
+/* min-width:0 or the image's intrinsic 2560px sets the track size and the card overflows. */
+.req-card-media,.req-card-body{min-width:0}
+.req-card-media{background:#eef3f8;aspect-ratio:1.95/1;overflow:hidden}
+.req-card-media img{width:100%;max-width:100%;height:100%;object-fit:cover;display:block}
+.req-card-body{padding:clamp(18px,2.4vw,28px)}
+/* The card sits on the navy block, which sets color:#fff — the card is white, so its own text colours are stated explicitly. */
+.req-card-body h3{font-size:clamp(19px,1.9vw,23px);letter-spacing:-.02em;margin:0 0 9px;color:#17365a}
+.req-card-body p{color:#52667d;font-size:14.5px;line-height:1.7;margin:0;max-width:64ch}
+
+.req-deck-bar{display:flex;align-items:center;gap:18px;margin-top:20px}
+.req-deck-count{
+  display:inline-block;border:1px solid #c7d3df;border-radius:40px;padding:8px 20px;
+  font-size:13px;letter-spacing:.05em;color:#52667d
+}
+.req-deck-controls{display:flex;gap:10px;margin-left:auto}
+.req-deck-controls button{
+  width:46px;height:46px;border:1px solid #c7d3df;border-radius:50%;
+  background:#fff;color:#17365a;cursor:pointer;font-size:19px;line-height:1;
+  transition:background-color .2s ease,border-color .2s ease
+}
+.req-deck-controls button:hover{background:#eef3f8;border-color:#17365a}
+.req-deck-controls button:focus-visible{outline:2px solid #17365a;outline-offset:3px}
+
+@media(max-width:760px){
+  .req-card{transform:translate(calc(var(--d,0)*6px),calc(var(--d,0)*9px)) rotate(calc(var(--d,0)*0.6deg)) scale(calc(1 - var(--d,0)*.033))}
+  .req-card-media{width:100%;aspect-ratio:4/3}
+  .req-card-body p{font-size:14.5px}
+  .req-deck-bar{margin-top:20px}
+  .req-deck-controls button{width:52px;height:52px;font-size:21px}
+}
+@media(prefers-reduced-motion:reduce){
+  .req-card{transition:none}
+}
+.req-card-body{display:block}
+
+/* The deck sits in its own rounded block, matching the home page journey
+   section's values: 24px inset, 40px radius, same navy gradient. */
+.req-section{padding-bottom:0}
+.req-block{
+  margin:24px;border-radius:40px;overflow:hidden;color:#fff;
+  background:linear-gradient(135deg,#17365a,#21466f 60%,#163254);
+  padding:clamp(38px,4.2vw,62px) clamp(20px,4vw,52px)
+}
+.req-block-head{text-align:center;max-width:780px;margin:0 auto clamp(22px,3vw,34px)}
+.req-block-head .eyebrow,.req-block-head .section-title{color:#fff}
+.req-block-sub{color:#d9e5f5;margin:18px auto 0;max-width:60ch}
+.req-block .req-deck{margin:0 auto}
+/* On navy the counter and arrows invert, as they do in the journey block. */
+.req-block .req-deck-count{border-color:#ffffff80;color:#e6eefa}
+.req-block .req-deck-controls button{border-color:#ffffff70;background:transparent;color:#fff}
+.req-block .req-deck-controls button:hover{background:#ffffff25;border-color:#fff}
+.req-block .req-deck-controls button:focus-visible{outline-color:#fff}
+@media(max-width:760px){
+  .req-block{margin:14px;border-radius:26px;padding:40px 18px}
+}
+
+/* Deck: jump-to-requirement buttons, and the grab affordance. */
+.req-deck-tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 auto 20px}
+.req-deck-tabs button{
+  border:1px solid #ffffff55;background:transparent;color:#d9e5f5;cursor:pointer;
+  border-radius:999px;padding:9px 18px;font-size:13.5px;line-height:1;
+  transition:background-color .2s ease,border-color .2s ease,color .2s ease
+}
+.req-deck-tabs button:hover{background:#ffffff1f;color:#fff;border-color:#ffffff99}
+.req-deck-tabs button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#17365a;font-weight:650}
+.req-deck-tabs button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* pan-y keeps vertical scrolling with the page; sideways is the deck's. */
+.req-card{touch-action:pan-y}
+.req-card.is-front{cursor:grab}
+.req-card.is-front:active{cursor:grabbing}
+.req-card:not(.is-front){cursor:pointer}
+.req-card img{user-select:none;-webkit-user-drag:none}
+
+@media(max-width:760px){
+  .req-deck-tabs{gap:6px;margin-bottom:20px}
+  .req-deck-tabs button{padding:8px 13px;font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .req-deck-tabs button{transition:none}
+}
+
+/* ============================================================
+   Mine Projects — site search and status tags
+   ============================================================ */
+.site-search{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0 0 32px}
+.site-search-field{flex:1 1 320px;min-width:0;display:block}
+.site-search-field input{
+  width:100%;box-sizing:border-box;
+  padding:15px 20px;border:1px solid #c7d3df;border-radius:999px;
+  background:#fff;color:#142033;font:inherit;font-size:15px;
+  transition:border-color .2s ease,box-shadow .2s ease
+}
+.site-search-field input::placeholder{color:#8296ab}
+.site-search-field input:focus{outline:none;border-color:#17365a;box-shadow:0 0 0 3px #17365a22}
+.site-search-count{margin:0;color:#52667d;font-size:14px;white-space:nowrap}
+.site-search-empty{
+  margin:28px 0 0;padding:22px;border:1px solid #d7e1eb;border-radius:14px;
+  background:#eef3f8;color:#52667d
+}
+.site-search-empty .reset-link{
+  background:none;border:0;padding:0;font:inherit;color:#17365a;
+  text-decoration:underline;cursor:pointer
+}
+
+/* Mine type and status, under the card name. */
+.site-tags{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 0}
+.site-tag{
+  display:inline-block;padding:4px 11px;border-radius:999px;
+  background:#eef3f8;color:#52667d;font-size:12px;letter-spacing:.02em
+}
+.site-tag.is-operational{background:#e8f3ed;color:#315d4b}
+.site-tag.is-development{background:#fff1d9;color:#7d591e}
+.site-tag.is-expansion{background:#e6edfa;color:#2b4a7d}
+
+@media(max-width:760px){
+  .site-search{gap:12px;margin-bottom:24px}
+  .site-search-field{flex:1 1 100%}
+  .site-search-field input{padding:13px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .site-search-field input{transition:none}
+}
+
+/* Deck arrows: a small lift on hover, a press on click. */
+.req-deck-controls button{
+  transition:background-color .2s ease,border-color .2s ease,transform .2s cubic-bezier(.22,.61,.36,1)
+}
+.req-deck-controls button:hover{transform:translateY(-2px)}
+.req-deck-controls button:active{transform:translateY(0) scale(.94);transition-duration:.08s}
+.req-deck-count{display:inline-block;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){
+  .req-deck-controls button{transition:none}
+  .req-deck-controls button:hover,.req-deck-controls button:active{transform:none}
+}
+
+/* Site search suggestions — scoped to the Mine Projects search box. */
+.site-search-box{position:relative;flex:1 1 320px;min-width:0}
+.site-search-box .site-search-field{flex:none;width:100%}
+.site-suggest{
+  position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:30;
+  margin:0;padding:6px;list-style:none;
+  background:#fff;border:1px solid #d7e1eb;border-radius:16px;
+  box-shadow:0 18px 44px rgba(16,32,51,.14);
+  max-height:330px;overflow:auto
+}
+.site-suggest li{
+  display:flex;flex-direction:column;gap:2px;
+  padding:11px 14px;border-radius:11px;cursor:pointer
+}
+.site-suggest li.is-active{background:#eef3f8}
+.site-suggest-name{color:#17365a;font-weight:650;font-size:15px}
+.site-suggest-name mark{background:#ffeab0;color:inherit;padding:0 1px;border-radius:3px}
+.site-suggest-meta{color:#52667d;font-size:13px}
+
+@media(max-width:760px){
+  .site-search-box{flex:1 1 100%}
+  .site-suggest li{padding:13px 14px}
+  .site-suggest-name{font-size:15.5px}
+}
+
+/* .mine-card sets display:block, which outranks the browser's own
+   [hidden] rule — so filtered-out cards stayed on screen. Scoped to
+   the sites grid so no other hidden element is affected. */
+.sites-grid [data-site][hidden]{display:none}
