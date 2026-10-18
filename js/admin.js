@@ -54,7 +54,7 @@
 
   const TABS = [
     ['overview', 'Overview'], ['listings', 'Listings'], ['sellers', 'Sellers'], ['buyers', 'Buyers'],
-    ['enquiries', 'Enquiries'], ['requests', 'Requests'], ['documents', 'Documents'], ['alerts', 'Alerts']
+    ['enquiries', 'Enquiries'], ['requests', 'Requests'], ['documents', 'Documents'], ['alerts', 'Alerts'], ['investors', 'Investors']
   ];
 
   const DOC_STATUS  = { pending: ['Waiting for review', 'is-wait'], approved: ['Approved', 'is-good'], rejected: ['Rejected', 'is-bad'] };
@@ -559,7 +559,7 @@
   }
 
   function render() {
-    root.innerHTML = tab === 'overview' ? overview() : tableView(tab);
+    root.innerHTML = tab === 'investors' ? '<section class="admin-investor-hub"><p class="eyebrow">Investor administration</p><h2>Investors & project reporting.</h2><p>Manage applications, project enquiries, confirmed participation and progress updates.</p><div class="admin-investor-links"><a href="investor-applications.html"><strong>Investor approvals →</strong><span>Review applications and approve investor access.</span></a><a href="investor-review.html"><strong>Interests & investments →</strong><span>Review enquiries, maintain matching criteria, record confirmed investments and publish project progress.</span></a></div></section>' : tab === 'overview' ? overview() : tableView(tab);
   }
 
   /* ---------- CSV ---------- */

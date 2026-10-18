@@ -1,0 +1,10 @@
+.page-mine-projects .requirements-section{padding-top:10px;background:#f4f2ee}
+.requirements-heading{max-width:720px;margin-bottom:34px}
+.requirements-heading>p:last-child{color:#52667d;line-height:1.7;margin-top:18px}
+.requirements-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.requirement-tile{display:flex;flex-direction:column;min-width:0;background:#17365a;border:1px solid #365779;border-radius:20px;overflow:hidden;box-shadow:0 8px 20px #102b4910}
+.requirement-tile>img{display:block;width:100%;height:185px;object-fit:cover}
+.requirement-copy{padding:28px 30px 30px;flex:1}
+.requirement-copy h3{color:#fff;font-size:25px;line-height:1.25;margin:0 0 15px;letter-spacing:-.02em}
+.requirement-copy p{color:#d2dfed;font-size:15px;line-height:1.75;margin:0}
+@media(max-width:680px){.requirements-grid{grid-template-columns:1fr;gap:20px}.requirement-tile>img{height:170px}.requirement-copy{padding:24px}.requirement-copy h3{font-size:23px}.requirement-copy p{font-size:14px}.requirements-heading{margin-bottom:26px}}

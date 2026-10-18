@@ -14,8 +14,9 @@
  if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){message('Investor sign-in is not configured yet.',true);return;}
  const client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'t7.investor.auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const session=unwrap(await client.auth.getSession()).session;
+ if(location.pathname.endsWith('/investors.html')&&session){const current=await application();if(current){location.replace(current.status==='approved'?'investor-dashboard.html':'investor-pending.html');return;}}
  async function application(){const user=unwrap(await client.auth.getUser()).user;if(!user)return null;return unwrap(await client.from('investor_applications').select('*').eq('user_id',user.id).maybeSingle());}
- function answersFrom(data){const answers={};for(const key of ['capacity','funds','verification','experience','risk','timing','signature','signature-date'])answers[key]=data.get(key);answers.investment_types=data.getAll('investment-type');return answers;}
+ function answersFrom(data){const answers={};for(const key of ['capacity','funds','verification','experience','risk','timing','signature','signature-date','preferred_countries','preferred_regions','investment_budget_zar'])answers[key]=data.get(key);answers.investment_types=data.getAll('investment-type');return answers;}
  /* Files the application against the account that is already signed in.
     Supabase Auth holds one row per email, so somebody who registered
     through Trade cannot sign up again — auth.signUp() returns success,
@@ -87,12 +88,18 @@
    let trackingReady=true;let interestResult=await client.from('investor_interests').select('id,project_id,created_at,status,review_note,updated_at').order('created_at',{ascending:false});
    if(interestResult.error?.code==='42703'){trackingReady=false;interestResult=await client.from('investor_interests').select('id,project_id,created_at').order('created_at',{ascending:false});}
    const interests=unwrap(interestResult);
-   const projects=unwrap(await client.from('investor_projects').select('*').eq('published',true).order('created_at'));
+   const projects=unwrap(await client.from('investor_projects').select('*').order('created_at'));
+   const workspace={ready:false,holdings:[],updates:[]};
+   const [holdingsResult,updatesResult]=await Promise.all([client.from('investor_holdings').select('*').eq('user_id',record.user_id).order('invested_on',{ascending:false}),client.from('investor_project_updates').select('*').eq('published',true).order('report_date',{ascending:false})]);
+   const missing=r=>['42P01','PGRST205'].includes(r.error?.code);
+   if(!holdingsResult.error&&!updatesResult.error){workspace.ready=true;workspace.holdings=holdingsResult.data;workspace.updates=updatesResult.data;workspace.saveProfile=async values=>{unwrap(await client.rpc('update_investor_preferences',{p_country:values.country,p_capacity:values.capacity,p_budget:values.budget,p_countries:values.countries,p_regions:values.regions}));};}
+   else if([holdingsResult,updatesResult].some(r=>r.error&&!missing(r)))workspace.error='Unable to load investment records. Please reload or contact investor support.';
+   record.application=record.application||{};
    T7InvestorDashboard(wrap,record,projects,interests,trackingReady,async project=>{
     const result=await client.from('investor_interests').insert({project_id:project.id}).select('id,project_id,created_at,status,review_note,updated_at').single();
     if(result.error?.code==='23505')return unwrap(await client.from('investor_interests').select('id,project_id,created_at,status,review_note,updated_at').eq('project_id',project.id).single());
     return unwrap(result);
-   },async()=>{try{unwrap(await client.auth.signOut({scope:'local'}));location.href='investor-login.html';}catch(e){message(friendly(e),true);}});
+   },async()=>{try{unwrap(await client.auth.signOut({scope:'local'}));location.href='investor-login.html';}catch(e){message(friendly(e),true);}},workspace);
 
   }catch(e){main.replaceChildren();message(friendly(e),true);}
  }
