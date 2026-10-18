@@ -1,0 +1,30 @@
+const fs=require('fs');
+let s=fs.readFileSync('minerals.html','utf8');
+const start=s.indexOf('<section class="section commodity-section"');const end=s.indexOf('</section>',start)+10;
+let panel=s.slice(start,end).replace('class="section commodity-section"','class="commodity-section mineral-market-panel"').replace('<div class="wrap">','<div class="market-inner">');
+s=s.slice(0,start)+s.slice(end);
+s=s.replace('</figcaption></figure></div></div></section>','</figcaption></figure>'+panel+'</div></div></section>');
+s=s.replace('Select a mineral to explore its image and market watch below.','Select a mineral to explore its image and market watch.').replace('css/review-update.css?v=20261018c','css/review-update.css?v=20261018d').replace('js/mineral-market.js?v=20261018','js/mineral-market.js?v=20261018b');
+fs.writeFileSync('minerals.html',s);
+let js=fs.readFileSync('js/mineral-market.js','utf8');
+js=js.replace("script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js';", "script.src = allMetals ? 'https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js' : 'https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js';");
+js=js.replace("script.textContent = JSON.stringify({ width:","script.textContent = JSON.stringify(allMetals ? { width:");
+js=js.replace("displayName: 'USD / ZAR'}]}] });", "displayName: 'USD / ZAR'}]}] } : {symbol: metals[name], width: '100%', isTransparent: true, colorTheme: 'light', locale: 'en'});");
+js=js.replace('widget.append(container);',`widget.append(container);
+      if (!allMetals) {
+        const fx = document.createElement('div');
+        fx.className = 'tradingview-widget-container market-fx';
+        const label = document.createElement('p');
+        label.className = 'market-fx-label';
+        label.textContent = 'Rand context · USD / ZAR';
+        const fxMount = document.createElement('div');
+        fxMount.className = 'tradingview-widget-container__widget';
+        const fxScript = document.createElement('script');
+        fxScript.src = 'https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js';
+        fxScript.async = true;
+        fxScript.textContent = JSON.stringify({symbol: 'FX_IDC:USDZAR', width: '100%', isTransparent: true, colorTheme: 'light', locale: 'en'});
+        fx.append(fxMount, fxScript);
+        widget.append(label, fx);
+      }
+      widget.classList.toggle('is-all-markets', allMetals);`);
+fs.writeFileSync('js/mineral-market.js',js);

@@ -1,0 +1,96 @@
+/* Homepage actions share one clear starting point. */
+.page-index .hero-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.page-index .hero-actions .btn{min-width:100px;justify-content:center}
+.page-index .hero-actions .hero-consult{background:transparent;color:white;border:1px solid #ffffff99;gap:18px}
+.page-index .hero-actions .hero-consult:hover{background:#ffffff20}
+.page-about .manufacturing-overview .company-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* Branded, selectable team deck. The unenhanced version remains a readable grid. */
+.people-deck{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin:40px 0}
+.people-card{position:relative;display:flex;flex-direction:column;align-items:center;background:#17365a;border:1px solid #6683a3;border-radius:22px;color:white;padding:72px 22px 30px;min-height:390px;font:inherit;cursor:pointer;box-shadow:0 8px 20px #102b4914;overflow:hidden}
+
+.people-number{position:absolute;top:27px;right:24px;font-size:10px;letter-spacing:.12em;color:#c5d4e6}
+.people-card .people-portrait,.people-placeholder{display:flex;align-items:center;justify-content:center;width:155px;height:170px;object-fit:cover;object-position:50% 25%;border-radius:75px 75px 16px 16px;background:#dfe8f2;color:#21466f;font-size:46px;margin:0 0 23px;border:3px solid #ffffff55}
+.people-name{display:block;font-size:23px;line-height:1.2;font-weight:650;margin-bottom:10px}
+.people-role{display:block;font-size:13px;line-height:1.5;color:#d2dfed;max-width:240px}
+.people-controls{display:none;align-items:center;justify-content:center;gap:24px;margin:12px 0 30px}
+.people-controls button{width:48px;height:48px;border:1px solid #b7c8d9;border-radius:50%;background:white;color:#17365a;font-size:24px;cursor:pointer}
+.people-status{margin:0;min-width:160px;text-align:center;font-size:13px;color:#52667d}
+.people-choices{display:none;flex-wrap:wrap;justify-content:center;gap:8px;max-width:920px;margin:auto}
+.people-choices button{font:inherit;font-size:12px;border:1px solid #ccd8e3;border-radius:30px;padding:9px 14px;background:transparent;color:#31516e;cursor:pointer}
+.people-choices button[aria-pressed=true]{background:#17365a;border-color:#17365a;color:white}
+.people-carousel.is-ready .people-deck{position:relative;display:block;height:470px;margin:36px 0 0;overflow:hidden}
+.people-carousel.is-ready .people-card{position:absolute;width:290px;min-height:400px;left:50%;top:30px;margin-left:-145px;transform:translateX(calc(var(--offset)*180px)) translateY(calc(var(--distance)*18px)) rotate(calc(var(--offset)*5deg));z-index:calc(10 - var(--distance));transition:transform .4s ease;opacity:1}
+.people-carousel.is-ready .people-card[aria-pressed=true]{opacity:1;box-shadow:0 12px 28px #102b4926;border-color:#8ca8c6}
+.people-card[hidden]{display:none}
+.people-carousel.is-ready .people-controls,.people-carousel.is-ready .people-choices{display:flex}
+.people-carousel :focus-visible{outline:3px solid #358fe4;outline-offset:5px}
+.commodity-section{background:#edf2f6;scroll-margin-top:90px}
+.commodity-section .section-title{margin-bottom:20px}
+.commodity-board{background:white;border:1px solid #d4dfeb;border-radius:16px;padding:16px;margin:30px 0 18px;min-height:460px;overflow:hidden}
+.tradingview-widget-copyright{text-align:center;font-size:12px;padding:12px;color:#52667d}
+.tradingview-widget-copyright a{color:#21466f;text-decoration:underline}
+.commodity-note{font-size:13px;line-height:1.7;max-width:850px;color:#52667d}
+@media(max-width:700px){.page-about .manufacturing-overview .company-overview-grid{grid-template-columns:1fr}.people-carousel.is-ready .people-card{width:250px;margin-left:-125px;transform:translateX(calc(var(--offset)*145px)) translateY(calc(var(--distance)*14px)) rotate(calc(var(--offset)*3deg))}.people-carousel.is-ready .people-deck{margin-left:-20px;margin-right:-20px}.people-name{font-size:21px}.people-choices{gap:6px}.people-choices button{font-size:11px;padding:8px 10px}.commodity-board{padding:5px}.page-index .hero-actions{gap:10px}.page-index .hero-actions .btn{min-width:90px;padding:12px 18px}}
+@media(prefers-reduced-motion:reduce){.people-carousel.is-ready .people-card{transition:none}}
+/* Keep all quote columns reachable on narrow screens. */
+@media(max-width:700px){.commodity-board{overflow-x:auto;-webkit-overflow-scrolling:touch}.commodity-board .tradingview-widget-container{min-width:620px}.commodity-board::before{content:'Swipe to view all market columns →';display:block;font-size:11px;color:#52667d;padding:10px}}
+/* Selected mineral market, inspired by a clean commodity price table. */
+.market-heading{display:flex;justify-content:space-between;align-items:center;gap:28px}
+.market-heading p:not(.eyebrow){max-width:680px;color:#52667d}
+.market-all{flex-shrink:0;background:white;border:1px solid #c6d4e1;border-radius:30px;padding:12px 18px;font:inherit;font-size:13px;color:#17365a;cursor:pointer}
+.market-selection{font-size:12px;letter-spacing:.04em;color:#31516e;border-top:1px solid #cbd8e3;padding-top:20px;margin-top:28px}
+.market-guidance{background:white;border:1px solid #d4dfeb;border-radius:14px;overflow:hidden;margin:20px 0}
+.market-table-scroll{overflow-x:auto}
+.mineral-price-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;min-width:580px}
+.mineral-price-table th,.mineral-price-table td{padding:20px 24px;border-bottom:1px solid #e2e8ee}
+.mineral-price-table thead{background:#f7f9fb;color:#52667d;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.mineral-price-table tbody th{color:#17365a}
+.mineral-price-table td{color:#52667d}
+.market-guidance-copy{display:flex;justify-content:space-between;gap:36px;padding:30px 24px}
+.market-guidance-copy h3{font-size:23px;margin-bottom:12px;color:#17365a}
+.market-guidance-copy p{max-width:640px;font-size:15px;color:#52667d;line-height:1.7;margin:0}
+.market-guidance-actions{display:flex;flex-direction:column;align-items:flex-start;gap:18px;flex-shrink:0}
+.market-guidance-actions .btn{font-size:13px}
+.market-source{font-size:12px;color:#52667d;margin-top:12px}
+.market-source a{text-decoration:underline}
+#commodity-prices .commodity-board{min-height:0}
+#commodity-prices [hidden]{display:none}
+.market-feed-error{padding:24px;color:#52667d}
+#commodity-prices :focus-visible{outline:3px solid #358fe4;outline-offset:4px}
+@media(max-width:760px){.market-heading,.market-guidance-copy{flex-direction:column;align-items:flex-start}.market-heading{gap:16px}.market-guidance-copy{gap:24px;padding:24px 20px}.mineral-price-table th,.mineral-price-table td{padding:16px}.market-guidance-actions{gap:15px}.market-all{font-size:12px}}
+/* One mineral workspace: navigation, image, and its market side by side. */
+.page-minerals .mineral-browser{grid-template-columns:170px minmax(0,1fr) minmax(0,1.05fr);gap:22px;align-items:start}
+.page-minerals .mineral-name-list{gap:10px}
+.page-minerals .mineral-name-list button{font-size:15px;padding:16px 14px;gap:8px}
+.page-minerals .mineral-view>img{height:390px}
+.page-minerals .mineral-market-panel{padding:24px;background:#edf2f6;border:1px solid #cbd6e0;border-radius:20px;min-width:0}
+.mineral-market-panel .market-heading{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.mineral-market-panel .eyebrow{font-size:10px;margin-bottom:12px}
+.mineral-market-panel .section-title{font-size:32px;line-height:1.15;margin-bottom:12px}
+.mineral-market-panel .market-heading p:not(.eyebrow){font-size:13px;line-height:1.6;margin-bottom:0}
+.mineral-market-panel .market-all{padding:9px 13px;font-size:11px}
+.mineral-market-panel .market-selection{font-size:11px;margin-top:18px;padding-top:16px}
+.mineral-market-panel .market-guidance{margin:16px 0}
+.mineral-market-panel .mineral-price-table{min-width:0;font-size:12px;display:block}
+.mineral-market-panel .mineral-price-table thead{display:none}
+.mineral-market-panel .mineral-price-table tbody{display:block}
+.mineral-market-panel .mineral-price-table tr{display:grid;grid-template-columns:1fr 1fr;padding:16px;gap:10px}
+.mineral-market-panel .mineral-price-table th,.mineral-market-panel .mineral-price-table td{padding:0;border:0}
+.mineral-market-panel .mineral-price-table td:nth-child(2){text-align:right;font-weight:600;color:#17365a}
+.mineral-market-panel .mineral-price-table td:nth-child(4){text-align:right}
+.mineral-market-panel .market-guidance-copy{flex-direction:column;gap:18px;padding:20px 16px;border-top:1px solid #e2e8ee}
+.mineral-market-panel .market-guidance-copy h3{font-size:19px;line-height:1.35}
+.mineral-market-panel .market-guidance-copy p{font-size:12px;line-height:1.7}
+.mineral-market-panel .market-guidance-actions{gap:14px;flex-shrink:1;max-width:100%}
+.mineral-market-panel .market-guidance-actions .btn{font-size:12px;padding:12px 16px;white-space:normal}
+.mineral-market-panel .text-link{font-size:12px}
+.mineral-market-panel .commodity-note,.mineral-market-panel .market-source{font-size:11px;line-height:1.7}
+#commodity-prices.mineral-market-panel .commodity-board{padding:12px;margin:16px 0;overflow:hidden}
+.mineral-market-panel .market-fx-label{border-top:1px solid #d4dfeb;padding-top:14px;margin:12px 0 0;font-size:11px;color:#52667d}
+.mineral-market-panel .tradingview-widget-container{min-width:0}
+.mineral-market-panel .tradingview-widget-copyright{font-size:10px;padding:6px}
+#commodity-prices.mineral-market-panel .commodity-board::before{display:none}
+#commodity-prices.mineral-market-panel .commodity-board.is-all-markets{overflow-x:auto}
+.mineral-market-panel .is-all-markets .tradingview-widget-container{min-width:620px}
+@media(min-width:761px) and (max-width:1050px){.page-minerals .mineral-browser{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.page-minerals .mineral-name-list{grid-column:1/-1;grid-template-columns:repeat(4,minmax(0,1fr))}.page-minerals .mineral-name-list button{font-size:13px;padding:14px 12px}}
+@media(max-width:760px){.page-minerals .mineral-browser{grid-template-columns:minmax(0,1fr);gap:20px}.page-minerals .mineral-name-list{grid-template-columns:1fr 1fr}.page-minerals .mineral-view>img{height:300px}.page-minerals .mineral-market-panel{padding:22px 18px}.mineral-market-panel .section-title{font-size:30px}}

@@ -16,12 +16,13 @@
 <link rel="stylesheet" href="css/trade-desk.css?v=20261011">
 <script>try{if(!JSON.parse(localStorage.getItem('t7.session')||'null')){location.replace('signin.html?next='+encodeURIComponent(location.pathname.split('/').pop()+location.search+location.hash));}}catch(e){}</script>
 
+<link rel="stylesheet" href="css/investor-workspace.css?v=20261018b">
 </head>
 <body class="page-admin td-page">
 
 <nav class="nav"><div class="wrap nav-layout"><a href="index.html" class="nav-mark" aria-label="Triple 7 Holdings — home"><img src="images/logo-light.png?v=2" alt="Triple 7 Holdings" width="437" height="124"></a><button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button><div class="nav-links"><div class="nav-primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="minerals.html">Minerals</a><a href="trade.html">Trade</a><a href="investors.html">Invest</a><a href="mine-projects.html">Mine Projects</a></div><div class="nav-utility" aria-label="Trade account and contact"><a href="signin.html" data-nav-signin>Account</a><a href="signin.html?mode=signup" data-nav-register>Sign Up</a><a href="contact.html" class="nav-cta">Contact</a></div></div></div></nav>
 
-<main id="main-content"><div class="wrap" style="padding-top:100px"><a class="btn btn-outline" href="investor-review.html">Review Investor Interests</a> <a class="btn btn-outline" href="investor-applications.html">Investor Approvals</a></div>
+<main id="main-content">
 <header class="pagehead td-head td-head-short"><div class="pagehead-media"><img src="images/hero-banner3.jpg" alt="Bucket-wheel excavator at an open mine"></div><div class="wrap"><p class="eyebrow">Trade Desk administration</p><h1 class="pagehead-title" id="desk-title">The desk.<br><em>Everything in one place.</em></h1><p class="pagehead-sub" id="desk-sub">Accounts, lots, enquiries, requests and documents.</p><div class="hero-actions td-hero-actions desk-actions"><span class="desk-count" id="desk-count"></span><button type="button" class="btn btn-solid" data-admin-trade="trade.html">View Trade Board</button><button type="button" class="btn btn-ghost" id="refresh">Refresh</button><a class="btn btn-ghost" href="signin.html?signout=1">Sign Out</a></div></div></header>
 <nav class="market-strip admin-tabs td-strip" aria-label="Dashboard sections"><div class="market-strip-inner"><div class="market-primary" id="admin-tabs" role="tablist"></div></div></nav>
 <section class="section td-body"><div class="wrap">
@@ -84,7 +85,7 @@
 <script src="js/auth.js?v=20261011"></script>
 <script src="js/api.js?v=20261011"></script>
 <script src="js/desk-chat.js?v=20261011"></script>
-<script src="js/admin.js?v=20261011"></script>
+<script src="js/admin.js?v=20261018"></script>
 <script src="js/account-menu.js?v=20261011"></script>
 <script src="js/lenis.min.js"></script>
 <script src="js/smooth-scroll.js"></script>

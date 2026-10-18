@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+await import('../js/investor-matching.js');
+const {match,budget}=globalThis.T7InvestorMatch;
+const investor={country:'South Africa',application:{investment_budget_zar:500000,preferred_countries:'Botswana',preferred_regions:'Northern Cape'}};
+const project={country:'South Africa',region:'Northern Cape',minimum_investment_zar:250000};
+test('uses residence and preferred location together',()=>{const result=match(investor,project);assert.equal(result.level,'Matched');assert.ok(result.reasons.includes('Matches your country of residence'));assert.ok(result.reasons.includes('Matches your preferred project location'));});
+test('allows overseas preferences while respecting residence restrictions',()=>{assert.equal(match(investor,{...project,country:'Botswana',region:'Central'}).level,'Matched');assert.equal(match(investor,{...project,eligible_countries:['Botswana']}).score,0);});
+test('does not claim matches above budget or without criteria',()=>{assert.equal(match(investor,{...project,minimum_investment_zar:600000}).level,'Outside budget');assert.equal(match(investor,{location:'Northern Cape'}).level,'Details pending');});
+test('legacy capacity ranges are conservative at overlapping minimums',()=>{const record={country:'South Africa',application:{capacity:'R100,000 – R500,000'}};assert.equal(match(record,project).level,'Potential match');assert.deepEqual(budget({capacity:'R500,000 – R5M'}),{min:500000,max:5000000});assert.deepEqual(budget({capacity:'R5M+'}),{min:5000000,max:Infinity});assert.equal(match({country:'South Africa',application:{capacity:'Under R100,000'}},project).level,'Outside budget');});
+test('missing budget does not match and case/spacing do not change locations',()=>{assert.equal(match({country:'South Africa',application:{}},project).level,'Complete profile');assert.equal(match({...investor,country:' south africa '},{...project,country:'SOUTH AFRICA'}).level,'Matched');});
