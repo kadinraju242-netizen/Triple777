@@ -202,7 +202,7 @@
       image: rows[0] ? P.image(rows[0].commodity) : 'images/mines/mine-projects.jpg'
     });
 
-    const bar = el('div', { class: 'pp-toolbar' }, [
+    const bar = el('div', { class: 'pp-toolbar' + (rows.length ? '' : ' is-centered') }, [
       el('div', {}, [el('p', { class: 'eyebrow', text: 'Signed in as ' + profile.email }), el('h2', { class: 'pp-h2', text: 'Your projects' })]),
       el('div', { class: 'pp-toolbar-actions' }, [
         el('a', { class: 'btn btn-solid', href: 'project-profile.html', text: 'Start a New Project' }),
@@ -210,7 +210,7 @@
       ])
     ]);
 
-    const grid = el('div', { class: 'pp-project-grid' });
+    const grid = el('div', { class: 'pp-project-grid' + (rows.length ? '' : ' is-empty') });
     for (const r of rows) {
       const editable = r.status === 'draft' || r.status === 'changes_requested';
       const actions = el('div', { class: 'pp-tile-actions' }, [
