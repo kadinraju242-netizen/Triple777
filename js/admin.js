@@ -54,7 +54,7 @@
 
   const TABS = [
     ['overview', 'Overview'], ['listings', 'Listings'], ['sellers', 'Sellers'], ['buyers', 'Buyers'],
-    ['enquiries', 'Enquiries'], ['requests', 'Requests'], ['documents', 'Documents'], ['alerts', 'Alerts'], ['investors', 'Investors']
+    ['enquiries', 'Enquiries'], ['requests', 'Requests'], ['documents', 'Documents'], ['alerts', 'Alerts'], ['investors', 'Investors'], ['mine-projects', 'Mine Projects']
   ];
 
   const DOC_STATUS  = { pending: ['Waiting for review', 'is-wait'], approved: ['Approved', 'is-good'], rejected: ['Rejected', 'is-bad'] };
@@ -559,6 +559,12 @@
   }
 
   function render() {
+    if (tab === 'mine-projects') {
+      /* Project review lives with the project portal (reached from the Mine
+         Projects page). Same email and password as this dashboard. */
+      root.innerHTML = '<section class="admin-investor-hub"><p class="eyebrow">Mining Division</p><h2>Mine project submissions.</h2><p>Review submitted project profiles, see each Opportunity Score, ask owners for changes, match projects to approved investors and produce an Investment Opportunity Brief.</p><div class="admin-investor-links"><a href="project-portal.html"><strong>Review project submissions →</strong><span>Sign in there with this admin email and password.</span></a></div></section>';
+      return;
+    }
     root.innerHTML = tab === 'investors' ? '<section class="admin-investor-hub"><p class="eyebrow">Investor administration</p><h2>Investors & project reporting.</h2><p>Manage applications, project enquiries, confirmed participation and progress updates.</p><div class="admin-investor-links"><a href="investor-applications.html"><strong>Investor approvals →</strong><span>Review applications and approve investor access.</span></a><a href="investor-review.html"><strong>Interests & investments →</strong><span>Review enquiries, maintain matching criteria, record confirmed investments and publish project progress.</span></a></div></section>' : tab === 'overview' ? overview() : tableView(tab);
   }
 
